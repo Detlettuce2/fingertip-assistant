@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>指尖小助手 · 区服日历</title>
+  <meta name="description" content="查询全服与区服活动日历。">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand-navigation">
+        <h1>指尖小助手</h1>
+        <nav class="primary-navigation" aria-label="主要功能" role="tablist">
+          <button class="navigation-tab" type="button" role="tab" data-view="global" aria-controls="global-calendar-view">全服日历</button>
+          <button class="navigation-tab" type="button" role="tab" data-view="server" aria-controls="server-calendar-view">区服日历</button>
+          <button class="navigation-tab" type="button" role="tab" data-view="encyclopedia" aria-controls="encyclopedia-view">指尖百科</button>
+        </nav>
+      </div>
+      <div class="clock-block">
+        <span>北京时间</span>
+        <strong id="clock">--:--:--</strong>
+      </div>
+    </header>
+
+    <section id="global-calendar-view" class="page-view" role="tabpanel" hidden>
+      <nav class="secondary-navigation" aria-label="全服日历内容" role="tablist">
+        <button class="secondary-navigation-tab active" type="button" role="tab" data-global-view="activities" aria-controls="activity-calendar-panel" aria-selected="true">活动日历</button>
+        <button class="secondary-navigation-tab" type="button" role="tab" data-global-view="holyland" aria-controls="holyland-review-panel" aria-selected="false">圣域回顾</button>
+      </nav>
+
+      <section id="activity-calendar-panel" class="global-subview" role="tabpanel" aria-labelledby="activity-calendar-title">
+        <div class="activity-calendar-heading">
+          <div>
+            <span class="eyebrow">全服周期</span>
+            <h2 id="activity-calendar-title">活动日历</h2>
+            <p>以北京时间显示各玩法当前阶段；尚未确定的服务器排期不会猜测。</p>
+          </div>
+        </div>
+        <div id="activity-calendar" class="activity-calendar" aria-live="polite"></div>
+      </section>
+
+      <section id="holyland-review-panel" class="global-subview" role="tabpanel" hidden>
+      <section class="holyland-section" aria-labelledby="holyland-title">
+        <div class="holyland-heading">
+          <div>
+            <span id="holyland-result-label" class="eyebrow">S14赛果</span>
+            <h2 id="holyland-title">圣域争锋 · 32强对阵</h2>
+            <p id="holyland-summary">正在读取比赛记录…</p>
+          </div>
+          <div class="holyland-controls">
+            <label class="realm-field">
+              <span>赛季</span>
+              <select id="holyland-season">
+                <option value="S14">S14</option>
+              </select>
+            </label>
+            <label class="realm-field">
+              <span>服务器系列</span>
+              <select id="holyland-channel">
+                <option value="xkbeta">指尖/指尖像素</option>
+                <option value="xkgdt">奥术殿</option>
+                <option value="xkapp" disabled>像素（暂无数据）</option>
+                <option value="xkstorebeta" disabled>浮空岛（暂无数据）</option>
+                <option value="xkhw" disabled>熔火城（暂无数据）</option>
+                <option value="xkghb" disabled>深境（暂无数据）</option>
+                <option value="xkgha" disabled>露娜（暂无数据）</option>
+              </select>
+            </label>
+            <label class="realm-field">
+              <span>圣域分区</span>
+              <select id="holyland-realm"></select>
+            </label>
+          </div>
+        </div>
+        <div id="holyland-bracket" class="bracket-wrap" aria-live="polite">
+          <div class="bracket-loading">正在读取比赛记录…</div>
+        </div>
+      </section>
+      </section>
+    </section>
+
+    <section id="encyclopedia-view" class="page-view" role="tabpanel" hidden>
+      <section class="encyclopedia-section" aria-labelledby="encyclopedia-title">
+        <div class="encyclopedia-heading">
+          <div>
+            <span class="eyebrow">物品图鉴</span>
+            <h2 id="encyclopedia-title">指尖百科</h2>
+            <p id="item-summary">正在读取物品资料…</p>
+          </div>
+          <div class="item-controls">
+            <label class="search-field">
+              <span>搜索物品</span>
+              <input id="item-search" type="search" autocomplete="off" placeholder="输入名称或编号">
+            </label>
+            <label class="item-filter-field">
+              <span>分类</span>
+              <select id="item-class-filter">
+                <option value="all">全部物品</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="item-layout">
+          <div class="item-browser">
+            <div id="item-grid" class="item-grid" aria-live="polite">
+              <div class="empty-state">正在读取物品资料…</div>
+            </div>
+            <nav class="item-pagination" aria-label="物品分页">
+              <button id="item-prev" class="secondary-button" type="button">上一页</button>
+              <span id="item-page-summary">第 1 页</span>
+              <button id="item-next" class="secondary-button" type="button">下一页</button>
+            </nav>
+          </div>
+          <aside id="item-detail" class="item-detail" aria-live="polite">
+            <div class="empty-state">选择一个物品查看详情。</div>
+          </aside>
+        </div>
+      </section>
+    </section>
+
+    <div id="server-calendar-view" class="page-view" role="tabpanel">
+    <section class="control-panel" aria-label="查询控制">
+      <label class="search-field">
+        <span>查询区服</span>
+        <input id="server-search" inputmode="numeric" autocomplete="off" placeholder="例如 S2014 或 指尖像素-1597服">
+      </label>
+      <button id="search-button" class="primary-button" type="button">查询</button>
+      <button id="refresh-button" class="secondary-button" type="button">立即刷新</button>
+      <p id="refresh-state" class="refresh-state">正在读取数据…</p>
+    </section>
+
+    <section id="selected-card" class="selected-card" aria-live="polite">
+      <div class="empty-state">输入区服编号即可查看当前轮替。</div>
+    </section>
+
+    <section class="list-section">
+      <div class="section-heading">
+        <div class="section-title-block">
+          <div class="section-title-row">
+            <h2>所有服务器轮替表</h2>
+            <label class="channel-field">
+              <span>服务器系列</span>
+              <select id="channel-select">
+                <option value="xkbeta">指尖/指尖像素</option>
+                <option value="xkapp">像素</option>
+                <option value="xkstorebeta">浮空岛</option>
+                <option value="xkgdt">奥术殿</option>
+                <option value="xkhw">熔火城</option>
+                <option value="xkghb">深境</option>
+                <option value="xkgha">露娜</option>
+              </select>
+            </label>
+          </div>
+          <p id="data-summary">正在载入…</p>
+        </div>
+        <div class="section-actions">
+          <button id="sort-button" class="text-button" type="button">按老区优先</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <colgroup>
+            <col class="col-group">
+            <col class="col-display">
+            <col class="col-open-time">
+            <col class="col-open-days">
+            <col class="col-rotation">
+            <col class="col-rotation">
+            <col class="col-status">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>合服组</th>
+              <th>显示服范围</th>
+              <th>日历开服时间</th>
+              <th>开服天数</th>
+              <th>当前虚空</th>
+              <th>下一期</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="group-rows"></tbody>
+        </table>
+      </div>
+    </section>
+    </div>
+  </main>
+  <footer class="site-credit">本网页由<a href="https://space.bilibili.com/92121767" target="_blank" rel="noopener noreferrer">小生菜</a>制作</footer>
+  <script src="app.js" defer></script>
+</body>
+</html>
