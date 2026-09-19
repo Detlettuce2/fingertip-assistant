@@ -17,19 +17,24 @@ const HOLYLAND_SEASONS = {
 };
 
 const urlParams = new URLSearchParams(location.search);
-const storedChannel = localStorage.getItem("voidRotationChannel");
+// Preference failures must not prevent the simulator's explicit storage warning.
+const preferences = {
+  getItem(key) { try { return localStorage.getItem(key); } catch (_) { return null; } },
+  setItem(key, value) { try { localStorage.setItem(key, value); } catch (_) { /* Optional preference. */ } },
+};
+const storedChannel = preferences.getItem("voidRotationChannel");
 const initialChannel = urlParams.get("channel") || storedChannel || "xkbeta";
-const storedDescending = localStorage.getItem("voidRotationDescending");
-const requestedView = urlParams.get("view") || localStorage.getItem("assistantView") || "server";
-const initialView = ["global", "server", "encyclopedia"].includes(requestedView) ? requestedView : "server";
-const storedGlobalView = localStorage.getItem("globalCalendarView");
+const storedDescending = preferences.getItem("voidRotationDescending");
+const requestedView = urlParams.get("view") || preferences.getItem("assistantView") || "server";
+const initialView = ["global", "server", "encyclopedia", "seal"].includes(requestedView) ? requestedView : "server";
+const storedGlobalView = preferences.getItem("globalCalendarView");
 
 const state = {
   data: null,
   holyland: null,
-  holylandSeason: localStorage.getItem("holylandSeason") || "S14",
-  holylandChannel: localStorage.getItem("holylandChannel") || "xkbeta",
-  holylandRealm: localStorage.getItem("holylandRealm") || "1",
+  holylandSeason: preferences.getItem("holylandSeason") || "S14",
+  holylandChannel: preferences.getItem("holylandChannel") || "xkbeta",
+  holylandRealm: preferences.getItem("holylandRealm") || "1",
   holylandLoading: false,
   items: null,
   itemsLoading: false,
@@ -39,7 +44,7 @@ const state = {
   itemPageSize: 6,
   selectedItemId: null,
   channel: CHANNELS[initialChannel] ? initialChannel : "xkbeta",
-  selectedSid: Number(urlParams.get("sid")) || Number(localStorage.getItem("voidRotationSid")) || 2014,
+  selectedSid: Number(urlParams.get("sid")) || Number(preferences.getItem("voidRotationSid")) || 2014,
   descending: storedDescending === "true",
   secondsToRefresh: 0,
   boundaryRefreshAt: null,
@@ -63,6 +68,7 @@ const els = {
   globalView: document.querySelector("#global-calendar-view"),
   serverView: document.querySelector("#server-calendar-view"),
   encyclopediaView: document.querySelector("#encyclopedia-view"),
+  sealView: document.querySelector("#beast-seal-view"),
   holylandRealm: document.querySelector("#holyland-realm"),
   holylandSeason: document.querySelector("#holyland-season"),
   holylandChannel: document.querySelector("#holyland-channel"),
@@ -101,7 +107,7 @@ const NEW_VOID_CARD = {key: "newvoid", name: "新虚空", group: "新虚空卡�
 
 function setGlobalView(view) {
   state.globalView = view === "holyland" ? "holyland" : "activities";
-  localStorage.setItem("globalCalendarView", state.globalView);
+  preferences.setItem("globalCalendarView", state.globalView);
   els.activityPanel.hidden = state.globalView !== "activities";
   els.holylandPanel.hidden = state.globalView !== "holyland";
   els.globalTabs.forEach(tab => {
@@ -116,18 +122,20 @@ function setGlobalView(view) {
 }
 
 function setView(view, updateHistory = true) {
-  state.view = ["global", "server", "encyclopedia"].includes(view) ? view : "server";
-  localStorage.setItem("assistantView", state.view);
+  state.view = ["global", "server", "encyclopedia", "seal"].includes(view) ? view : "server";
+  preferences.setItem("assistantView", state.view);
+  document.body.classList.toggle("seal-active", state.view === "seal");
   els.globalView.hidden = state.view !== "global";
   els.serverView.hidden = state.view !== "server";
   els.encyclopediaView.hidden = state.view !== "encyclopedia";
+  els.sealView.hidden = state.view !== "seal";
   els.navigationTabs.forEach(tab => {
     const active = tab.dataset.view === state.view;
     tab.classList.toggle("active", active);
     tab.setAttribute("aria-selected", String(active));
     tab.tabIndex = active ? 0 : -1;
   });
-  const viewTitles = {global: "全服日历", server: "区服日历", encyclopedia: "指尖百科"};
+  const viewTitles = {global: "全服日历", server: "区服日历", encyclopedia: "指尖百科", seal: "兽印洗炼"};
   document.title = `指尖小助手 · ${viewTitles[state.view]}`;
   if (updateHistory) {
     const url = new URL(location.href);
@@ -139,6 +147,8 @@ function setView(view, updateHistory = true) {
   if (state.view === "global") setGlobalView(state.globalView);
   if (state.view === "encyclopedia" && !state.items) loadItems();
   else if (state.view === "encyclopedia") scheduleItemPageSize();
+  if (state.view === "seal") window.BeastSealUI.init();
+  else window.BeastSealUI.stop();
 }
 
 function activeChannel() {
@@ -152,7 +162,7 @@ function populateHolylandRealms() {
   if (!realms.includes(state.holylandRealm)) state.holylandRealm = realms[0];
   els.holylandRealm.innerHTML = realms.map(realm => `<option value="${realm}">${realm}区</option>`).join("");
   els.holylandRealm.value = state.holylandRealm;
-  localStorage.setItem("holylandRealm", state.holylandRealm);
+  preferences.setItem("holylandRealm", state.holylandRealm);
 }
 
 function populateHolylandSeasons() {
@@ -160,7 +170,7 @@ function populateHolylandSeasons() {
   if (!HOLYLAND_SEASONS[state.holylandSeason]) state.holylandSeason = seasons[0]?.[0] || "S14";
   els.holylandSeason.innerHTML = seasons.map(([value, season]) => `<option value="${value}">${escapeHtml(season.label)}</option>`).join("");
   els.holylandSeason.value = state.holylandSeason;
-  localStorage.setItem("holylandSeason", state.holylandSeason);
+  preferences.setItem("holylandSeason", state.holylandSeason);
 }
 
 function beijingNow() {
@@ -659,7 +669,7 @@ function renderSummary() {
 
 function selectSid(sid) {
   state.selectedSid = sid;
-  localStorage.setItem("voidRotationSid", String(sid));
+  preferences.setItem("voidRotationSid", String(sid));
   const url = new URL(location.href);
   url.searchParams.set("sid", sid);
   history.replaceState(null, "", url);
@@ -915,7 +925,7 @@ els.search.addEventListener("keydown", event => { if (event.key === "Enter") run
 els.refreshButton.addEventListener("click", () => loadData(true));
 els.channelSelect.addEventListener("change", () => {
   state.channel = els.channelSelect.value;
-  localStorage.setItem("voidRotationChannel", state.channel);
+  preferences.setItem("voidRotationChannel", state.channel);
   const url = new URL(location.href);
   if (state.channel === "xkbeta") url.searchParams.delete("channel");
   else url.searchParams.set("channel", state.channel);
@@ -924,7 +934,7 @@ els.channelSelect.addEventListener("change", () => {
 });
 els.sortButton.addEventListener("click", () => {
   state.descending = !state.descending;
-  localStorage.setItem("voidRotationDescending", String(state.descending));
+  preferences.setItem("voidRotationDescending", String(state.descending));
   els.sortButton.textContent = state.descending ? "按新区优先" : "按老区优先";
   renderRows();
 });
@@ -953,19 +963,19 @@ els.itemNext.addEventListener("click", () => {
 els.holylandRealm.addEventListener("change", () => {
   state.holylandRealm = els.holylandRealm.value;
   state.holyland = null;
-  localStorage.setItem("holylandRealm", state.holylandRealm);
+  preferences.setItem("holylandRealm", state.holylandRealm);
   loadHolyland();
 });
 els.holylandSeason.addEventListener("change", () => {
   state.holylandSeason = els.holylandSeason.value;
   state.holyland = null;
-  localStorage.setItem("holylandSeason", state.holylandSeason);
+  preferences.setItem("holylandSeason", state.holylandSeason);
   loadHolyland();
 });
 els.holylandChannel.addEventListener("change", () => {
   state.holylandChannel = els.holylandChannel.value;
   state.holyland = null;
-  localStorage.setItem("holylandChannel", state.holylandChannel);
+  preferences.setItem("holylandChannel", state.holylandChannel);
   populateHolylandRealms();
   loadHolyland();
 });

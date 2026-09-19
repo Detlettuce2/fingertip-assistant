@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>指尖小助手 · 区服日历</title>
   <meta name="description" content="查询全服与区服活动日历。">
+  <link rel="icon" href="assets/item-assets/icon_310107010.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="beast-seal.css">
 </head>
 <body>
   <main class="shell">
@@ -16,6 +18,7 @@
           <button class="navigation-tab" type="button" role="tab" data-view="global" aria-controls="global-calendar-view">全服日历</button>
           <button class="navigation-tab" type="button" role="tab" data-view="server" aria-controls="server-calendar-view">区服日历</button>
           <button class="navigation-tab" type="button" role="tab" data-view="encyclopedia" aria-controls="encyclopedia-view">指尖百科</button>
+          <button class="navigation-tab" type="button" role="tab" data-view="seal" aria-controls="beast-seal-view">兽印洗炼</button>
         </nav>
       </div>
       <div class="clock-block">
@@ -120,6 +123,70 @@
       </section>
     </section>
 
+    <section id="beast-seal-view" class="page-view seal-page" role="tabpanel" aria-labelledby="seal-title" hidden>
+      <div class="seal-heading">
+        <div><span class="eyebrow">魔宠养成 · 模拟工坊</span><h2 id="seal-title">兽印洗炼</h2><p>试试手气，留住每一次出货。</p></div>
+        <button type="button" class="secondary-button" id="seal-rules-open">规则与概率</button>
+      </div>
+      <p class="seal-disclaimer">仅为本地模拟，不消耗游戏道具。概率采用配置推演方案，非官方实测概率。</p>
+      <div id="seal-load-state" role="status">正在读取兽印配置…</div>
+      <button id="seal-retry" class="secondary-button" type="button" hidden>重新加载</button>
+      <div id="seal-workspace" hidden>
+        <div class="seal-layout">
+          <section class="seal-stage" aria-label="洗炼操作台">
+            <div class="seal-quality-switch" role="group" aria-label="选择兽印品质">
+              <button type="button" data-seal-quality="6">雷霆虎<span>6 精魄 / 次</span></button>
+              <button type="button" data-seal-quality="7">圣角兽<span>12 精魄 / 次</span></button>
+              <button type="button" data-seal-quality="8" class="selected">焚焰凤<span>20 精魄 / 次</span></button>
+            </div>
+            <div class="seal-machine">
+              <div class="seal-mascots" aria-hidden="true">
+                <img src="assets/item-assets/icon_110110308.png" alt="">
+                <img class="seal-mascot-center" src="assets/item-assets/icon_110110306.png" alt="">
+                <img src="assets/item-assets/icon_110110309.png" alt="">
+              </div>
+              <div class="seal-ribbon"><span>兽印洗炼</span><img id="seal-emblem" src="assets/item-assets/icon_310107010.png" alt="焚焰凤兽印"></div>
+              <div class="seal-machine-body">
+                <div class="seal-machine-caption"><strong id="seal-name">焚焰凤 · 兽印</strong><span id="seal-pool-count"></span></div>
+                <div class="seal-reel" id="seal-reel" aria-label="洗炼词条展示">
+                  <div class="seal-reel-neighbor" id="seal-neighbor-before" aria-hidden="true"></div>
+                  <div class="seal-result" id="seal-result" aria-live="polite"><span class="seal-result-label" id="seal-result-label">等待洗炼</span><p id="seal-result-text">点击洗炼，获得你的第一个兽印词条。</p><small id="seal-result-id">每次获得 1 条词条</small></div>
+                  <div class="seal-reel-neighbor" id="seal-neighbor-after" aria-hidden="true"></div>
+                </div>
+                <div class="seal-machine-options"><label><input type="checkbox" id="seal-skip"> 跳过动画</label><button id="seal-preview-open" type="button">词条预览</button></div>
+              </div>
+              <div class="seal-cost"><img src="assets/item-assets/icon_250210501.png" alt=""><span>每次 <strong id="seal-cost-value">20</strong> 兽印精魄</span><small>模拟材料不限量</small></div>
+              <button class="seal-wash" id="seal-wash" type="button">洗 炼</button>
+              <button class="seal-lock" id="seal-lock" type="button" aria-pressed="false" disabled>锁定当前兽印</button>
+            </div>
+            <div class="seal-batch">
+              <label>连续次数 <select id="seal-batch-count"><option value="10">10 次</option><option value="100" selected>100 次</option><option value="1000">1,000 次</option></select></label>
+              <button type="button" id="seal-batch-start" class="secondary-button">连续洗炼</button>
+              <button type="button" id="seal-stop" class="secondary-button" hidden>停止</button>
+              <label class="seal-stop-option"><input type="checkbox" id="seal-stop-rare" checked> 出稀有时停手</label>
+              <p id="seal-target-note">可在词条预览中选择心愿词条，抽中自动停手。</p>
+              <button id="seal-target-clear" class="text-button" type="button" hidden>取消心愿</button>
+            </div>
+            <p id="seal-status" class="seal-status" role="status">准备就绪。</p>
+          </section>
+          <aside class="seal-records" aria-label="洗炼统计和出货记录">
+            <div class="seal-record-heading"><h3>我的洗炼记录</h3><span class="seal-local-tag">保存在当前浏览器</span></div>
+            <div class="seal-stats">
+              <div><span>累计洗炼</span><strong id="seal-total">0</strong><small>次</small></div>
+              <div><span>稀有出货</span><strong id="seal-rares">0</strong><small>次</small></div>
+              <div><span>累计精魄</span><strong id="seal-spent">0</strong><small>个</small></div>
+              <div><span>距上次出货</span><strong id="seal-streak">0</strong><small>次</small></div>
+            </div>
+            <p class="seal-record-note">出货 = 配置标记为「稀有」的词条。统计包含三种兽印；上限 10,000 次，达到后可导出并开启新一轮。</p>
+            <p id="seal-quality-totals" class="seal-record-note"></p>
+            <div class="seal-history-controls"><label>查看 <select id="seal-history-filter"><option value="rare">出货记录</option><option value="all">全部洗炼</option><option value="6">雷霆虎</option><option value="7">圣角兽</option><option value="8">焚焰凤</option></select></label><button id="seal-export" type="button" class="text-button">导出 CSV</button></div>
+            <ol class="seal-history" id="seal-history"></ol>
+            <button id="seal-history-more" type="button" class="secondary-button" hidden>加载更多记录</button>
+            <div class="seal-record-footer"><span id="seal-save-state" role="status">刷新页面后记录仍在</span><button type="button" id="seal-reset" class="text-button">开启新一轮</button></div>
+          </aside>
+        </div>
+      </div>
+    </section>
     <div id="server-calendar-view" class="page-view" role="tabpanel">
     <section class="control-panel" aria-label="查询控制">
       <label class="search-field">
@@ -188,6 +255,21 @@
     </div>
   </main>
   <footer class="site-credit">本网页由<a href="https://space.bilibili.com/92121767" target="_blank" rel="noopener noreferrer">小生菜</a>制作</footer>
+  <dialog id="seal-preview" class="seal-dialog" aria-labelledby="seal-preview-title">
+    <div class="seal-dialog-heading"><h2 id="seal-preview-title">词条预览</h2><button type="button" data-seal-close aria-label="关闭词条预览">×</button></div>
+    <div class="seal-preview-controls"><label>搜索词条<input id="seal-preview-search" type="search" placeholder="魔宠名、效果或编号"></label><label><input id="seal-preview-rare" type="checkbox"> 仅稀有</label></div>
+    <p id="seal-preview-summary"></p><div id="seal-preview-list" class="seal-preview-list"></div>
+  </dialog>
+  <dialog id="seal-rules" class="seal-dialog" aria-labelledby="seal-rules-title">
+    <div class="seal-dialog-heading"><h2 id="seal-rules-title">规则与概率</h2><button type="button" data-seal-close aria-label="关闭规则与概率">×</button></div>
+    <p>每次仅获得 <strong>1 条词条</strong>，上下两条为滚动装饰，不是额外奖励。锁定后的兽印不能洗炼。稀有结果会保留在出货记录中，继续洗炼会替换当前词条。</p>
+    <p>词条、稀有标记和消耗来自 Config。帮助配置中的概率数值合计只有 1%，本模拟将它们作为相对权重归一化到 100%。<strong>分类内等概率、按相同品质抽取、无保底</strong>是模拟假设，不能据此推断游戏真实概率。</p>
+    <p>通用／专属按词条类型编号分组（小于 1000 为通用）；雷霆虎原文未细分稀有，因此按通用／专属两组抽取，保留词条自身的稀有标记。</p>
+    <div class="seal-source-note"><strong>帮助配置第 322 项 · 当前兽印原文</strong><p id="seal-raw-rates"></p><small>来源：beast_seal_cfg.json；h4e5lp_cfg.json 第 283、322 项；l4a5nguage_cfg.json 第 212013、212017 项。</small></div>
+    <form id="seal-weight-form"><h3 id="seal-weights-title">模拟权重</h3><div id="seal-weight-fields" class="seal-weight-fields"></div><p>权重不必相加为 100，实际概率会自动归一化；至少一项大于 0。修改只影响之后的洗炼，历史记录保留原方案。</p><p id="seal-weight-error" role="alert"></p><div class="seal-rule-actions"><button type="submit" class="primary-button">应用权重</button><button type="button" id="seal-weights-default" class="secondary-button">恢复配置推演值</button></div></form>
+  </dialog>
+  <script src="beast-seal-core.js" defer></script>
+  <script src="beast-seal.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

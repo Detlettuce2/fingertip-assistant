@@ -69,7 +69,7 @@ h2 { margin-bottom: 4px; font-size: 19px; }
 .brand-navigation { display: flex; align-items: center; gap: 28px; min-width: 0; }
 .primary-navigation {
   display: inline-grid;
-  grid-template-columns: repeat(3, minmax(112px, 1fr));
+  grid-template-columns: repeat(4, minmax(100px, 1fr));
   gap: 4px;
   padding: 4px;
   background: #e5edf4;
@@ -737,7 +737,7 @@ tbody tr:last-child td { border-bottom: 0; }
 @media (max-width: 540px) {
   .topbar { align-items: flex-start; }
   .brand-navigation { align-items: flex-start; flex-direction: column; gap: 12px; width: 100%; }
-  .primary-navigation { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .primary-navigation { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .navigation-tab { padding-inline: 6px; }
   .clock-block strong { font-size: 16px; }
   .control-panel { grid-template-columns: 1fr; }

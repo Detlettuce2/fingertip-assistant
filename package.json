@@ -1,0 +1,12 @@
+{
+  "name": "fingertip-assistant",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/beast-seal.test.cjs",
+    "test:browser": "node tests/browser/run.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  },
+  "engines": {"node": ">=20"}
+}

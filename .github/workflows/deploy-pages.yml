@@ -23,10 +23,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test beast seal model
+        run: node --test tests/beast-seal.test.cjs
       - name: Assemble static site
         run: |
           mkdir -p _site
-          cp index.html app.js styles.css .nojekyll _site/
+          cp index.html app.js styles.css beast-seal*.js beast-seal.css .nojekyll _site/
           cp -R assets api _site/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
