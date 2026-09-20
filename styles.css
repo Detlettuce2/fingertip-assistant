@@ -216,6 +216,13 @@ h2 { margin-bottom: 4px; font-size: 19px; }
 .item-stars img { display: block; width: 12px; height: 12px; margin-left: -4px; flex: 0 0 auto; object-fit: contain; }
 .item-stars img:first-child { margin-left: 0; }
 .item-stars img[src*="sixjx5"] { width: 48px; height: 15px; }
+/* The legend banner is five stars wide; the tier number sits on the middle one,
+   which covers x 40..58 of the 96px strip. */
+/* The 96x30 banner is wider than a 64px card, so the legend is scaled to fit and
+   the tier number is centred on the banner's middle star (x 40..58 of 96). */
+.item-stars-legend { width: 58px; height: auto; max-width: none; }
+.item-stars-legend img[src*="sixjx5"] { width: 58px; height: 18px; }
+.item-stars-legend b { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; font-size: 9px; }
 .item-stars b { color: #fff; font-size: 10px; font-weight: 800; text-shadow: 0 1px 2px #234; }
 .item-card-visual.large .item-stars { bottom: 8px; height: 26px; }
 .item-card-visual.large .item-stars img { width: 25px; height: 25px; }
@@ -449,7 +456,17 @@ h2 { margin-bottom: 4px; font-size: 19px; }
   min-height: 62px;
   align-items: center;
   padding: 5px 8px 5px 5px;
+  /* Rendered as a button so each side is clickable; reset the UA styling. */
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 }
+.bracket-player:hover { background: #eef4fa; }
+.bracket-player:focus-visible { outline: 2px solid #3f7fb5; outline-offset: -2px; }
 .bracket-player:first-child { border-radius: 12px 12px 0 0; }
 .bracket-player:last-child { border-radius: 0 0 12px 12px; }
 .bracket-player + .bracket-player { border-top: 1px solid #e3eaf1; }
@@ -763,3 +780,59 @@ tbody tr:last-child td { border-bottom: 0; }
   .activity-grid { grid-template-columns: 1fr; }
   .rotation-week-pair { grid-column: span 1; grid-template-columns: 1fr; }
 }
+
+/* --- 当场阵容 ---------------------------------------------------------------
+   镜像游戏内的布阵界面：出战 6 个按两列排布（1/2/3 在右、4/5/6 在左），
+   下面是单回合/双回合助战，最后是魔宠。卡片复用 .item-card-visual，
+   所以品质框、角标、星级与图鉴完全一致。 */
+.lineup-panel { margin-top: 18px; border: 1px solid #d8e3ee; border-radius: 16px; background: #fff; padding: 14px 16px 18px; box-shadow: 0 6px 20px rgba(29, 55, 77, .07); }
+.lineup-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid #e6eef5; }
+.lineup-head h3 { margin: 0; font-size: 16px; }
+.lineup-head p { margin: 0; color: var(--muted); font-size: 12px; flex: 1 1 auto; }
+.lineup-close { flex: 0 0 auto; }
+.lineup-loading { padding: 18px 4px; color: var(--muted); font-size: 13px; }
+.lineup-sides { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px; }
+.lineup-sides > div { flex: 1 1 340px; min-width: 300px; }
+.lineup-sides > div.lineup-current .lineup-side { border-color: #7fb0d8; box-shadow: 0 0 0 2px rgba(83, 141, 194, .16); }
+.lineup-side { border: 1px solid #e2eaf2; border-radius: 14px; padding: 10px 12px 12px; background: #fbfdff; }
+.lineup-side-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+.lineup-server { display: inline-block; padding: 0; border-radius: 0; background: none; color: inherit; font-size: 13px; font-weight: 400; }
+.lineup-field { display: grid; grid-template-columns: repeat(3, auto); justify-content: center; gap: 8px; justify-items: center; }
+/* The client renders a roughly 77px-wide battle tile.  Keep the battle card
+   independent from the smaller encyclopedia grid without changing its art. */
+.lineup-slot { width: 78px; }
+.lineup-hero { margin: 0; width: 100%; display: block; }
+.lineup-hero .item-card-visual { width: 100%; }
+.lineup-hero.empty { min-height: 82px; }
+.lineup-group-label { display: inline-block; flex: 0 0 auto; margin-right: 8px; padding: 0; border-radius: 0; background: none; color: #1d3750; font-size: 14px; font-weight: 400; line-height: 1; vertical-align: middle; }
+.lineup-assists { position: relative; display: flex; align-items: center; justify-content: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e0e9f1; }
+.lineup-assists > .lineup-group-label { position: absolute; left: 0; margin-right: 0; }
+.lineup-assist-list { display: flex; align-items: flex-start; justify-content: center; gap: 10px; }
+.lineup-assist { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.lineup-assist .lineup-hero { width: 78px; }
+.lineup-assist-slot { font-size: 10px; color: var(--muted); }
+.lineup-pets { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e0e9f1; }
+.lineup-pet { display: inline-flex; }
+.lineup-pet .item-card-visual { width: 40px; }
+.lineup-pet .item-stars { bottom: 2px; height: 10px; }
+.lineup-pet .item-stars img { width: 8px; height: 8px; margin-left: -3px; }
+.lineup-pet .item-stars img:first-child { margin-left: 0; }
+.lineup-pet .item-stars img[src*="sixjx5"] { width: 32px; height: 10px; }
+/* 星痕 / 月痕 sits inside the right edge of the battle tile.  Keeping it
+   inside is important because the quality-frame canvas clips overflow. */
+.hero-card-mark { position: absolute; z-index: 5; right: 1%; top: 62%; transform: translateY(-50%); width: 27%; aspect-ratio: 1; pointer-events: none; }
+.hero-card-mark-base { display: block; width: 100%; height: 100%; object-fit: contain; }
+.hero-card-mark b { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 10px; font-weight: 900; line-height: 1; text-shadow: 0 1px 2px #123, 0 0 3px #123; }
+.lineup-hero .hero-card-mark { right: 6%; top: 44%; }
+.lineup-hero .hero-card-mark b { font-size: 6px; -webkit-text-stroke: 1px #123; paint-order: stroke fill; }
+.lineup-hero .hero-card-mark-moon b { top: calc(58% + 1px); }
+.battle-hero-level { position: absolute; z-index: 6; right: 13.5%; top: 11%; color: #fff; font-size: 12px; font-weight: 900; line-height: 1; text-align: right; white-space: nowrap; letter-spacing: -.4px; text-shadow: -1px -1px 0 #17202a, 1px -1px 0 #17202a, -1px 1px 0 #17202a, 1px 1px 0 #17202a, 0 2px 1px rgba(0,0,0,.65); pointer-events: none; }
+.lineup-marks { list-style: none; margin: 12px 0 0; padding: 10px 0 0; border-top: 1px dashed #e0e9f1; display: flex; flex-direction: column; gap: 6px; }
+.lineup-mark { display: flex; flex-direction: column; gap: 2px; }
+.lineup-mark-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lineup-mark-head strong { font-size: 12px; color: #1d3750; }
+.lineup-mark-kind { display: inline-block; padding: 0 5px; border-radius: 5px; font-size: 10px; font-weight: 700; }
+.lineup-mark-kind.verdict-win { background: #e8f1f9; color: #2d5f8a; }
+.lineup-mark-kind.verdict-lose { background: #f6ece2; color: #8a5a2d; }
+.lineup-mark-tier { font-size: 11px; font-weight: 700; color: #173950; }
+.lineup-mark-effect { font-size: 11px; line-height: 1.45; color: var(--muted); }

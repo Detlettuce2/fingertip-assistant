@@ -2,7 +2,7 @@
   "name": "fingertip-assistant",
   "private": true,
   "scripts": {
-    "test": "node --test tests/beast-seal.test.cjs",
+    "test": "node --test tests/*.test.cjs",
     "test:browser": "node tests/browser/run.cjs"
   },
   "devDependencies": {

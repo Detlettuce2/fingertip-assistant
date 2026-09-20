@@ -15,6 +15,93 @@ const HOLYLAND_CHANNELS = {
 const HOLYLAND_SEASONS = {
   S14: {label: "S14"},
 };
+const ITEM_CLASS_LABELS = {
+  1: "基础资源",
+  2: "养成资源",
+  3: "宝箱",
+  4: "角色与碎片",
+  5: "装备",
+  6: "角色皮肤",
+  7: "气泡头像框",
+  8: "养成资源",
+  9: "符文",
+  11: "魔宠碎片",
+  12: "消消乐道具",
+  15: "圣物碎片",
+  23: "养成资源",
+  24: "养成资源",
+  25: "养成资源",
+  30: "魔石",
+  31: "兽印",
+  32: "魔域战场",
+  33: "百妖谱活动·装备",
+  34: "夏日大作战·装备",
+  35: "夏日大作战·宝石",
+  36: "夏日大作战·资源",
+  37: "养成资源",
+};
+const ITEM_MANUAL_CLASSES = {
+  unused_items: {label: "未使用物品", sourceClassIds: [2, 3, 7, 10, 14, 17, 18, 19, 20, 22]},
+};
+const ITEM_CLASS_RULES = [
+  {
+    key: "unused_items",
+    sourceClassId: 2,
+    ranges: [
+      [210504005, 210504010],
+      [210505005, 210505010],
+      [220504005, 220504010],
+      [230504005, 230504010],
+      [240504005, 240504010],
+    ],
+  },
+  {
+    key: "unused_items",
+    sourceClassId: 3,
+    ranges: [
+      [30140301, 30140804],
+      [30240301, 30240804],
+      [30270001, 30281003],
+      [30460001, 30481003],
+    ],
+  },
+  {
+    key: "unused_items",
+    sourceClassId: 7,
+    ranges: [
+      [70212600, 70214700],
+    ],
+  },
+  {
+    key: "unused_items",
+    sourceClassIds: [10, 14, 17, 18, 19, 20, 22],
+  },
+  {
+    key: "category:基础资源",
+    sourceClassId: 12,
+    ranges: [
+      [120210101, 120210101],
+    ],
+  },
+  {
+    key: "category:夏日大作战·资源",
+    sourceClassId: 3,
+    ranges: [
+      [36000011, 36000012],
+    ],
+  },
+];
+// Add item-id -> class-id corrections here when individual records need a
+// catalogue category different from the source data.
+const ITEM_CLASS_OVERRIDES = {};
+const ALL_ITEMS_EXCLUDED_CLASSES = new Set([
+  "unused_items",
+  "category:装备",
+  "category:百妖谱活动·装备",
+  "category:夏日大作战·装备",
+  "category:夏日大作战·宝石",
+  "category:夏日大作战·资源",
+]);
 
 const urlParams = new URLSearchParams(location.search);
 // Preference failures must not prevent the simulator's explicit storage warning.
@@ -75,6 +162,7 @@ const els = {
   holylandSummary: document.querySelector("#holyland-summary"),
   holylandResultLabel: document.querySelector("#holyland-result-label"),
   holylandBracket: document.querySelector("#holyland-bracket"),
+  lineupPanel: document.querySelector("#lineup-panel"),
   globalTabs: [...document.querySelectorAll(".secondary-navigation-tab")],
   activityPanel: document.querySelector("#activity-calendar-panel"),
   holylandPanel: document.querySelector("#holyland-review-panel"),
@@ -92,18 +180,18 @@ const els = {
 const ACTIVITY_CARDS = [
   {key: "syzf", name: "圣域争锋", group: "圣域赛季", title: true, icon: true, schedule: "holyland", tone: "sky"},
   {key: "ygwz", name: "耀光王座", group: "竞技玩法", title: true, icon: true, schedule: "throne", tone: "violet"},
-  {key: "yjtt", name: "异界天梯", group: "竞技玩法", title: true, icon: true, schedule: "ladder", tone: "pink"},
-  {key: "jjdj", name: "极境对决", group: "竞技玩法", title: true, icon: true, schedule: "duel", tone: "rose"},
-  {key: "yjzy", name: "永劫战域", group: "竞技玩法", title: true, icon: true, schedule: "eternal", tone: "orange"},
+  {key: "yjtt", name: "异界天梯", group: "竞技玩法", title: true, icon: true, iconSrc: "assets/events/yjtt-icon.png", schedule: "ladder", tone: "pink"},
+  {key: "jjdj", name: "极境对决", group: "竞技玩法", title: true, icon: true, iconSrc: "assets/events/jjdj-icon.png", schedule: "duel", tone: "rose"},
+  {key: "yjzy", name: "永劫战域", group: "竞技玩法", title: true, icon: true, iconSrc: "assets/events/yjzy-icon.png", schedule: "eternal", tone: "orange"},
   {key: "myzc", name: "魔域战场", group: "跨服玩法", icon: true, schedule: "demon", tone: "indigo"},
 ];
 
 const ROTATION_WEEK_CARDS = [
   {key: "sldd", name: "失落之地", group: "轮换活动", icon: true, tone: "amber"},
-  {key: "yyhx", name: "远洋航行", group: "轮换活动", tone: "ocean"},
+  {key: "yyhx", name: "远洋突袭", group: "轮换活动", icon: true, iconSrc: "assets/events/yyhx-icon.png", tone: "ocean"},
   {key: "yzjj", name: "奕阵竞技", group: "轮换活动", icon: true, tone: "teal"},
 ];
-const NEW_VOID_CARD = {key: "newvoid", name: "新虚空", group: "新虚空卡池", tone: "sky"};
+const NEW_VOID_CARD = {key: "newvoid", name: "新虚空", group: "新虚空卡池", icon: true, iconSrc: "assets/events/newvoid-icon.png", tone: "sky"};
 
 function setGlobalView(view) {
   state.globalView = view === "holyland" ? "holyland" : "activities";
@@ -328,7 +416,7 @@ function activityStatus(type) {
     stage.note = `战令积分上限：${[1500, 3000, 4500, 6000][week - 1]}`;
     return stage;
   }
-  if (type === "rotation") return {label: "轮换顺序已知", detail: "失落之地 → 远洋航行 → 奕阵竞技", unknown: true};
+  if (type === "rotation") return {label: "轮换顺序已知", detail: "失落之地 → 远洋突袭 → 奕阵竞技", unknown: true};
   return {label: "排期尚待接入", detail: "需要从服务器活动时间校准", unknown: true};
 }
 
@@ -382,7 +470,7 @@ function activityCard(card, suppliedStatus = null, extraClass = "") {
   const title = card.title
     ? `<img class="activity-title-sprite" src="assets/events/${card.key}-title.png" alt="${escapeHtml(card.name)}">`
     : `<strong class="activity-title-text">${escapeHtml(card.name)}</strong>`;
-  const icon = card.icon ? `<img class="activity-mark" src="assets/events/${card.key}-icon.png" alt="">` : `<span class="activity-mark activity-mark-text">${escapeHtml(card.name.slice(0, 1))}</span>`;
+  const icon = card.icon ? `<img class="activity-mark" src="${escapeHtml(card.iconSrc || `assets/events/${card.key}-icon.png`)}" alt="">` : `<span class="activity-mark activity-mark-text">${escapeHtml(card.name.slice(0, 1))}</span>`;
   const mainRatio = status.weeklyProgress ?? status.ratio;
   const progressMarkup = status.noProgress ? "" : (status.unknown
       ? `<div class="activity-progress unavailable" aria-hidden="true"><span></span></div>`
@@ -429,10 +517,22 @@ function renderItemDescription(value) {
     (_match, color, content) => `<span class="item-description-color" style="color:${color}">${content}</span>`);
 }
 
-function holylandPlayer(player) {
+function holylandPlayer(player, lineupId, playerIndex) {
   const winner = player.result === "win";
   const name = escapeHtml(player.name);
-  return `<div class="bracket-player ${winner ? "winner" : "loser"}">
+  if (!lineupId) return `<div class="bracket-player ${winner ? "winner" : "loser"}">
+    <span class="player-avatar" aria-hidden="true">
+      <img class="avatar-image" src="assets/holyland/avatar/${escapeHtml(player.avatar_id)}.png" alt="">
+      <img class="avatar-frame" src="assets/holyland/frame/${escapeHtml(player.frame_id)}.png" alt="">
+    </span>
+    <span class="player-identity"><span class="player-server">S${player.server_id}</span><strong title="${name}">${name}</strong></span>
+    <span class="match-result">${winner ? "胜" : "负"}</span>
+  </div>`;
+  const label = `${player.name}（S${player.server_id}）· 查看当场阵容`;
+  return `<button class="bracket-player ${winner ? "winner" : "loser"}" type="button"
+    data-lineup-id="${escapeHtml(lineupId)}"
+    data-lineup-side="${playerIndex}"
+    title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
     <span class="player-avatar" aria-hidden="true">
       <img class="avatar-image" src="assets/holyland/avatar/${escapeHtml(player.avatar_id)}.png" alt="">
       <img class="avatar-frame" src="assets/holyland/frame/${escapeHtml(player.frame_id)}.png" alt="">
@@ -442,13 +542,106 @@ function holylandPlayer(player) {
       <strong title="${name}">${name}</strong>
     </span>
     <span class="match-result">${winner ? "胜" : "负"}</span>
-  </div>`;
+  </button>`;
 }
 
 function holylandMatch(match, extraClass = "") {
   return `<article class="bracket-match ${extraClass}">
-    ${match.players.map(holylandPlayer).join("")}
+    ${match.players.map((player, index) => holylandPlayer(player, match.lineup_id, index)).join("")}
   </article>`;
+}
+
+// --- On-field lineup viewer ---------------------------------------------------
+//
+// Opening a match shows the formation both sides actually fielded.  The layout
+// mirrors the profile card: six on-field slots in numerical order across two
+// rows, followed by the single-round and double-round assists, then the pets.
+
+const LINEUP_POSITION_ORDER = [1, 2, 3, 4, 5, 6];
+
+function lineupHeroCard(hero) {
+  const starCount = Number(hero.star || 0);
+  const name = hero.name || "未命名";
+  const accessibleLabel = `${name}，等级 ${hero.level ?? "未知"}`;
+  return `<figure class="lineup-hero" title="${escapeHtml(name)}" aria-label="${escapeHtml(accessibleLabel)}">
+    ${itemCardVisual({
+      asset_token: hero.asset_token,
+      asset_kind: "hero",
+      quality: hero.quality,
+      hero_realm: hero.realm,
+      hero_strength: hero.strength,
+      star_count: starCount,
+      mark_sprite: hero.star_mark_sprite,
+      mark_icon: hero.star_mark_icon,
+      mark_tier: hero.star_mark_tier,
+      battle_level: hero.level,
+    })}
+  </figure>`;
+}
+
+function lineupSide(side) {
+  const displayName = side.name || "";
+  const displayServer = side.server_id;
+  const byStand = new Map((side.on_field || []).map(hero => [hero.stand, hero]));
+  const field = LINEUP_POSITION_ORDER.map(stand => {
+    const hero = byStand.get(stand);
+    const body = hero
+      ? lineupHeroCard(hero)
+      : '<div class="lineup-hero empty" aria-hidden="true"></div>';
+    return `<div class="lineup-slot" data-stand="${stand}">${body}</div>`;
+  }).join("");
+  const assistLabels = ["单回合", "双回合"];
+  const assists = (side.assists || []).map((hero, index) => `
+    <div class="lineup-assist">
+      ${lineupHeroCard(hero)}
+      <span class="lineup-assist-slot">${assistLabels[index] || "助战"}</span>
+    </div>`).join("");
+  const pets = (side.pets || []).map(pet => `
+    <span class="lineup-pet" title="${escapeHtml(pet.name || "")}">
+      ${itemCardVisual({
+        asset_token: pet.asset_token,
+        asset_kind: "pet",
+        quality: pet.quality,
+        star_count: Number(pet.star || 0),
+      })}
+    </span>`).join("");
+  return `<div class="lineup-side">
+    <header class="lineup-side-head">
+      <span class="lineup-server">S${escapeHtml(displayServer)}</span>
+      <strong>${escapeHtml(displayName)}</strong>
+    </header>
+    <div class="lineup-field">${field}</div>
+    ${assists ? `<div class="lineup-assists"><span class="lineup-group-label">助战</span><div class="lineup-assist-list">${assists}</div></div>` : ""}
+    ${pets ? `<div class="lineup-pets"><span class="lineup-group-label">魔宠</span>${pets}</div>` : ""}
+  </div>`;
+}
+
+async function openLineup(lineupId, playerIndex) {
+  if (!els.lineupPanel) return;
+  els.lineupPanel.hidden = false;
+  els.lineupPanel.innerHTML = '<div class="lineup-loading">正在解析当场阵容…</div>';
+  try {
+    const response = await fetch(`api/lineups/${encodeURIComponent(lineupId)}.json?t=${Date.now()}`, {cache: "no-store"});
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload?.error || "读取阵容失败");
+    const sides = (payload.sides || []).filter(side => side.on_field?.length || side.pets?.length);
+    if (!sides.length) throw new Error("这场录像里没有可用的阵容数据");
+    const highlightedIndex = Number(playerIndex);
+    els.lineupPanel.innerHTML = `<div class="lineup-head">
+        <h3>当场阵容</h3>
+        <p>回合 ${escapeHtml(payload.round_end ?? "-")}/${escapeHtml(payload.round_max ?? "-")} · 记录于 ${escapeHtml(payload.captured_at_china || "未知时间")}</p>
+        <button class="text-button lineup-close" type="button">收起</button>
+      </div>
+      <div class="lineup-sides">
+        ${sides.map((side, index) => `<div class="${index === highlightedIndex ? "lineup-current" : ""}">${lineupSide(side)}</div>`).join("")}
+      </div>`;
+    els.lineupPanel.querySelector(".lineup-close")?.addEventListener("click", () => {
+      els.lineupPanel.hidden = true;
+      els.lineupPanel.innerHTML = "";
+    });
+  } catch (error) {
+    els.lineupPanel.innerHTML = `<div class="lineup-loading error-message">无法读取阵容：${escapeHtml(error.message)}</div>`;
+  }
 }
 
 function drawBracketConnectors() {
@@ -512,6 +705,13 @@ function renderHolyland() {
       ${round.key === "final" && state.holyland.bronze_match ? `<div class="bronze-block"><span>季军赛</span>${holylandMatch(state.holyland.bronze_match, "bronze-match")}</div>` : ""}
     </section>`).join("")}
   </div>`;
+  // Match rows are buttons, so delegation on the bracket keeps the listener
+  // count constant no matter how many rounds are rendered.
+  els.holylandBracket.querySelectorAll("[data-lineup-id]").forEach(node => {
+    node.addEventListener("click", () => {
+      openLineup(node.dataset.lineupId, node.dataset.lineupSide);
+    });
+  });
   requestAnimationFrame(() => {
     els.holylandBracket.scrollLeft = 0;
     els.holylandBracket.scrollTop = 0;
@@ -742,13 +942,46 @@ async function loadData(manual = false) {
 }
 
 function itemClassLabel(classId) {
-  return classId ? `分类 ${classId}` : "未分类";
+  const manualClass = ITEM_MANUAL_CLASSES[classId];
+  if (manualClass) return manualClass.label;
+  return String(classId).startsWith("category:") ? String(classId).slice(9) : "未分类";
+}
+
+function effectiveItemClass(item) {
+  if (Object.hasOwn(ITEM_CLASS_OVERRIDES, item.id)) return ITEM_CLASS_OVERRIDES[item.id];
+  const sourceClassId = Number(item.class_id) || 0;
+  const rule = ITEM_CLASS_RULES.find(entry => {
+    const sourceClassIds = entry.sourceClassIds || [entry.sourceClassId];
+    return sourceClassIds.includes(sourceClassId)
+      && (!entry.ranges || entry.ranges.some(([start, end]) => item.id >= start && item.id <= end));
+  });
+  if (rule) return rule.key;
+  return ITEM_CLASS_LABELS[sourceClassId]
+    ? `category:${ITEM_CLASS_LABELS[sourceClassId]}`
+    : `unclassified:${sourceClassId}`;
+}
+
+function itemClassSortValue(classId, sourceIds = []) {
+  if (classId === "unused_items") return Number.MAX_SAFE_INTEGER;
+  const manualClass = ITEM_MANUAL_CLASSES[classId];
+  if (manualClass) return Math.min(...manualClass.sourceClassIds) * 10 + 1;
+  if (String(classId).startsWith("category:")) {
+    const label = String(classId).slice(9);
+    const canonicalIds = Object.entries(ITEM_CLASS_LABELS)
+      .filter(([, categoryLabel]) => categoryLabel === label)
+      .map(([id]) => Number(id));
+    if (canonicalIds.length) return Math.min(...canonicalIds) * 10;
+  }
+  const firstSourceId = sourceIds.length ? Math.min(...sourceIds) : 999;
+  return firstSourceId * 10 + 9;
 }
 
 function filteredItems() {
   const query = state.itemQuery.trim().toLowerCase();
   return (state.items || []).filter(item => {
-    if (state.itemClass !== "all" && String(item.class_id) !== state.itemClass) return false;
+    const classId = effectiveItemClass(item);
+    if (state.itemClass === "all" && ALL_ITEMS_EXCLUDED_CLASSES.has(classId)) return false;
+    if (state.itemClass !== "all" && String(classId) !== state.itemClass) return false;
     return !query || item.name.toLowerCase().includes(query) || String(item.id).includes(query);
   });
 }
@@ -759,8 +992,21 @@ function itemIcon(item, large = false) {
   return `<img class="item-icon${large ? " large" : ""}" src="${source}" alt="">`;
 }
 
+// A hero body's frame follows its star level in tiers:
+// 3->3, 4->4, 5->5, 6-10->6, 11-15->7, 16 and above->8.
+// Fragments, hero hearts and ordinary items keep their catalogue quality.
+function starFrame(starLevel) {
+  const value = Number(starLevel) || 0;
+  if (value <= 0) return 0;
+  if (value <= 5) return value;
+  if (value <= 10) return 6;
+  if (value <= 15) return 7;
+  return 8;
+}
+
 function itemQualityClass(item) {
-  const quality = Number(item.quality || 0);
+  const starBased = item.asset_kind === "hero" ? starFrame(item.star_count) : 0;
+  const quality = starBased || Number(item.frame || 0) || Number(item.quality || 0);
   return quality ? ` quality-${Math.min(8, quality)}` : "";
 }
 
@@ -774,7 +1020,10 @@ function itemStars(item) {
   else if (value >= 16 && value <= 20) { mark = "sixjx4"; count = value - 15; }
   else if (value > 20) { mark = "sixjx5"; count = 1; }
   const marks = Array.from({length: count}, () => `<img src="assets/star-marks/${mark}.png" alt="">`).join("");
-  return `<span class="item-stars" aria-label="${value} 星">${marks}${value > 20 ? `<b>${value - 21}</b>` : ""}</span>`;
+  // Past 20 stars the banner replaces the marks and the tier number sits on its
+  // middle star, so the legend variant centres the digit instead of right-aligning.
+  const legend = value > 20;
+  return `<span class="item-stars${legend ? " item-stars-legend" : ""}" aria-label="${value} 星">${marks}${legend ? `<b>${value - 21}</b>` : ""}</span>`;
 }
 
 function itemSpecialBadges(item) {
@@ -811,14 +1060,37 @@ function heroCardOverlays(item) {
   </span>`;
 }
 
+// 星痕 (wh*) and 月痕 (sp*) are drawn the way the client does it: one badge
+// sprite from the tier bucket, with the tier number on top of it.  The whsk* /
+// spsk* pair belongs to a different screen and is not layered here.
+function heroMarkBadge(item) {
+  if (!item.mark_sprite) return '';
+  const tier = Number(item.mark_tier || 0);
+  const markKind = String(item.mark_sprite).startsWith("sp") ? " hero-card-mark-moon" : " hero-card-mark-star";
+  return `<span class="hero-card-mark${markKind}" aria-hidden="true">
+    <img class="hero-card-mark-base" src="assets/hero-ui/${encodeURIComponent(item.mark_sprite)}.png" alt="">
+    ${tier > 0 ? `<b>${tier}</b>` : ''}
+  </span>`;
+}
+
 function standaloneFragmentBadge(item) {
   if (!item.show_fragment_badge || item.is_fragment) return '';
   return '<img class="hero-card-fragment standalone-fragment-badge" src="assets/hero-ui/sisp.png" alt="">';
 }
 
+function battleHeroLevel(item) {
+  if (item.battle_level == null || item.battle_level === "") return "";
+  return `<b class="battle-hero-level" aria-hidden="true">${escapeHtml(item.battle_level)}</b>`;
+}
+
 function itemCardVisual(item, large = false) {
+  // Battle pets take the same tile as an item, but the hero-only overlays
+  // (rank, faction, SP, fragment, star mark) do not belong on them.
+  const heroOverlays = item.asset_kind === "pet"
+    ? ""
+    : `${heroCardOverlays(item)}${heroMarkBadge(item)}${standaloneFragmentBadge(item)}${itemSpecialBadges(item)}${itemChoiceBadge(item)}`;
   return `<span class="item-card-visual asset-${item.asset_kind || "item"}${large ? " large" : ""}${itemQualityClass(item)}">
-    ${itemIcon(item, large)}${heroCardOverlays(item)}${standaloneFragmentBadge(item)}${itemSpecialBadges(item)}${itemChoiceBadge(item)}${itemStars(item)}
+    ${itemIcon(item, large)}${heroOverlays}${battleHeroLevel(item)}${itemStars(item)}
   </span>`;
 }
 
@@ -843,7 +1115,7 @@ function renderItemDetail() {
   }
   els.itemDetail.innerHTML = `<div class="item-detail-content">
     <div class="item-detail-icon">${itemCardVisual(item, true)}</div>
-    <div class="item-detail-title"><span class="eyebrow">物品编号 ${item.id}</span><h3>${escapeHtml(item.name)}</h3><span class="item-class">${escapeHtml(itemClassLabel(item.class_id))}</span></div>
+    <div class="item-detail-title"><span class="eyebrow">物品编号 ${item.id}</span><h3>${escapeHtml(item.name)}</h3><span class="item-class">${escapeHtml(itemClassLabel(effectiveItemClass(item)))}</span></div>
     <p>${renderItemDescription(item.description || "暂无描述")}</p>
     ${itemContents(item)}
   </div>`;
@@ -871,7 +1143,6 @@ function renderItems() {
     renderItemDetail();
   }));
   renderItemDetail();
-  scheduleItemPageSize();
 }
 
 let itemPageSizeFrame = 0;
@@ -890,7 +1161,11 @@ function updateItemPageSize() {
   const rowGap = Number.parseFloat(gridStyle.rowGap) || 0;
   const rowHeight = sampleCard.getBoundingClientRect().height;
   const paginationHeight = els.itemPageSummary.closest(".item-pagination")?.getBoundingClientRect().height || 48;
-  const availableHeight = Math.max(rowHeight, window.innerHeight - els.itemGrid.getBoundingClientRect().top - paginationHeight - 22);
+  // Use the grid's fixed document position rather than its viewport position.
+  // A tall detail panel can make the user scroll before changing pages; the
+  // viewport top then becomes negative and used to be mistaken for extra room.
+  const gridDocumentTop = els.itemGrid.getBoundingClientRect().top + window.scrollY;
+  const availableHeight = Math.max(rowHeight, window.innerHeight - gridDocumentTop - paginationHeight - 22);
   const rows = Math.max(1, Math.floor((availableHeight + rowGap) / (rowHeight + rowGap)));
   const nextPageSize = rows * columns;
   if (nextPageSize === state.itemPageSize) return;
@@ -908,10 +1183,27 @@ async function loadItems() {
     const response = await fetch(`api/items.json?t=${Date.now()}`, {cache: "no-store"});
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     state.items = (await response.json()).items || [];
-    const classes = [...new Set(state.items.map(item => item.class_id))].sort((a, b) => a - b);
-    els.itemClassFilter.innerHTML = '<option value="all">全部物品</option>' + classes.map(id => `<option value="${id}">${escapeHtml(itemClassLabel(id))}</option>`).join("");
+    const presentClasses = new Map();
+    state.items.forEach(item => {
+      const classKey = effectiveItemClass(item);
+      if (!presentClasses.has(classKey)) presentClasses.set(classKey, new Set());
+      presentClasses.get(classKey).add(Number(item.class_id) || 0);
+    });
+    const classOptions = [...presentClasses].map(([key, sourceIds]) => ({
+      key,
+      sourceIds: [...sourceIds].sort((a, b) => a - b),
+    })).sort((a, b) => {
+      const classDifference = itemClassSortValue(a.key, a.sourceIds) - itemClassSortValue(b.key, b.sourceIds);
+      return classDifference || itemClassLabel(a.key).localeCompare(itemClassLabel(b.key), "zh-CN");
+    });
+    els.itemClassFilter.innerHTML = '<option value="all">全部物品</option>'
+      + classOptions.map(({key}) => `<option value="${escapeHtml(key)}">${escapeHtml(itemClassLabel(key))}</option>`).join("");
     els.itemClassFilter.value = state.itemClass;
     renderItems();
+    // Establish the capacity once after the grid exists. Page changes and
+    // detail selection reuse this value; only entering the view or resizing
+    // the window should measure the layout again.
+    scheduleItemPageSize();
   } catch (error) {
     els.itemSummary.textContent = `读取失败：${error.message}`;
     els.itemGrid.innerHTML = '<div class="empty-state">无法读取物品资料，请确认启动窗口仍在运行。</div>';
