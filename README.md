@@ -4,7 +4,7 @@
 
 新增 [兽印洗炼模拟器](https://detlettuce2.github.io/fingertip-assistant/?view=seal)：支持三种可洗炼兽印、词条预览、单次与连续洗炼、稀有／心愿停手、锁定、次数和材料统计、出货记录、刷新恢复及 CSV 导出。
 
-词条和消耗取自游戏官方提供的概率公示；概率采用明确标注的模拟推演方案，不代表游戏真实概率。记录仅保存在当前浏览器，不与游戏账户同步。规则来源和验证说明见 [兽印模拟器说明](docs/beast-seal-simulator.md)。
+词条和消耗取自游戏官方公示；概率采用明确标注的模拟推演方案，不代表游戏真实概率。记录仅保存在当前浏览器，不与游戏账户同步。规则来源和验证说明见 [兽印模拟器说明](docs/beast-seal-simulator.md)。
 
 访问地址：<https://detlettuce2.github.io/fingertip-assistant/>
 
