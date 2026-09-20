@@ -113,6 +113,22 @@ module.exports = async page => {
   await page.getByRole('tab',{name:'区服日历',exact:true}).click();
   await page.locator('#group-rows tr').first().waitFor();
   ok(await page.locator('#server-calendar-view').isVisible(), '原有区服日历可用');
+  const deterministicRotation = await page.evaluate(async () => {
+    const payload = await (await fetch('api/data/xkbeta.json')).json();
+    const recalculated = recalculateRotationData(payload, Date.parse('2026-09-21T00:00:00+08:00'));
+    const group = recalculated.groups.find(entry => entry.start_sid <= 755 && entry.end_sid >= 755);
+    return {openDays:group.open_days,current:group.current.label,next:group.next.label};
+  });
+  ok(deterministicRotation.openDays === 470 && deterministicRotation.current === '81+35n' && deterministicRotation.next === '88+35n', '区服轮替按当前北京时间动态计算');
+  await page.locator('#server-search').fill('S755');
+  await page.locator('#search-button').click();
+  const liveRotation = await page.evaluate(() => {
+    const group = state.data.groups.find(entry => entry.start_sid <= 755 && entry.end_sid >= 755);
+    return {openDays:group.open_days,current:group.current.label,next:group.next.label};
+  });
+  const selectedText = await page.locator('#selected-card').innerText();
+  ok(selectedText.includes(`${liveRotation.openDays} 天`) && selectedText.includes(liveRotation.current) && selectedText.includes(liveRotation.next), 'S755 页面展示使用实时轮替结果');
+  await page.screenshot({path:'output/playwright/server-s755-live-rotation.png',fullPage:true});
   await page.getByRole('tab',{name:'兽印洗炼',exact:true}).click();
   ok(await total() === stopped, '页面切换不丢失记录');
   await page.setViewportSize({width:390,height:844});

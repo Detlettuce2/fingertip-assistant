@@ -25,6 +25,13 @@ const ALLOWED_KEYS = {
     "is_fragment", "show_fragment_badge", "is_hero_heart", "contents",
   ]),
   content: new Set(["id", "count"]),
+  rotationData: new Set(["channel", "updated_at_china", "rotations", "groups"]),
+  rotation: new Set(["slot", "label", "ids", "names"]),
+  serverGroup: new Set([
+    "start_sid", "end_sid", "status", "source", "calendar_open_time", "open_days",
+    "rotation_started_at", "next_switch_at", "display_start", "display_end",
+    "display_start_number", "display_end_number", "current", "next",
+  ]),
 };
 
 const FORBIDDEN_KEY = /(^|_)(record|player|base|battle|map|group|replay|capture|file|path|cookie|password|secret|hp|health)(_|$)/i;
@@ -127,4 +134,17 @@ test("public encyclopedia export exposes only approved fields", () => {
       assertKeys(content, "content", `api/items.json.items[${index}].contents[${contentIndex}]`));
   }
   assertNoPrivateData(data, "api/items.json");
+});
+
+test("public server data contains a complete rotation table and approved fields", () => {
+  for (const file of jsonFiles(path.join(API_ROOT, "data"))) {
+    const data = readJson(file);
+    const location = path.relative(ROOT, file);
+    assertKeys(data, "rotationData", location);
+    assert.equal(data.rotations.length, 15, `${location} must contain all 15 rotation slots`);
+    assert.deepEqual(data.rotations.map(rotation => rotation.slot), Array.from({length: 15}, (_, index) => index + 1));
+    data.rotations.forEach((rotation, index) => assertKeys(rotation, "rotation", `${location}.rotations[${index}]`));
+    data.groups.forEach((group, index) => assertKeys(group, "serverGroup", `${location}.groups[${index}]`));
+    assertNoPrivateData(data, location);
+  }
 });

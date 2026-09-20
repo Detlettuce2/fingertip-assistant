@@ -746,6 +746,51 @@ function iconStrip(rotation, compact = false) {
   return `<div class="avatar-strip${compact ? " compact" : ""}" aria-label="${escapeHtml(rotation.label)}">${images}</div>`;
 }
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseBeijingCalendarTime(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
+  if (!match) return NaN;
+  const [, year, month, day, hour, minute] = match.map(Number);
+  return Date.UTC(year, month - 1, day, hour - 8, minute);
+}
+
+function rotationSlot(openDays) {
+  if (openDays < 10) return 0;
+  if (openDays < 80) return Math.floor((openDays - 10) / 7) + 1;
+  return Math.floor((openDays - 80) / 7) % 5 + 11;
+}
+
+function nextRotationSlot(slot) {
+  if (slot === 0) return 1;
+  return slot === 15 ? 11 : slot + 1;
+}
+
+function recalculateRotationData(data, now = Date.now()) {
+  const rotations = new Map((data.rotations || []).map(rotation => [Number(rotation.slot), rotation]));
+  if (rotations.size !== 15) throw new Error("轮替表数据不完整");
+  return {
+    ...data,
+    groups: (data.groups || []).map(group => {
+      const calendarOpen = parseBeijingCalendarTime(group.calendar_open_time);
+      if (!Number.isFinite(calendarOpen)) return group;
+      const openDays = Math.max(0, Math.floor((now - calendarOpen) / DAY_IN_MS));
+      const slot = rotationSlot(openDays);
+      const rotationStartDay = slot === 0 ? 0 : 10 + Math.floor((openDays - 10) / 7) * 7;
+      const rotationStartedAt = calendarOpen + rotationStartDay * DAY_IN_MS;
+      const nextSwitchAt = rotationStartedAt + (slot === 0 ? 10 : 7) * DAY_IN_MS;
+      return {
+        ...group,
+        open_days: openDays,
+        rotation_started_at: new Date(rotationStartedAt).toISOString(),
+        next_switch_at: new Date(nextSwitchAt).toISOString(),
+        current: rotations.get(slot) || null,
+        next: rotations.get(nextRotationSlot(slot)) || null,
+      };
+    }),
+  };
+}
+
 function rotationProgress(group) {
   return `<div class="rotation-progress" data-start="${escapeHtml(group.rotation_started_at)}" data-end="${escapeHtml(group.next_switch_at)}">
     <div class="progress-copy"><span>本期进度</span><strong class="remaining-time">正在计算…</strong></div>
@@ -925,7 +970,7 @@ async function loadData(manual = false) {
   try {
     const response = await fetch(`api/data/${encodeURIComponent(state.channel)}.json?t=${Date.now()}`, {cache: "no-store"});
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    state.data = await response.json();
+    state.data = recalculateRotationData(await response.json());
     state.secondsToRefresh = 30;
     renderSummary();
     renderSelected();
