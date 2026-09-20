@@ -9,8 +9,10 @@ module.exports = async page => {
   await page.locator('#seal-workspace').waitFor({state:'visible'});
   ok(await total() === 0, '首次进入零次数');
   await page.locator('#seal-rules-open').click();
-  for (const [name,value] of Object.entries({generalRare:100,general:0,exclusiveRare:0,exclusive:0})) await page.locator(`[name="${name}"]`).fill(String(value));
-  await page.getByRole('button',{name:'应用权重',exact:true}).click();
+  const ruleText=await page.locator('#seal-rules').innerText();
+  ok(ruleText.includes('官方概率公示') && ruleText.includes('第 20 次左右') && ruleText.includes('第 42 次左右'), '规则显示官方概率与两档软保底');
+  ok(!ruleText.toLowerCase().includes('config') && await page.locator('#seal-rules input').count()===0, '规则不含旧来源字样和自定义概率入口');
+  await page.keyboard.press('Escape');
   await page.locator('#seal-skip').check();
   await page.evaluate(() => { Math.random = () => 0; document.querySelector('#seal-wash').click(); document.querySelector('#seal-wash').click(); });
   await settle();
@@ -39,14 +41,28 @@ module.exports = async page => {
   await page.locator('#seal-batch-start').click(); await settle();
   ok(await total() === 3 && (await page.locator('#seal-status').innerText()).includes('心愿达成'), '关闭稀有停手仍能命中心愿停手');
   await page.locator('#seal-target-clear').click();
-  await page.locator('#seal-rules-open').click();
-  for (const [name,value] of Object.entries({generalRare:0,general:100,exclusiveRare:0,exclusive:0})) await page.locator(`[name="${name}"]`).fill(String(value));
-  await page.getByRole('button',{name:'应用权重',exact:true}).click();
+
+  await page.evaluate(() => { Math.random = () => 0.999999; });
+  await page.locator('#seal-stop-rare').check();
   await page.locator('#seal-batch-count').selectOption('100');
   page.once('dialog', d => d.accept());
   await page.locator('#seal-batch-start').click(); await settle();
-  ok(await total() === 103 && await page.locator('#seal-spent').innerText() === '2,060', '完整100连洗统计准确');
-  ok(await page.locator('#seal-rares').innerText() === '3', '普通词条不计为出货');
+  ok(await total() === 48 && await page.locator('#seal-spent').innerText() === '960', '绿色兽印最迟第45次触发软保底');
+  ok(await page.locator('#seal-result-label').innerText()==='软保底出货', '中间结果标记软保底出货');
+  ok(await page.locator('#seal-neighbor-before').getAttribute('class').then(x=>x.includes('is-rare')) && await page.locator('#seal-neighbor-after').getAttribute('class').then(x=>x.includes('is-rare')), '软保底显示上下两条其他稀有词条');
+  const tripleIds=await page.evaluate(()=>{
+    const saved=JSON.parse(localStorage.getItem('fingertip.beast-seal.v1'));
+    const middle=saved.draws.at(-1).skillId;
+    return {middle,before:document.querySelector('#seal-neighbor-before').textContent,after:document.querySelector('#seal-neighbor-after').textContent};
+  });
+  ok(tripleIds.before.startsWith('稀有 · ') && tripleIds.after.startsWith('稀有 · ') && tripleIds.before!==tripleIds.after, '三稀有同屏且上下内容不同');
+  await page.screenshot({path:'output/playwright/seal-pity-triple.png',fullPage:true});
+
+  await page.locator('#seal-stop-rare').uncheck();
+  page.once('dialog', d => d.accept());
+  await page.locator('#seal-batch-start').click(); await settle();
+  ok(await total() === 148 && await page.locator('#seal-spent').innerText() === '2,960', '关闭稀有停手后完整100连洗统计准确');
+  ok(await page.locator('#seal-rares').innerText() === '6', '自然与软保底稀有均计入出货');
   await page.locator('#seal-history-filter').selectOption('all');
   ok(await page.locator('#seal-history > li').count() === 30, '历史分页初始30条');
   await page.locator('#seal-history-more').click();
@@ -58,19 +74,19 @@ module.exports = async page => {
   ok(download.suggestedFilename().endsWith('.csv'), '真实浏览器下载CSV');
   await page.locator('[data-seal-quality="6"]').click();
   await page.locator('#seal-wash').click(); await settle();
-  ok(await total() === 104 && await page.locator('#seal-spent').innerText() === '2,066', '切换雷霆虎保留历史且扣6');
+  ok(await total() === 149 && await page.locator('#seal-spent').innerText() === '2,966', '切换雷霆虎保留历史且扣6');
   await page.locator('[data-seal-quality="7"]').click();
   await page.locator('#seal-wash').click(); await settle();
-  ok(await total() === 105 && await page.locator('#seal-spent').innerText() === '2,078', '切换圣角兽扣12');
+  ok(await total() === 150 && await page.locator('#seal-spent').innerText() === '2,978', '切换圣角兽扣12');
   await page.locator('[data-seal-quality="8"]').click();
-  ok((await page.locator('#seal-result-id').innerText()).includes('103'), '切回兽印恢复其最后词条');
+  ok((await page.locator('#seal-result-id').innerText()).includes('148'), '切回兽印恢复其最后词条');
   await page.locator('#seal-skip').uncheck();
   await page.locator('#seal-batch-count').selectOption('1000');
   await page.locator('#seal-batch-start').click();
-  await page.waitForFunction(() => Number(document.querySelector('#seal-total').textContent.replaceAll(',','')) > 105);
+  await page.waitForFunction(() => Number(document.querySelector('#seal-total').textContent.replaceAll(',','')) > 150);
   await page.locator('#seal-stop').click(); await settle();
   const stopped = await total();
-  ok(stopped > 105 && stopped < 1105, '手动停止连续洗炼');
+  ok(stopped > 150 && stopped < 1150, '手动停止连续洗炼');
   await page.getByRole('tab',{name:'指尖百科',exact:true}).click();
   await page.locator('.item-card').first().waitFor();
   ok(await page.locator('#encyclopedia-view').isVisible(), '原有百科可用');
@@ -83,7 +99,7 @@ module.exports = async page => {
   ok(await total() === stopped, '页面切换不丢失记录');
   await page.setViewportSize({width:390,height:844});
   const layout = await page.evaluate(() => {
-    const ids=['seal-wash','seal-result','seal-result-text'];
+    const ids=['seal-wash','seal-result','seal-result-text','seal-pity-note'];
     return {overflow:document.documentElement.scrollWidth>window.innerWidth,controls:ids.map(id=>{const e=document.getElementById(id);return {id,clipped:e.scrollHeight>e.clientHeight+1 || e.scrollWidth>e.clientWidth+1};})};
   });
   ok(!layout.overflow && layout.controls.every(x=>!x.clipped), '390px手机无横向溢出和主内容截断');

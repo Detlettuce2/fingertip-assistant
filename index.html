@@ -128,8 +128,8 @@
         <div><span class="eyebrow">魔宠养成 · 模拟工坊</span><h2 id="seal-title">兽印洗炼</h2><p>试试手气，留住每一次出货。</p></div>
         <button type="button" class="secondary-button" id="seal-rules-open">规则与概率</button>
       </div>
-      <p class="seal-disclaimer">仅为本地模拟，不消耗游戏道具。概率采用配置推演方案，非官方实测概率。</p>
-      <div id="seal-load-state" role="status">正在读取兽印配置…</div>
+      <p class="seal-disclaimer">仅为本地模拟，不消耗游戏道具。基础概率来自游戏官方概率公示，软保底为模拟规则。</p>
+      <div id="seal-load-state" role="status">正在读取兽印数据…</div>
       <button id="seal-retry" class="secondary-button" type="button" hidden>重新加载</button>
       <div id="seal-workspace" hidden>
         <div class="seal-layout">
@@ -164,6 +164,7 @@
               <button type="button" id="seal-batch-start" class="secondary-button">连续洗炼</button>
               <button type="button" id="seal-stop" class="secondary-button" hidden>停止</button>
               <label class="seal-stop-option"><input type="checkbox" id="seal-stop-rare" checked> 出稀有时停手</label>
+              <p id="seal-pity-note" class="seal-pity-note"></p>
               <p id="seal-target-note">可在词条预览中选择心愿词条，抽中自动停手。</p>
               <button id="seal-target-clear" class="text-button" type="button" hidden>取消心愿</button>
             </div>
@@ -175,9 +176,9 @@
               <div><span>累计洗炼</span><strong id="seal-total">0</strong><small>次</small></div>
               <div><span>稀有出货</span><strong id="seal-rares">0</strong><small>次</small></div>
               <div><span>累计精魄</span><strong id="seal-spent">0</strong><small>个</small></div>
-              <div><span>距上次出货</span><strong id="seal-streak">0</strong><small>次</small></div>
+              <div><span>当前连续未出</span><strong id="seal-streak">0</strong><small>次</small></div>
             </div>
-            <p class="seal-record-note">出货 = 配置标记为「稀有」的词条。统计包含三种兽印；上限 10,000 次，达到后可导出并开启新一轮。</p>
+            <p class="seal-record-note">出货 = 官方数据中标为「稀有」的词条。统计包含三种兽印；上限 10,000 次，达到后可导出并开启新一轮。</p>
             <p id="seal-quality-totals" class="seal-record-note"></p>
             <div class="seal-history-controls"><label>查看 <select id="seal-history-filter"><option value="rare">出货记录</option><option value="all">全部洗炼</option><option value="6">雷霆虎</option><option value="7">圣角兽</option><option value="8">焚焰凤</option></select></label><button id="seal-export" type="button" class="text-button">导出 CSV</button></div>
             <ol class="seal-history" id="seal-history"></ol>
@@ -262,11 +263,10 @@
   </dialog>
   <dialog id="seal-rules" class="seal-dialog" aria-labelledby="seal-rules-title">
     <div class="seal-dialog-heading"><h2 id="seal-rules-title">规则与概率</h2><button type="button" data-seal-close aria-label="关闭规则与概率">×</button></div>
-    <p>每次仅获得 <strong>1 条词条</strong>，上下两条为滚动装饰，不是额外奖励。锁定后的兽印不能洗炼。稀有结果会保留在出货记录中，继续洗炼会替换当前词条。</p>
-    <p>词条、稀有标记和消耗来自 Config。帮助配置中的概率数值合计只有 1%，本模拟将它们作为相对权重归一化到 100%。<strong>分类内等概率、按相同品质抽取、无保底</strong>是模拟假设，不能据此推断游戏真实概率。</p>
-    <p>通用／专属按词条类型编号分组（小于 1000 为通用）；雷霆虎原文未细分稀有，因此按通用／专属两组抽取，保留词条自身的稀有标记。</p>
-    <div class="seal-source-note"><strong>帮助配置第 322 项 · 当前兽印原文</strong><p id="seal-raw-rates"></p><small>来源：beast_seal_cfg.json；h4e5lp_cfg.json 第 283、322 项；l4a5nguage_cfg.json 第 212013、212017 项。</small></div>
-    <form id="seal-weight-form"><h3 id="seal-weights-title">模拟权重</h3><div id="seal-weight-fields" class="seal-weight-fields"></div><p>权重不必相加为 100，实际概率会自动归一化；至少一项大于 0。修改只影响之后的洗炼，历史记录保留原方案。</p><p id="seal-weight-error" role="alert"></p><div class="seal-rule-actions"><button type="submit" class="primary-button">应用权重</button><button type="button" id="seal-weights-default" class="secondary-button">恢复配置推演值</button></div></form>
+    <p>每次仅获得 <strong>1 条词条</strong>。通常上下两条仅为滚动装饰；触发软保底时，上下会各显示一条其他稀有词条，中间高亮的词条才是本次实际结果。锁定后的兽印不能洗炼。</p>
+    <p>基础分类概率采用游戏官方概率公示，通用／专属按词条类型分组；分类内的具体词条等概率抽取。稀有结果会保留在出货记录中，继续洗炼会替换当前词条。</p>
+    <p><strong>软保底：</strong>彩色兽印连续未出稀有时，从第 18 次起逐步提升概率，第 20 次左右出货，最迟第 23 次；绿色兽印从第 40 次起提升，第 42 次左右出货，最迟第 45 次。提前自然出货会立即重置对应兽印的计数。</p>
+    <div class="seal-source-note"><strong id="seal-rates-title">当前兽印 · 官方概率公示</strong><p id="seal-raw-rates"></p><small>软保底为本模拟新增规则，不代表游戏官方存在同样机制。</small></div>
   </dialog>
   <script src="beast-seal-core.js" defer></script>
   <script src="beast-seal.js" defer></script>

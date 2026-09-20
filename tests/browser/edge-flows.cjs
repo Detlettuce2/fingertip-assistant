@@ -3,15 +3,12 @@ module.exports = async (page, baseURL) => {
   const ready=()=>page.locator('#seal-workspace').waitFor({state:'visible'});
   await ready();
   await page.locator('#seal-rules-open').click();
-  for(const name of ['generalRare','general','exclusiveRare','exclusive']) await page.locator(`[name="${name}"]`).fill('0');
-  await page.getByRole('button',{name:'应用权重',exact:true}).click();
-  ok((await page.locator('#seal-weight-error').innerText()).includes('大于 0'),'全零权重被拒绝');
-  await page.locator('#seal-weights-default').click();
-  ok(await page.locator('[name="generalRare"]').inputValue()==='0.25','恢复配置权重');
+  ok((await page.locator('#seal-raw-rates').innerText()).includes('通用稀有 0.25%'),'显示当前兽印官方公示概率');
+  ok(await page.locator('#seal-rules form').count()===0 && await page.locator('#seal-rules input').count()===0,'官方概率不可在页面修改');
   await page.keyboard.press('Escape');
   await page.route('**/api/beast-seal.json',route=>route.abort());
   await page.reload(); await page.locator('#seal-retry').waitFor({state:'visible'});
-  ok((await page.locator('#seal-load-state').innerText()).includes('失败'),'配置加载失败有可恢复提示');
+  ok((await page.locator('#seal-load-state').innerText()).includes('失败'),'数据加载失败有可恢复提示');
   await page.unroute('**/api/beast-seal.json');await page.locator('#seal-retry').click();await ready();
   ok(await page.locator('#seal-wash').isEnabled(),'重试后可洗炼');
   await page.evaluate(()=>localStorage.setItem('fingertip.beast-seal.v1','{broken'));
@@ -28,8 +25,8 @@ module.exports = async (page, baseURL) => {
   await peer.waitForFunction(()=>document.querySelector('#seal-total').textContent==='1');
   ok(await peer.locator('#seal-total').innerText()==='1','同浏览器另一页面同步记录');await peer.close();
   await page.evaluate(async()=>{
-    const config=await (await fetch('api/beast-seal.json')).json();const s=BeastSeal.freshSession();s.skip=true;s.stopOnRare=false;
-    for(let i=0;i<9999;i++)BeastSeal.appendRoll(s,config,()=>0.99999);
+    const data=await (await fetch('api/beast-seal.json')).json();const s=BeastSeal.freshSession();s.skip=true;s.stopOnRare=false;
+    for(let i=0;i<9999;i++)BeastSeal.appendRoll(s,data,()=>0.99999);
     localStorage.setItem(BeastSeal.STORAGE_KEY,JSON.stringify(s));
   });
   await page.reload();await ready();await page.locator('#seal-wash').click();

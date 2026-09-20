@@ -43,12 +43,29 @@
     $("cost-value").textContent = C.cost(config, quality);
     const skill = latest ? config["6"][latest.skillId] : null;
     const index = skill ? skills.findIndex(entry => entry.s2k3ill_id === skill.s2k3ill_id) : Math.floor(skills.length / 2);
-    $("neighbor-before").textContent = skills[(index + skills.length - 1) % skills.length].d2e3sc;
-    $("neighbor-after").textContent = skills[(index + 1) % skills.length].d2e3sc;
+    const pityTriggered = Boolean(latest?.pity);
+    let before = skills[(index + skills.length - 1) % skills.length];
+    let after = skills[(index + 1) % skills.length];
+    if (pityTriggered) {
+      const otherRares = skills.filter(entry => entry.r2a3re === 1 && entry.s2k3ill_id !== skill.s2k3ill_id);
+      const offset = latest.n % otherRares.length;
+      before = otherRares[offset];
+      after = otherRares[(offset + 1) % otherRares.length];
+    }
+    $("neighbor-before").textContent = (pityTriggered ? "稀有 · " : "") + before.d2e3sc;
+    $("neighbor-after").textContent = (pityTriggered ? "稀有 · " : "") + after.d2e3sc;
+    $("reel").classList.toggle("is-pity", pityTriggered);
+    $("neighbor-before").classList.toggle("is-rare", pityTriggered);
+    $("neighbor-after").classList.toggle("is-rare", pityTriggered);
     $("result").classList.toggle("is-rare", skill?.r2a3re === 1);
-    $("result-label").textContent = skill ? (skill.r2a3re ? "稀有出货" : "本次词条") : "等待洗炼";
+    $("result").classList.toggle("is-pity", pityTriggered);
+    $("result-label").textContent = skill ? (pityTriggered ? "软保底出货" : (skill.r2a3re ? "稀有出货" : "本次词条")) : "等待洗炼";
     $("result-text").textContent = skill ? skill.d2e3sc : "点击洗炼，获得你的第一个兽印词条。";
-    $("result-id").textContent = skill ? `第 ${format(latest.n)} 次 · ${skill.skill_type < 1000 ? "通用" : "专属"} · #${skill.s2k3ill_id}` : "每次获得 1 条词条";
+    $("result-id").textContent = skill ? `第 ${format(latest.n)} 次 · ${skill.skill_type < 1000 ? "通用" : "专属"}${pityTriggered ? ` · 连续第 ${latest.pityAttempt} 次触发软保底` : ""} · #${skill.s2k3ill_id}` : "每次获得 1 条词条";
+    const streak = C.pityStreak(session, config, quality), rule = C.PITY[quality];
+    if (!rule) $("pity-note").textContent = "雷霆虎按官方基础概率模拟，不设置软保底。";
+    else if (streak < rule.start) $("pity-note").textContent = `${rule.label}软保底：已连续 ${streak} 次未出稀有，第 ${rule.start} 次起逐步提升概率。`;
+    else $("pity-note").textContent = `${rule.label}软保底已升温：已连续 ${streak} 次未出稀有，约第 ${rule.target} 次出货，最迟第 ${rule.hard} 次。`;
     $("target-note").textContent = session.target ? "心愿：" + config["6"][session.target].d2e3sc + "（命中即停）" : "可在词条预览中选择心愿词条，抽中自动停手。";
     $("target-clear").hidden = !session.target;
   }
@@ -58,7 +75,7 @@
     $("history").innerHTML = records.length ? records.slice(0, historyLimit).map(draw => {
       const skill = config["6"][draw.skillId];
       const time = new Date(draw.time).toLocaleString("zh-CN", {hour12: false});
-      return `<li class="${skill.r2a3re ? "rare-record" : ""}"><div><strong>第 ${format(draw.n)} 次</strong><span>${C.SPECS[draw.quality].name}${skill.r2a3re ? " · 稀有" : ""}</span></div><p>${escape(skill.d2e3sc)}</p><small>${escape(time)} · ${draw.cost} 精魄 · #${draw.skillId}</small></li>`;
+      return `<li class="${skill.r2a3re ? "rare-record" : ""}"><div><strong>第 ${format(draw.n)} 次</strong><span>${C.SPECS[draw.quality].name}${skill.r2a3re ? " · 稀有" : ""}${draw.pity ? " · 软保底" : ""}</span></div><p>${escape(skill.d2e3sc)}</p><small>${escape(time)} · ${draw.cost} 精魄 · #${draw.skillId}</small></li>`;
     }).join("") : `<li class="seal-empty"><span>✦</span><strong>${filter === "rare" ? "静候下一次惊喜" : "还没有洗炼记录"}</strong><p>${filter === "rare" ? "抽到稀有词条后，这里会记下它和出货次数。" : "点击洗炼，开始记录你的每一次尝试。"}</p></li>`;
     $("history-more").hidden = records.length <= historyLimit;
   }
@@ -68,7 +85,7 @@
     $("total").textContent = format(stats.total);
     $("rares").textContent = format(stats.rare);
     $("spent").textContent = format(stats.spent);
-    $("streak").textContent = format(stats.sinceRare);
+    $("streak").textContent = format(stats.dryByQuality[session.quality]);
     $("quality-totals").textContent = Object.entries(stats.byQuality).map(([quality, total]) => C.SPECS[quality].name + " " + format(total) + " 次").join(" · ");
     renderHistory();
     updateButtons();
@@ -78,11 +95,11 @@
     const current = C.current(session);
     if (current && config["6"][current.skillId].r2a3re === 1 && !window.confirm("当前是稀有词条，继续洗炼将替换它。出货记录会保留。继续吗？")) return;
     if (session.target) {
-      const possible = C.distribution(config, session.quality, session.weights[session.quality]).some(group => group.weight > 0 && group.entries.some(skill => skill.s2k3ill_id === session.target));
-      if (!possible) { status("心愿词条所在组的权重为 0，请调整权重或取消心愿。"); return; }
+      const possible = C.pool(config, session.quality).some(skill => skill.s2k3ill_id === session.target);
+      if (!possible) { status("当前兽印不包含所选心愿词条，请重新选择。"); return; }
     }
     busy = true; cancelled = false; updateButtons();
-    let completed = 0, reason = "", rareCount = 0;
+    let completed = 0, reason = "", rareCount = 0, pityCount = 0;
     try {
       while (completed < count && !cancelled) {
         if (!session.skip) {
@@ -91,20 +108,23 @@
           if (cancelled) break;
         }
         const chunk = session.skip ? Math.min(10, count - completed) : 1;
+        let pityShown = false;
         for (let i = 0; i < chunk; i++) {
-          const {skill} = C.appendRoll(session, config);
+          const {skill, pityTriggered} = C.appendRoll(session, config);
           completed++;
           if (skill.r2a3re) rareCount++;
+          if (pityTriggered) { pityCount++; pityShown = true; }
           if (session.target === skill.s2k3ill_id) { reason = "心愿达成，已自动停手。"; break; }
           if (session.stopOnRare && skill.r2a3re) { reason = "稀有出货，已自动停手。"; break; }
+          if (pityShown) break;
         }
         $("reel").classList.remove("is-rolling");
         save(); render();
-        status(`已洗炼 ${completed} / ${count} 次，本轮出货 ${rareCount} 次。`);
+        status(`已洗炼 ${completed} / ${count} 次，本轮出货 ${rareCount} 次${pityCount ? `，触发软保底 ${pityCount} 次` : ""}。`);
         if (reason) break;
-        await delay(25);
+        await delay(pityShown ? 450 : 25);
       }
-      status(`本次完成 ${completed} 次，出货 ${rareCount} 次。${reason || (cancelled ? "已停止。" : "")}`);
+      status(`本次完成 ${completed} 次，出货 ${rareCount} 次${pityCount ? `，触发软保底 ${pityCount} 次` : ""}。${reason || (cancelled ? "已停止。" : "")}`);
     } catch (error) {
       status(`本次完成 ${completed} 次。${error.message}`);
     } finally {
@@ -115,22 +135,19 @@
   }
   function preview() {
     const quality = session.quality, query = $("preview-search").value.trim().toLowerCase(), rareOnly = $("preview-rare").checked;
-    const groups = C.distribution(config, quality, session.weights[quality]);
+    const groups = C.distribution(config, quality);
     const skills = C.pool(config, quality).filter(skill => (!rareOnly || skill.r2a3re) && (/^\d+$/.test(query) ? String(skill.s2k3ill_id) === query : (skill.d2e3sc + " " + skill.s2k3ill_id).toLowerCase().includes(query)));
     $("preview-title").textContent = C.SPECS[quality].name + " · 词条预览";
-    $("preview-summary").textContent = `${skills.length} 条匹配 · 下列概率仅为当前模拟方案；点击词条设为心愿。`;
+    $("preview-summary").textContent = `${skills.length} 条匹配 · 分类概率来自官方公示，软保底阶段稀有概率会提升；点击词条设为心愿。`;
     $("preview-list").innerHTML = skills.map(skill => {
       const group = groups.find(group => group.key === C.category(skill, quality));
-      const probability = group.probability / group.entries.length * 100;
-      return `<button type="button" class="seal-preview-entry ${skill.r2a3re ? "rare-record" : ""}" data-seal-target="${skill.s2k3ill_id}" aria-pressed="${session.target === skill.s2k3ill_id}"><span>${skill.r2a3re ? "稀有 · " : ""}${skill.skill_type < 1000 ? "通用" : "专属"} · #${skill.s2k3ill_id}<b>${probability.toFixed(4)}%</b></span><p>${escape(skill.d2e3sc)}</p></button>`;
+      return `<button type="button" class="seal-preview-entry ${skill.r2a3re ? "rare-record" : ""}" data-seal-target="${skill.s2k3ill_id}" aria-pressed="${session.target === skill.s2k3ill_id}"><span>${skill.r2a3re ? "稀有 · " : ""}${skill.skill_type < 1000 ? "通用" : "专属"} · #${skill.s2k3ill_id}<b>${C.LABELS[group.key]} ${Number((group.probability * 100).toFixed(4))}%</b></span><p>${escape(skill.d2e3sc)}</p></button>`;
     }).join("") || '<p class="seal-no-match">没有匹配的词条，换个关键词试试。</p>';
   }
   function rules() {
     const spec = C.SPECS[session.quality];
     $("raw-rates").textContent = spec.raw;
-    $("weights-title").textContent = spec.name + " · 模拟权重";
-    $("weight-fields").innerHTML = Object.entries(session.weights[session.quality]).map(([key, value]) => `<label>${C.LABELS[key]}<input type="number" name="${key}" value="${value}" min="0" max="100" step="any" required></label>`).join("");
-    $("weight-error").textContent = "";
+    $("rates-title").textContent = spec.name + " · 官方概率公示";
   }
   function download(content, filename, type) {
     const url = URL.createObjectURL(new Blob([content], {type}));
@@ -164,15 +181,6 @@
     });
     $("rules-open").addEventListener("click", () => { if (!config) return; rules(); $("rules").showModal(); });
     document.querySelectorAll("[data-seal-close]").forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
-    $("weight-form").addEventListener("submit", event => {
-      event.preventDefault();
-      try {
-        const weights = Object.fromEntries(Array.from(new FormData(event.currentTarget), ([key, value]) => [key, Number(value)]));
-        C.validateWeights(session.quality, weights);
-        session.weights[session.quality] = weights; save(); $("rules").close(); status("模拟权重已更新，之后的洗炼使用新方案。");
-      } catch (error) { $("weight-error").textContent = error.message; }
-    });
-    $("weights-default").addEventListener("click", () => { session.weights[session.quality] = {...C.SPECS[session.quality].weights}; save(); rules(); status("已恢复配置推演权重。"); });
     $("export").addEventListener("click", () => {
       const date = new Date().toISOString().slice(0, 10);
       if (damaged) download(rawBackup, `兽印存档备份-${date}.json`, "application/json;charset=utf-8");
@@ -196,7 +204,7 @@
     if (config || loading) return;
     loading = true;
     $("retry").hidden = true;
-    $("load-state").textContent = "正在读取兽印配置…";
+    $("load-state").textContent = "正在读取兽印数据…";
     try {
       const response = await fetch("api/beast-seal.json");
       if (!response.ok) throw new Error("HTTP " + response.status);
@@ -213,7 +221,7 @@
       if (warning) { status(warning); $("save-state").textContent = warning; }
     } catch (error) {
       config = null;
-      $("load-state").textContent = "兽印配置读取失败：" + error.message;
+      $("load-state").textContent = "兽印数据读取失败：" + error.message;
       $("retry").hidden = false;
     } finally { loading = false; }
   }

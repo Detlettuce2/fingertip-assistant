@@ -30,8 +30,8 @@ const server = http.createServer((req,res)=>{
       } finally { await context.close(); }
     }
     const csv = fs.readFileSync('output/playwright/records.csv','utf8');
-    if(csv.charCodeAt(0)!==65279 || csv.split('\r\n').length!==104) throw new Error('CSV row count or BOM is incorrect');
+    if(csv.charCodeAt(0)!==65279 || csv.split('\r\n').length!==149 || !csv.includes('软保底触发')) throw new Error('CSV row count, BOM, or pity column is incorrect');
     if(fs.readFileSync('output/playwright/corrupt-backup.json','utf8')!=='{broken') throw new Error('Corrupt backup changed');
-    console.log('CSV 103 data rows and original corrupt backup verified.');
+    console.log('CSV 148 data rows, pity column, and original corrupt backup verified.');
   } finally { await browser.close(); }
 })().catch(error=>{console.error(error.stack);process.exitCode=1;}).finally(()=>server.close());
