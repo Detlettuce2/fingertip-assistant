@@ -10,7 +10,7 @@ module.exports = async page => {
   ok(await total() === 0, '首次进入零次数');
   await page.locator('#seal-rules-open').click();
   const ruleText=await page.locator('#seal-rules').innerText();
-  ok(ruleText.includes('官方概率公示') && ruleText.includes('第 20 次左右') && ruleText.includes('第 42 次左右'), '规则显示官方概率与两档软保底');
+  ok(ruleText.includes('官方概率公示') && ruleText.includes('第 40 次左右') && ruleText.includes('第 42 次左右') && ruleText.includes('3%'), '规则显示官方概率、新版两档软保底与红色模拟调整');
   ok(!ruleText.toLowerCase().includes('config') && await page.locator('#seal-rules input').count()===0, '规则不含旧来源字样和自定义概率入口');
   await page.keyboard.press('Escape');
   await page.locator('#seal-skip').check();

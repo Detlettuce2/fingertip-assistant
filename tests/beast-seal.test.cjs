@@ -42,13 +42,13 @@ test('一次洗炼只产生一个词条，跨品质统计、出货及材料准�
   assert.equal(s.draws.length,3);
 });
 
-test('彩色约20次、绿色约42次的软保底曲线正确', () => {
+test('彩色约40次、绿色约42次的软保底曲线正确', () => {
   assert.equal(C.pityBoost(6,100),0);
-  assert.equal(C.pityBoost(7,17),0);
-  assert.equal(C.pityBoost(7,18),1/6);
-  assert.equal(C.pityBoost(7,20),1/2);
-  assert.equal(C.pityBoost(7,22),5/6);
-  assert.equal(C.pityBoost(7,23),1);
+  assert.equal(C.pityBoost(7,37),0);
+  assert.equal(C.pityBoost(7,38),1/6);
+  assert.equal(C.pityBoost(7,40),1/2);
+  assert.equal(C.pityBoost(7,42),5/6);
+  assert.equal(C.pityBoost(7,43),1);
   assert.equal(C.pityBoost(8,39),0);
   assert.equal(C.pityBoost(8,40),1/6);
   assert.equal(C.pityBoost(8,42),1/2);
@@ -59,12 +59,13 @@ test('彩色约20次、绿色约42次的软保底曲线正确', () => {
 test('软保底触发会产出稀有并按兽印分别重置计数', () => {
   const s=C.freshSession();
   s.quality=7;
-  for(let i=0;i<17;i++) assert.equal(C.appendRoll(s,data,()=>0.1).skill.r2a3re,0);
-  assert.equal(C.pityStreak(s,data,7),17);
-  const pity=C.appendRoll(s,data,()=>0,18000);
+  for(let i=0;i<37;i++) assert.equal(C.appendRoll(s,data,()=>0.1).skill.r2a3re,0);
+  assert.equal(C.pityStreak(s,data,7),37);
+  const pity=C.appendRoll(s,data,()=>0,38000);
   assert.equal(pity.skill.r2a3re,1);
   assert.equal(pity.pityTriggered,true);
-  assert.equal(pity.draw.pityAttempt,18);
+  assert.equal(pity.draw.pityAttempt,38);
+  assert.equal(pity.draw.pityVersion,2);
   assert.equal(C.pityStreak(s,data,7),0);
   s.quality=8;
   for(let i=0;i<10;i++) C.appendRoll(s,data,()=>0.1);
@@ -79,8 +80,8 @@ test('软保底触发会产出稀有并按兽印分别重置计数', () => {
   assert.equal(C.pityStreak(s,data,8),10);
 });
 
-test('连续未出时彩色最迟第23次、绿色最迟第45次必出稀有', () => {
-  for(const [quality, hard] of [[7,23],[8,45]]) {
+test('连续未出时彩色最迟第43次、绿色最迟第45次必出稀有', () => {
+  for(const [quality, hard] of [[7,43],[8,45]]) {
     const s=C.freshSession();s.quality=quality;
     for(let attempt=1;attempt<hard;attempt++) {
       const result=C.appendRoll(s,data,()=>0.999999,attempt);
@@ -100,27 +101,69 @@ test('锁定和容量上限不增加次数或消耗',()=>{
   assert.throws(()=>C.appendRoll(s,data));assert.equal(s.draws.length,C.LIMIT);
 });
 
-test('刷新还原时恢复官方概率，CSV 保留软保底标记',()=>{
+test('刷新还原时恢复当前概率，CSV 保留软保底标记',()=>{
   const s=C.freshSession(); C.appendRoll(s,data,()=>0,1000);
   s.weights[8]={generalRare:0,general:100,exclusiveRare:0,exclusive:0};
   const restored=C.restore(JSON.stringify(s),data);
   assert.deepEqual(restored.weights[8],C.SPECS[8].weights);
   restored.quality=7;
-  for(let i=0;i<17;i++) C.appendRoll(restored,data,()=>0.1,2000+i);
+  for(let i=0;i<37;i++) C.appendRoll(restored,data,()=>0.1,2000+i);
   C.appendRoll(restored,data,()=>0,3000);
   const again=C.restore(JSON.stringify(restored),data);
   assert.equal(again.draws.at(-1).pity,true);
-  assert.equal(again.draws.at(-1).pityAttempt,18);
+  assert.equal(again.draws.at(-1).pityAttempt,38);
   const csv=C.csv(again,data);
-  assert.equal(csv.split('\r\n').length,20);
+  assert.equal(csv.split('\r\n').length,40);
   assert.ok(csv.startsWith('\uFEFF'));
   assert.ok(csv.includes('软保底触发'));
-  assert.ok(csv.includes('是（连续第 18 次）'));
+  assert.ok(csv.includes('是（连续第 38 次）'));
+});
+
+test('红色稀有率为3%，通用和专属仍保持36%与64%',()=>{
+  const groups=C.distribution(data,6);
+  assert.deepEqual(groups.map(g=>g.entries.length),[2,28,10,32]);
+  const probability=key=>groups.find(g=>g.key===key).probability;
+  assert.ok(Math.abs(probability('generalRare')+probability('exclusiveRare')-0.03)<1e-12);
+  assert.ok(Math.abs(probability('generalRare')+probability('general')-0.36)<1e-12);
+  assert.ok(Math.abs(probability('exclusiveRare')+probability('exclusive')-0.64)<1e-12);
+  for(const [value,expected] of [[0,'generalRare'],[0.010799,'generalRare'],[0.0108,'general'],[0.36,'exclusiveRare'],[0.3792,'exclusive'],[0.999999,'exclusive']]){
+    let first=true;
+    const skill=C.roll(data,6,C.SPECS[6].weights,()=>first?(first=false,value):0);
+    assert.equal(C.category(skill,6),expected);
+  }
+});
+
+test('旧红色概率方案和旧彩色18次保底存档保留，后续使用新版规则',()=>{
+  const s=C.freshSession();s.quality=6;
+  const legacyWeights={general:36,exclusive:64};
+  const red=C.appendRoll(s,data,()=>0,1000).draw;
+  red.profile='6:36,64';
+  s.profiles[red.profile]={quality:6,weights:legacyWeights};
+  s.weights[6]=legacyWeights;
+  s.quality=7;
+  for(let i=0;i<17;i++)C.appendRoll(s,data,()=>0.1,2000+i);
+  const legacy=C.appendRoll(s,data,()=>0,3000).draw;
+  legacy.pity=true;legacy.pityAttempt=18;
+  const restored=C.restore(JSON.stringify(s),data);
+  assert.deepEqual(restored.draws,s.draws);
+  assert.deepEqual(restored.profiles[red.profile].weights,legacyWeights);
+  assert.deepEqual(restored.weights[6],C.SPECS[6].weights);
+  assert.equal(C.distribution(data,6,legacyWeights).length,2);
+  assert.equal(C.pityStreak(restored,data,7),0);
+  for(let i=0;i<37;i++)assert.equal(C.appendRoll(restored,data,()=>0.1,4000+i).pityTriggered,false);
+  const next=C.appendRoll(restored,data,()=>0,5000).draw;
+  assert.equal(next.pityAttempt,38);
+  assert.equal(next.pityVersion,2);
+  assert.deepEqual(C.restore(JSON.stringify(restored),data).draws,restored.draws);
+  legacy.pityVersion=2;
+  assert.throws(()=>C.restore(JSON.stringify(s),data));
+  legacy.pityVersion=99;
+  assert.throws(()=>C.restore(JSON.stringify(s),data));
 });
 
 test('损坏、伪造或版本不兼容的存档明确报错',()=>{
   assert.throws(()=>C.restore('{broken',data));
-  for(const mutate of [s=>s.version=2,s=>s.quality=5,s=>s.quality='8',s=>s.draws[0].skillId=999999,s=>s.draws[0].cost=0,s=>s.draws[0].n=3,s=>s.target=1017,s=>s.profiles={},s=>s.draws[0].pity=false,s=>{s.draws[0].pity=true;s.draws[0].pityAttempt=1;}]){
+  for(const mutate of [s=>s.version=2,s=>s.quality=5,s=>s.quality='8',s=>s.draws[0].skillId=999999,s=>s.draws[0].cost=0,s=>s.draws[0].n=3,s=>s.target=1017,s=>s.profiles={},s=>s.draws[0].pity=false,s=>s.draws[0].pityVersion=2,s=>{s.draws[0].pity=true;s.draws[0].pityAttempt=1;}]){
     const s=C.freshSession();C.appendRoll(s,data,()=>0);mutate(s);
     assert.throws(()=>C.restore(JSON.stringify(s),data));
   }
@@ -132,4 +175,18 @@ test('固定种子十万次抽样符合官方分类概率且所有结果均来�
   const counts={};const allowed=new Set(C.pool(data,8).map(s=>s.s2k3ill_id));
   for(let i=0;i<100000;i++){const skill=C.roll(data,8,C.SPECS[8].weights,random);assert.ok(allowed.has(skill.s2k3ill_id));const key=C.category(skill,8);counts[key]=(counts[key]||0)+1;}
   for(const g of C.distribution(data,8)){const sigma=Math.sqrt(100000*g.probability*(1-g.probability));assert.ok(Math.abs(counts[g.key]-100000*g.probability)<6*sigma, g.key);}
+});
+
+test('固定种子十万次红色抽样符合调低后的3%稀有率',()=>{
+  let seed=987654321;
+  const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+  const counts={};
+  for(let i=0;i<100000;i++){
+    const key=C.category(C.roll(data,6,C.SPECS[6].weights,random),6);
+    counts[key]=(counts[key]||0)+1;
+  }
+  for(const group of C.distribution(data,6)){
+    const sigma=Math.sqrt(100000*group.probability*(1-group.probability));
+    assert.ok(Math.abs(counts[group.key]-100000*group.probability)<6*sigma,group.key);
+  }
 });

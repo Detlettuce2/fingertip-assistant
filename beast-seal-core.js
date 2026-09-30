@@ -8,14 +8,16 @@
   const LIMIT = 10000;
   const STORAGE_KEY = "fingertip.beast-seal.v1";
   const SPECS = {
-    6: {name: "雷霆虎", color: "红色", icon: "310105010", weights: {general: 36, exclusive: 64}, raw: "通用 36%；专属 64%"},
+    6: {name: "雷霆虎", color: "红色", icon: "310105010", weights: {generalRare: 1.08, general: 34.92, exclusiveRare: 1.92, exclusive: 62.08}, raw: "通用 36%；专属 64%"},
     7: {name: "圣角兽", color: "彩色", icon: "310106010", weights: {generalRare: 0.34, general: 35.50, exclusiveRare: 2.72, exclusive: 61.44}, raw: "通用稀有 0.34%；通用 35.50%；专属稀有 2.72%；专属 61.44%"},
     8: {name: "焚焰凤", color: "绿色", icon: "310107010", weights: {generalRare: 0.25, general: 40.57, exclusiveRare: 2.05, exclusive: 57.13}, raw: "通用稀有 0.25%；通用 40.57%；专属稀有 2.05%；专属 57.13%"},
   };
   const PITY = {
-    7: {label: "彩色兽印", start: 18, target: 20, hard: 23},
+    7: {label: "彩色兽印", start: 38, target: 40, hard: 43},
     8: {label: "绿色兽印", start: 40, target: 42, hard: 45},
   };
+  // Old draws retain their original pity rule when restoring an existing save.
+  const LEGACY_PITY = {...PITY, 7: {label: "彩色兽印", start: 18, target: 20, hard: 23}};
   const LABELS = {generalRare: "通用稀有", general: "通用", exclusiveRare: "专属稀有", exclusive: "专属"};
   function qualityCheck(quality) {
     if (!Number.isInteger(quality) || !Object.hasOwn(SPECS, quality)) throw new Error("请选择可洗炼的兽印品质。");
@@ -31,11 +33,12 @@
   }
   function category(skill, quality) {
     const group = skill.skill_type < 1000 ? "general" : "exclusive";
-    return Number(quality) >= 7 && skill.r2a3re === 1 ? group + "Rare" : group;
+    return skill.r2a3re === 1 ? group + "Rare" : group;
   }
   function validateWeights(quality, weights) {
     qualityCheck(quality);
-    const keys = Object.keys(SPECS[quality].weights);
+    const legacyRed = quality === 6 && weights && Object.keys(weights).length === 2 && Object.hasOwn(weights, "general") && Object.hasOwn(weights, "exclusive");
+    const keys = legacyRed ? ["general", "exclusive"] : Object.keys(SPECS[quality].weights);
     if (!weights || Object.keys(weights).length !== keys.length || keys.some(key => !Number.isFinite(weights[key]) || weights[key] < 0 || weights[key] > 100)) {
       throw new Error("概率数据不正确。");
     }
@@ -53,7 +56,10 @@
     const total = validateWeights(quality, weights);
     const skills = pool(data, quality);
     return Object.entries(weights).map(([key, weight]) => {
-      const entries = skills.filter(skill => category(skill, quality) === key);
+      const entries = skills.filter(skill => {
+        const skillCategory = category(skill, quality);
+        return (quality === 6 && !Object.hasOwn(weights, "generalRare") ? skillCategory.replace("Rare", "") : skillCategory) === key;
+      });
       if (!entries.length && weight > 0) throw new Error("所选分组没有可用词条。");
       return {key, weight, probability: weight / total, entries};
     });
@@ -117,7 +123,7 @@
     const profile = quality + ":" + Object.keys(weights).map(key => weights[key]).join(",");
     session.profiles[profile] = {quality, weights: {...weights}};
     session.weights[quality] = {...weights};
-    const draw = {n: session.draws.length + 1, quality, skillId: skill.s2k3ill_id, cost: cost(data, quality), time: now, profile, ...(pityTriggered ? {pity: true, pityAttempt: attempt} : {})};
+    const draw = {n: session.draws.length + 1, quality, skillId: skill.s2k3ill_id, cost: cost(data, quality), time: now, profile, ...(pityTriggered ? {pity: true, pityAttempt: attempt, pityVersion: 2} : {})};
     session.draws.push(draw);
     return {draw, skill, pityTriggered};
   }
@@ -159,7 +165,9 @@
       const attempt = dryByQuality[draw.quality] + 1;
       if (draw.pity !== undefined && draw.pity !== true) throw new Error("软保底记录不正确。");
       if (!draw.pity && draw.pityAttempt !== undefined) throw new Error("软保底记录不正确。");
-      if (draw.pity && (!PITY[draw.quality] || skill.r2a3re !== 1 || draw.pityAttempt !== attempt || pityBoost(draw.quality, attempt) <= 0)) throw new Error("软保底记录不正确。");
+      if (!draw.pity && draw.pityVersion !== undefined) throw new Error("软保底记录不正确。");
+      const recordedRule = draw.pityVersion === undefined ? LEGACY_PITY[draw.quality] : PITY[draw.quality];
+      if (draw.pity && (!recordedRule || (draw.pityVersion !== undefined && draw.pityVersion !== 2) || skill.r2a3re !== 1 || draw.pityAttempt !== attempt || attempt < recordedRule.start)) throw new Error("软保底记录不正确。");
       dryByQuality[draw.quality] = skill.r2a3re === 1 ? 0 : attempt;
     });
     s.weights = Object.fromEntries(Object.entries(SPECS).map(([quality, spec]) => [quality, {...spec.weights}]));

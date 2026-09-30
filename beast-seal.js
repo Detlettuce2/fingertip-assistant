@@ -3,10 +3,11 @@
   const C = window.BeastSeal;
   const $ = id => document.getElementById("seal-" + id);
   const escape = text => String(text).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
-  let config, session, loading = false, bound = false, busy = false, cancelled = false, damaged = false, rawBackup = "", historyLimit = 30;
+  let config, session, loading = false, bound = false, busy = false, cancelled = false, damaged = false, rawBackup = "", historyLimit = 30, reelAnimation = null;
   const format = number => number.toLocaleString("zh-CN");
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   function status(message) { $("status").textContent = message; }
+  function stopRolling() { cancelled = true; reelAnimation?.cancel(); }
   function save() {
     if (damaged) return;
     try {
@@ -29,8 +30,8 @@
     $("skip").checked = session.skip;
     $("stop-rare").checked = session.stopOnRare;
   }
-  function renderResult() {
-    const quality = session.quality, spec = C.SPECS[quality], skills = C.pool(config, quality), latest = C.current(session);
+  function renderResult(latest = C.current(session)) {
+    const quality = session.quality, spec = C.SPECS[quality], skills = C.pool(config, quality);
     document.querySelectorAll("[data-seal-quality]").forEach(button => {
       const selected = Number(button.dataset.sealQuality) === quality;
       button.classList.toggle("selected", selected);
@@ -63,7 +64,7 @@
     $("result-text").textContent = skill ? skill.d2e3sc : "点击洗炼，获得你的第一个兽印词条。";
     $("result-id").textContent = skill ? `第 ${format(latest.n)} 次 · ${skill.skill_type < 1000 ? "通用" : "专属"}${pityTriggered ? ` · 连续第 ${latest.pityAttempt} 次触发软保底` : ""} · #${skill.s2k3ill_id}` : "每次获得 1 条词条";
     const streak = C.pityStreak(session, config, quality), rule = C.PITY[quality];
-    if (!rule) $("pity-note").textContent = "雷霆虎按官方基础概率模拟，不设置软保底。";
+    if (!rule) $("pity-note").textContent = "红色兽印稀有率为 3%（模拟调整），不设置软保底。";
     else if (streak < rule.start) $("pity-note").textContent = `${rule.label}软保底：已连续 ${streak} 次未出稀有，第 ${rule.start} 次起逐步提升概率。`;
     else $("pity-note").textContent = `${rule.label}软保底已升温：已连续 ${streak} 次未出稀有，约第 ${rule.target} 次出货，最迟第 ${rule.hard} 次。`;
     $("target-note").textContent = session.target ? "心愿：" + config["6"][session.target].d2e3sc + "（命中即停）" : "可在词条预览中选择心愿词条，抽中自动停手。";
@@ -90,6 +91,71 @@
     renderHistory();
     updateButtons();
   }
+  async function animateRoll(draw, count) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof $("result").animate !== "function") return true;
+    const reel = $("reel"), result = $("result");
+    const motion = document.createElement("div");
+    let animation;
+    try {
+      result.setAttribute("aria-live", "off");
+      reel.classList.add("is-rolling");
+      reel.setAttribute("aria-busy", "true");
+      // Lay out the pending result without recording it; the final frame will match exactly.
+      renderResult(draw);
+      const step = result.offsetHeight + 10;
+      const turns = count === 1 ? 12 : 7;
+      const skills = C.pool(config, draw.quality);
+      motion.className = "seal-reel-motion";
+      motion.setAttribute("aria-hidden", "true");
+      const track = document.createElement("div");
+      track.className = "seal-reel-track";
+      // Cosmetic entries are deterministic: animation must not consume draw randomness.
+      for (let index = 0; index < turns; index++) {
+        const skill = skills[(draw.n * 17 + index * 13) % skills.length];
+        const cell = document.createElement("div");
+        cell.className = "seal-reel-cell";
+        cell.style.height = step + "px";
+        const label = document.createElement("span");
+        label.textContent = "洗炼中…";
+        const text = document.createElement("p");
+        text.textContent = skill.d2e3sc;
+        cell.append(label, text);
+        track.append(cell);
+      }
+      const finalFrame = document.createElement("div");
+      finalFrame.className = "seal-reel-final";
+      for (const element of [$("neighbor-before"), result, $("neighbor-after")]) {
+        const clone = element.cloneNode(true);
+        clone.removeAttribute("id");
+        clone.removeAttribute("aria-live");
+        clone.classList.remove("is-pity");
+        clone.querySelectorAll("[id]").forEach(child => child.removeAttribute("id"));
+        finalFrame.append(clone);
+      }
+      track.append(finalFrame);
+      motion.append(track);
+      reel.append(motion);
+      // Start the real result's glow only after the reel has settled.
+      result.classList.remove("is-pity");
+      animation = track.animate([
+        {transform: "translate3d(0, 0, 0)"},
+        {transform: `translate3d(0, ${-turns * step}px, 0)`},
+      ], {duration: count === 1 ? 1400 : 760, easing: "cubic-bezier(0.12, 0.72, 0.2, 1)", fill: "forwards"});
+      reelAnimation = animation;
+      await animation.finished;
+      return !cancelled;
+    } catch (error) {
+      if (error.name !== "AbortError") throw error;
+      return false;
+    } finally {
+      animation?.cancel();
+      if (reelAnimation === animation) reelAnimation = null;
+      motion.remove();
+      reel.classList.remove("is-rolling");
+      reel.removeAttribute("aria-busy");
+      result.setAttribute("aria-live", "polite");
+    }
+  }
   async function wash(count) {
     if (busy || damaged || session.locked[session.quality]) return;
     const current = C.current(session);
@@ -102,15 +168,18 @@
     let completed = 0, reason = "", rareCount = 0, pityCount = 0;
     try {
       while (completed < count && !cancelled) {
+        let animatedResult = null;
         if (!session.skip) {
-          $("reel").classList.add("is-rolling");
-          await delay(count === 1 ? 360 : 160);
-          if (cancelled) break;
+          const previous = session;
+          const pending = {...session, draws: session.draws.slice(), profiles: {...session.profiles}, weights: {...session.weights}};
+          animatedResult = C.appendRoll(pending, config);
+          if (!await animateRoll(animatedResult.draw, count) || cancelled || session !== previous) break;
+          session = pending;
         }
         const chunk = session.skip ? Math.min(10, count - completed) : 1;
         let pityShown = false;
         for (let i = 0; i < chunk; i++) {
-          const {skill, pityTriggered} = C.appendRoll(session, config);
+          const {skill, pityTriggered} = animatedResult || C.appendRoll(session, config);
           completed++;
           if (skill.r2a3re) rareCount++;
           if (pityTriggered) { pityCount++; pityShown = true; }
@@ -138,7 +207,7 @@
     const groups = C.distribution(config, quality);
     const skills = C.pool(config, quality).filter(skill => (!rareOnly || skill.r2a3re) && (/^\d+$/.test(query) ? String(skill.s2k3ill_id) === query : (skill.d2e3sc + " " + skill.s2k3ill_id).toLowerCase().includes(query)));
     $("preview-title").textContent = C.SPECS[quality].name + " · 词条预览";
-    $("preview-summary").textContent = `${skills.length} 条匹配 · 分类概率来自官方公示，软保底阶段稀有概率会提升；点击词条设为心愿。`;
+    $("preview-summary").textContent = `${skills.length} 条匹配 · ${quality === 6 ? "红色稀有率已按模拟规则调整为 3%" : "分类概率来自官方公示，软保底阶段稀有概率会提升"}；点击词条设为心愿。`;
     $("preview-list").innerHTML = skills.map(skill => {
       const group = groups.find(group => group.key === C.category(skill, quality));
       return `<button type="button" class="seal-preview-entry ${skill.r2a3re ? "rare-record" : ""}" data-seal-target="${skill.s2k3ill_id}" aria-pressed="${session.target === skill.s2k3ill_id}"><span>${skill.r2a3re ? "稀有 · " : ""}${skill.skill_type < 1000 ? "通用" : "专属"} · #${skill.s2k3ill_id}<b>${C.LABELS[group.key]} ${Number((group.probability * 100).toFixed(4))}%</b></span><p>${escape(skill.d2e3sc)}</p></button>`;
@@ -146,8 +215,8 @@
   }
   function rules() {
     const spec = C.SPECS[session.quality];
-    $("raw-rates").textContent = spec.raw;
-    $("rates-title").textContent = spec.name + " · 官方概率公示";
+    $("raw-rates").textContent = spec.raw + (session.quality === 6 ? "。模拟设置：稀有总概率 3%（通用稀有 1.08%；专属稀有 1.92%），不设置软保底。" : "");
+    $("rates-title").textContent = spec.name + " · 官方概率公示" + (session.quality === 6 ? "与模拟调整" : "");
   }
   function download(content, filename, type) {
     const url = URL.createObjectURL(new Blob([content], {type}));
@@ -165,7 +234,7 @@
     }));
     $("wash").addEventListener("click", () => wash(1));
     $("batch-start").addEventListener("click", () => wash(Number($("batch-count").value)));
-    $("stop").addEventListener("click", () => { cancelled = true; status("正在停止…"); });
+    $("stop").addEventListener("click", () => { stopRolling(); status("正在停止…"); });
     $("skip").addEventListener("change", () => { session.skip = $("skip").checked; save(); });
     $("stop-rare").addEventListener("change", () => { session.stopOnRare = $("stop-rare").checked; save(); });
     $("lock").addEventListener("click", () => { session.locked[session.quality] = !session.locked[session.quality]; save(); updateButtons(); status(session.locked[session.quality] ? "兽印已锁定。" : "兽印已解锁。"); });
@@ -193,11 +262,12 @@
     });
     window.addEventListener("storage", event => {
       if (event.key !== C.STORAGE_KEY && event.key !== null) return;
-      cancelled = true;
+      stopRolling();
       try { session = C.restore(event.newValue, config); damaged = false; render(); status("已同步另一页面的记录，本页连续洗炼已停止。"); }
       catch (_) { damaged = true; rawBackup = event.newValue || ""; updateButtons(); status("另一页面的存档异常，请备份后开启新一轮。"); $("export").textContent = "备份异常存档"; }
     });
-    document.addEventListener("visibilitychange", () => { if (document.hidden) cancelled = true; });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) stopRolling(); });
+    window.addEventListener("resize", () => { if (reelAnimation) stopRolling(); });
     // Each completed chunk is saved before yielding; never overwrite a newer tab on pagehide.
   }
   async function init() {
@@ -226,5 +296,5 @@
     } finally { loading = false; }
   }
   $("retry").addEventListener("click", init);
-  window.BeastSealUI = {init, stop() { cancelled = true; }};
+  window.BeastSealUI = {init, stop: stopRolling};
 })();

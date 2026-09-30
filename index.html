@@ -129,7 +129,7 @@
         <div><span class="eyebrow">魔宠养成 · 模拟工坊</span><h2 id="seal-title">兽印洗炼</h2><p>试试手气，留住每一次出货。</p></div>
         <button type="button" class="secondary-button" id="seal-rules-open">规则与概率</button>
       </div>
-      <p class="seal-disclaimer">仅为本地模拟，不消耗游戏道具。基础概率来自游戏官方概率公示，软保底为模拟规则。</p>
+      <p class="seal-disclaimer">仅为本地模拟，不消耗游戏道具。基础分类概率来自游戏官方概率公示，软保底和红色稀有率调整为模拟规则。</p>
       <div id="seal-load-state" role="status">正在读取兽印数据…</div>
       <button id="seal-retry" class="secondary-button" type="button" hidden>重新加载</button>
       <div id="seal-workspace" hidden>
@@ -266,8 +266,9 @@
     <div class="seal-dialog-heading"><h2 id="seal-rules-title">规则与概率</h2><button type="button" data-seal-close aria-label="关闭规则与概率">×</button></div>
     <p>每次仅获得 <strong>1 条词条</strong>。通常上下两条仅为滚动装饰；触发软保底时，上下会各显示一条其他稀有词条，中间高亮的词条才是本次实际结果。锁定后的兽印不能洗炼。</p>
     <p>基础分类概率采用游戏官方概率公示，通用／专属按词条类型分组；分类内的具体词条等概率抽取。稀有结果会保留在出货记录中，继续洗炼会替换当前词条。</p>
-    <p><strong>软保底：</strong>彩色兽印连续未出稀有时，从第 18 次起逐步提升概率，第 20 次左右出货，最迟第 23 次；绿色兽印从第 40 次起提升，第 42 次左右出货，最迟第 45 次。提前自然出货会立即重置对应兽印的计数。</p>
-    <div class="seal-source-note"><strong id="seal-rates-title">当前兽印 · 官方概率公示</strong><p id="seal-raw-rates"></p><small>软保底为本模拟新增规则，不代表游戏官方存在同样机制。</small></div>
+    <p><strong>软保底：</strong>彩色兽印连续未出稀有时，从第 38 次起逐步提升概率，第 40 次左右出货，最迟第 43 次；绿色兽印从第 40 次起提升，第 42 次左右出货，最迟第 45 次。提前自然出货会立即重置对应兽印的计数。</p>
+    <p><strong>红色兽印：</strong>保留官方通用／专属 36%／64% 的分类比例，稀有总概率按模拟体验调整为 3%，不设置软保底。</p>
+    <div class="seal-source-note"><strong id="seal-rates-title">当前兽印 · 官方概率公示</strong><p id="seal-raw-rates"></p><small>软保底和红色兽印的稀有率调整均为本模拟新增规则，不代表游戏官方存在同样机制或概率。</small></div>
   </dialog>
   <script src="beast-seal-core.js" defer></script>
   <script src="beast-seal.js" defer></script>
