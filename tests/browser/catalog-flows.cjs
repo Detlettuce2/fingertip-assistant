@@ -1,3 +1,5 @@
+const inspectCatalogLayout = require('./catalog-layout.cjs');
+
 module.exports=async(page,baseURL)=>{
   const checks=[],errors=[],requests=[];
   const ok=(condition,name)=>{if(!condition)throw new Error(name);checks.push(name);};
@@ -49,11 +51,17 @@ module.exports=async(page,baseURL)=>{
   await page.locator('#catalog-search').fill('不存在的角色');
   ok(await page.locator('.catalog-card').count()===0 && await page.locator('#catalog-next').isDisabled(),'空搜索结果有提示且无法翻页');
   await page.locator('#catalog-clear').click();
-  for(const width of [320,390,768,1440]){
+  for(const width of [320,390,540,768,1440]){
     await page.setViewportSize({width,height:900});
-    ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),`${width}px图鉴不产生横向页面溢出`);
+    for(const catalog of ['heroes','runes','pets','artifacts','seals']){
+      await page.locator(`[data-catalog="${catalog}"]`).click();
+      await page.locator('#catalog-clear').click();
+      const layout=await page.evaluate(inspectCatalogLayout);
+      ok(layout.issues.length===0,`${width}px ${catalog}：图标、文字、分页及页脚不遮挡；${layout.issues.join('；')}`);
+    }
   }
   await page.setViewportSize({width:390,height:844});
+  await page.getByRole('tab',{name:'角色图鉴',exact:true}).click();
   await page.screenshot({path:'output/playwright/catalog-mobile.png',fullPage:true});
   await page.setViewportSize({width:1440,height:1050});
   await page.screenshot({path:'output/playwright/catalog-desktop.png',fullPage:true});
