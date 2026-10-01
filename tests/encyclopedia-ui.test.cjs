@@ -20,7 +20,7 @@ function setup({url='http://localhost/?view=encyclopedia',fetcher=async()=>({ok:
     focus(){document.activeElement=this;}
     closest(){return this;}
     scrollIntoView(){this.scrolled=true;}
-    querySelectorAll(){return ['search','faction','career','category','quality','rare','clear'].map(id=>nodes.get('catalog-'+id));}
+    querySelectorAll(){return ['search','faction','career','category','quality','pet','rare','late','trace','clear'].map(id=>nodes.get('catalog-'+id));}
   }
   const html=fs.readFileSync(require.resolve('../index.html'),'utf8');
   for(const match of html.matchAll(/id="((?:catalog-|encyclopedia-)[^"]+)"/g))nodes.set(match[1],new Element(match[1]));
@@ -28,6 +28,7 @@ function setup({url='http://localhost/?view=encyclopedia',fetcher=async()=>({ok:
   const document={getElementById:id=>nodes.get(id),querySelectorAll:()=>tabs};
   const location={href:url};
   const sandbox={document,location,URL,history:{replaceState:(_,__,value)=>location.href=String(value)},Encyclopedia:C,innerWidth:1280,addEventListener:()=>{},matchMedia:()=>({matches:true}),
+    CatalogGrowthUI:{mount(){}},
     itemCardVisual:entry=>`<span class="item-card-visual">${entry.asset_token}</span>`,
     localStorage:{getItem:key=>{if(blockedStorage)throw new Error('blocked');return storage.get(key)||null;},setItem:(key,value)=>{if(blockedStorage)throw new Error('blocked');storage.set(key,value);}},
     fetch:async path=>{requests++;assert.equal(path,'api/catalogs.json');return fetcher();}};
@@ -75,7 +76,7 @@ test('兽印详情联动关键词与稀有筛选，并可清除',async()=>{
   const env=setup({url:'http://localhost/?view=encyclopedia&catalog=seals'});env.init();await flush();
   env.node('rare').checked=true;env.node('rare').events.change();
   env.node('search').value='九尾狐';env.node('search').events.input();
-  assert.ok(!env.node('detail').innerHTML.includes('梦魇'));
+  assert.ok(!env.node('detail').innerHTML.includes('梦魇的诅咒'));
   assert.match(env.node('detail').innerHTML,/稀有 · 专属/);
   env.node('clear').click();assert.equal(env.node('search').value,'');assert.equal(env.node('rare').checked,false);
 });

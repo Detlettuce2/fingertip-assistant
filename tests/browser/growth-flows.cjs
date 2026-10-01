@@ -1,0 +1,97 @@
+module.exports=async(page,baseURL)=>{
+  const checks=[],errors=[];
+  const ok=(value,name)=>{if(!value)throw new Error(name);checks.push(name);};
+  const cost=async id=>Number(await page.locator(`[data-growth-material="${id}"] strong`).getAttribute('data-raw-count')).toLocaleString('zh-CN');
+  const amount=id=>page.locator(`[data-growth-material="${id}"] strong`).innerText();
+  const unit=id=>page.locator(`[data-growth-material="${id}"] small`).innerText();
+  const calculate=async(from,to)=>{
+    await page.locator('#growth-from').fill(String(from));await page.locator('#growth-to').fill(String(to));
+    await page.getByRole('button',{name:'计算区间',exact:true}).click();
+  };
+  page.on('pageerror',error=>errors.push(error.message));
+  await page.goto(baseURL+'/?view=encyclopedia&catalog=heroes&entry=2103010');
+  await page.locator('#growth-form').waitFor();
+  ok((await page.locator('#growth-title').innerText()).includes('伊芙'),'角色分享链接直接加载成长查询');
+  ok(await cost(3)==='1,517,150'&&await cost(2)==='1,121,000'&&await cost(20110101)==='1,850','1到100级经验、金币、棱晶正确');
+  ok(await amount(3)==='0.0151715'&&await amount(2)==='0.01121'&&await unit(3)==='亿'&&await unit(2)==='亿','金币与英雄经验统一以亿显示并保留精度');
+  await calculate(1,2);
+  ok(await amount(3)==='0.0000001'&&await amount(2)==='0.000002','小额金币与经验不被舍入成零');
+  await calculate(1,100);
+  await page.locator('#growth-compare').check();
+  ok(await page.locator('#growth-chart polyline').count()===4,'四职业比较展示四条曲线');
+  await page.locator('#growth-attribute').selectOption('1');
+  ok((await page.locator('#growth-chart svg').getAttribute('aria-label')).includes('攻击'),'属性选择切换攻击曲线');
+  await page.locator('#growth-cursor').focus();await page.keyboard.press('End');
+  ok((await page.locator('#growth-cursor-label').innerText()).includes('100 级') && await page.locator('#growth-legend > span').count()===4,'曲线游标键盘操作显示四职业指定等级数值');
+  await calculate(20,21);
+  ok(await cost(3)==='2,480'&&await cost(2)==='11,200'&&await cost(20110101)==='50','跨20级节点计入一次进阶');
+  await page.locator('#growth-stage').selectOption('1');
+  ok(await page.locator('#growth-results').isHidden()&&await page.locator('#growth-export').isDisabled(),'修改条件后旧结果与导出暂停，避免混用');
+  await page.getByRole('button',{name:'计算区间',exact:true}).click();
+  ok(await cost(2)==='1,200'&&await cost(20110101)==='0','已进阶不重复收取棱晶');
+  await calculate(41,42);
+  ok((await page.locator('#growth-error').innerText()).includes('进阶不足')&&await page.locator('#growth-export').isDisabled(),'不合法进阶组合明确报错');
+  await page.locator('#growth-stage').selectOption('auto');await calculate(100,50);
+  ok((await page.locator('#growth-error').innerText()).includes('不能小于'),'逆序区间明确报错');
+  await calculate(1,100);
+  const downloadEvent=page.waitForEvent('download');await page.locator('#growth-export').click();
+  const download=await downloadEvent;await download.saveAs('output/playwright/hero-growth.csv');
+  ok(download.suggestedFilename().includes('伊芙-1至100'),'成长区间CSV实际下载');
+  ok(require('node:fs').readFileSync('output/playwright/hero-growth.csv','utf8').includes('"英雄经验","1517150","0.0151715","亿"'),'CSV保留原始数量及亿万显示单位');
+  await page.locator('.growth-details summary').click();
+  ok(await page.locator('#growth-level-table tbody tr').count()===20,'逐级表分页显示20条');
+  await page.locator('#growth-table-next').click();
+  ok(await page.locator('#growth-level-table tbody tr').first().locator('td').first().innerText()==='21','逐级表下一页从21级开始');
+  await page.getByRole('tab',{name:'兽印图鉴',exact:true}).click();await page.locator('#catalog-clear').click();
+  await page.locator('#catalog-quality').selectOption('8');await page.locator('#catalog-pet').selectOption('急救鼠');
+  const descriptions=await page.locator('.catalog-seal-columns section').allTextContents();
+  ok(descriptions.length===2&&descriptions[0].includes('通用词条')&&descriptions[1].includes('急救鼠专属词条'),'兽印通用与指定魔宠专属独立分栏');
+  ok(!descriptions[1].includes('贪食龙'),'魔宠筛选不混入其他专属词条');
+  await page.locator('#catalog-rare').check();
+  const rare=await page.locator('.catalog-skill > span').allTextContents();
+  ok(rare.length>0&&rare.every(text=>text.includes('稀有')),'魔宠与稀有筛选联动');
+  await page.locator('#catalog-clear').click();
+  ok(await page.locator('#catalog-pet').inputValue()==='all','清除恢复全部魔宠');
+  await page.getByRole('tab',{name:'圣物图鉴',exact:true}).click();await page.locator('#catalog-search').fill('朗基努斯之枪');
+  await page.locator('#growth-form').waitFor();await calculate(999,1001);
+  ok(await cost(20110401)==='2,010'&&await cost(20110501)==='1','圣物1000级觉醒节点材料正确');
+  ok(await amount(20110401)==='0.201'&&await unit(20110401)==='万'&&await unit(20110501)==='个','圣物经验以万显示，觉醒石保持个数');
+  await calculate(999,1000);ok(await cost(20110501)==='0','圣物目标等级成本不提前收取');
+  await calculate(1000,1001);ok(await cost(20110501)==='1','圣物从节点出发正确收取觉醒石');
+  await page.locator('#growth-star').selectOption('1');
+  ok((await page.locator('#growth-star-attributes').innerText()).includes('20%'),'圣物星级属性独立显示');
+  await calculate(1000,1000);ok(await cost(20110401)==='0'&&await cost(20110501)==='0','同级圣物无需材料');
+  await calculate(1,100);
+  await page.getByRole('tab',{name:'角色图鉴',exact:true}).click();
+  await page.locator('#growth-show-late').click();
+  ok(await page.locator('#growth-from').inputValue()==='1000'&&await page.locator('#growth-to').inputValue()==='1500','后期角色入口默认1000至1500级');
+  ok(await amount(3)==='220.400325'&&await amount(2)==='83.0052','1000至1500级经验与金币亿单位数值准确');
+  await page.locator('[data-growth-range="1000,1200"]').click();
+  ok((await page.locator('#growth-range-summary').innerText()).includes('1000 → 1200'),'后期快捷区间可切换');
+  ok(await page.locator('#growth-late-steps li').count()===2,'每100级分段增量清楚显示');
+  await page.locator('#catalog-trace').check();await page.locator('#catalog-search').fill('诺伦');
+  ok(await page.locator('#catalog-trace-stage option').count()===15,'星痕角色有十五阶完整说明');
+  await page.locator('#catalog-trace-stage').selectOption('14');
+  ok((await page.locator('#catalog-trace-description').innerText()).includes('时间·加速'),'第15阶星痕效果可查看');
+  for(const width of [320,390,768,1440]){
+    await page.setViewportSize({width,height:900});
+    for(const tab of ['heroes','artifacts']){
+      await page.locator(`[data-catalog="${tab}"]`).click();await page.locator('#growth-form').waitFor();
+      const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,clipped:[...document.querySelectorAll('#growth-form input,#growth-form button,#growth-title,[data-growth-material] strong')].some(e=>e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+1)||[...document.querySelectorAll('#growth-attributes td')].some(e=>{const range=document.createRange();range.selectNodeContents(e);return range.getClientRects().length!==1;})}));
+      ok(!layout.overflow&&!layout.clipped,`${width}px ${tab}成长表单、数值与曲线无外溢`);
+    }
+  }
+  await page.setViewportSize({width:1440,height:1050});await page.locator('[data-catalog="heroes"]').click();
+  await page.locator('#growth-compare').check();await page.locator('#catalog-growth').screenshot({path:'output/playwright/hero-growth-desktop.png'});
+  await page.setViewportSize({width:390,height:844});await page.locator('#catalog-growth').screenshot({path:'output/playwright/hero-growth-mobile.png'});
+  const context=await page.context().browser().newContext();
+  try{
+    const failed=await context.newPage();await failed.route('**/api/growth.json',route=>route.abort());
+    await failed.goto(baseURL+'/?view=encyclopedia&catalog=heroes');await failed.locator('#growth-retry').waitFor({state:'visible'});
+    ok(await failed.locator('.catalog-card').count()>0,'成长资料失败不影响图鉴列表');
+    await failed.unroute('**/api/growth.json');await failed.locator('#growth-retry').click();await failed.locator('#growth-form').waitFor();
+    ok(await failed.locator('#growth-materials').isVisible(),'成长资料失败可重试恢复');
+  }finally{await context.close();}
+  ok(errors.length===0,'成长与魔宠筛选流程无脚本错误');
+  return {passed:checks.length,checks,errors};
+};

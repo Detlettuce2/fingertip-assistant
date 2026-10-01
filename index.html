@@ -8,6 +8,7 @@
   <link rel="icon" href="assets/item-assets/icon_310107010.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="beast-seal.css">
+  <link rel="stylesheet" href="growth.css">
 </head>
 <body>
   <main class="shell">
@@ -140,8 +141,11 @@
           <label id="catalog-faction-field" class="item-filter-field"><span>阵营</span><select id="catalog-faction"><option value="all">全部阵营</option></select></label>
           <label id="catalog-career-field" class="item-filter-field"><span>定位</span><select id="catalog-career"><option value="all">全部定位</option></select></label>
           <label id="catalog-category-field" class="item-filter-field" hidden><span>类型</span><select id="catalog-category"><option value="all">全部类型</option></select></label>
+          <label id="catalog-pet-field" class="item-filter-field" hidden><span>适用魔宠</span><select id="catalog-pet"><option value="all">全部魔宠</option></select></label>
           <label class="item-filter-field"><span>品质</span><select id="catalog-quality"><option value="all">全部品质</option></select></label>
           <label id="catalog-rare-field" class="catalog-rare-filter" hidden><input id="catalog-rare" type="checkbox"> 仅看稀有词条</label>
+          <label id="catalog-late-field" class="catalog-rare-filter" hidden><input id="catalog-late" type="checkbox"> 支持1000级后成长</label>
+          <label id="catalog-trace-field" class="catalog-rare-filter" hidden><input id="catalog-trace" type="checkbox"> 有星痕</label>
           <button id="catalog-clear" class="secondary-button" type="button">清除筛选</button>
         </form>
         <div class="catalog-layout">
@@ -150,6 +154,7 @@
           </div>
           <aside id="catalog-detail" class="catalog-detail" aria-live="polite"><div class="empty-state">选择条目查看技能和成长效果。</div></aside>
         </div>
+        <section id="catalog-growth" class="growth-panel" aria-labelledby="growth-title" hidden></section>
       </section>
     </section>
 
@@ -302,6 +307,8 @@
   <script src="beast-seal-core.js" defer></script>
   <script src="beast-seal.js" defer></script>
   <script src="encyclopedia-core.js" defer></script>
+  <script src="growth-core.js" defer></script>
+  <script src="growth.js" defer></script>
   <script src="encyclopedia.js" defer></script>
   <script src="app.js" defer></script>
 </body>

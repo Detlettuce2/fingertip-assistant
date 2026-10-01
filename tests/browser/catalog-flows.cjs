@@ -76,7 +76,10 @@ module.exports=async(page,baseURL)=>{
     await failed.locator('.catalog-card').first().waitFor();
     ok(await failed.locator('#catalog-search').isEnabled(),'重试成功后恢复筛选');
   }finally{await failedContext.close();}
-  ok(requests.every(url=>url.startsWith(baseURL+'/')),'页面只读取本站公开资源');
+  // The host antivirus injects its own browser agent; it is absent from the shipped page.
+  const hostAgent='gc.kis.v2.scr.kaspersky-labs.com';
+  const external=requests.filter(url=>!url.startsWith(baseURL+'/')&&new URL(url).hostname!==hostAgent);
+  ok(external.length===0,'页面代码只读取本站公开资源；异常来源：'+[...new Set(external.map(url=>new URL(url).origin))].join(', '));
   ok(errors.length===0,'图鉴流程无脚本错误');
   return {passed:checks.length,checks,errors};
 };

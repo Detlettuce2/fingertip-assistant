@@ -40,13 +40,15 @@ module.exports = async (page,baseURL) => {
     });
   });
   ok(alignment,'滚轮最终帧与真实三格位置一致，无停靠跳位');
-  await page.screenshot({path:'output/playwright/seal-reel-settling.png',fullPage:true});
+  // A full-page capture may temporarily resize Chromium and intentionally cancel the reel.
+  await page.locator('#seal-reel').screenshot({path:'output/playwright/seal-reel-settling.png'});
   await page.evaluate(()=>document.querySelector('.seal-reel-track').getAnimations()[0].finish());
   await settle();
   ok(await total()===1 && await page.locator('#seal-spent').innerText()==='20','动画完成后仅结算一次');
   ok(await page.locator('.seal-reel-motion').count()===0 && await page.locator('#seal-result').getAttribute('aria-live')==='polite','结束后清理动画并恢复播报');
   for(const width of [320,390,768,1440]){
     await page.setViewportSize({width,height:900});
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     await startPaused();
     await sample(1399);
     ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth && document.querySelector('.seal-reel-final .seal-result p').scrollWidth<=document.querySelector('.seal-reel-final .seal-result p').clientWidth+1),`${width}px动画无横向溢出`);

@@ -48,7 +48,7 @@ test('兽印稀有筛选只返回含稀有词条的品质，公开词条共429�
   const phoenix=data.seals.find(entry=>entry.name==='焚焰凤·兽印');
   const skills=C.visibleSkills(phoenix,filters,true);
   assert.ok(skills.length>0);
-  assert.ok(skills.every(skill=>C.isRare(skill)&&skill.description.includes('九尾狐')));
+  assert.ok(skills.every(skill=>C.isRare(skill)&&(skill.description.includes('九尾狐')||skill.pets.includes('九尾狐'))));
 });
 
 test('分页在无结果和越界情况下稳定，并展示最后一个条目',()=>{

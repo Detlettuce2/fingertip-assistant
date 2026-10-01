@@ -32,7 +32,7 @@ jobs:
       - name: Assemble static site
         run: |
           mkdir -p _site
-          cp index.html app.js styles.css beast-seal*.js beast-seal.css encyclopedia*.js .nojekyll _site/
+          cp index.html app.js styles.css beast-seal*.js beast-seal.css encyclopedia*.js growth*.js growth.css .nojekyll _site/
           cp -R assets api _site/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

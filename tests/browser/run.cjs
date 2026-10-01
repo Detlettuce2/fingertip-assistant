@@ -16,8 +16,9 @@ const server = http.createServer((req,res)=>{
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const baseURL = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch({headless:true,...(process.env.BROWSER_EXECUTABLE ? {executablePath:process.env.BROWSER_EXECUTABLE} : {})});
+  const suites=process.argv.length>2?process.argv.slice(2):['flows','edge-flows','reel-flows','catalog-flows','growth-flows'];
   try {
-    for (const name of ['flows','edge-flows','reel-flows','catalog-flows']) {
+    for (const name of suites) {
       const context = await browser.newContext({viewport:{width:1440,height:1050}});
       const page = await context.newPage();
       try {
@@ -29,9 +30,11 @@ const server = http.createServer((req,res)=>{
         throw error;
       } finally { await context.close(); }
     }
+    if(suites.includes('flows')&&suites.includes('edge-flows')) {
     const csv = fs.readFileSync('output/playwright/records.csv','utf8');
     if(csv.charCodeAt(0)!==65279 || csv.split('\r\n').length!==149 || !csv.includes('软保底触发')) throw new Error('CSV row count, BOM, or pity column is incorrect');
     if(fs.readFileSync('output/playwright/corrupt-backup.json','utf8')!=='{broken') throw new Error('Corrupt backup changed');
     console.log('CSV 148 data rows, pity column, and original corrupt backup verified.');
+    }
   } finally { await browser.close(); }
 })().catch(error=>{console.error(error.stack);process.exitCode=1;}).finally(()=>server.close());

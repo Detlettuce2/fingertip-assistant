@@ -26,9 +26,18 @@ const ALLOWED_KEYS = {
   ]),
   content: new Set(["id", "count"]),
   catalogs: new Set(["updated_on", "heroes", "runes", "pets", "artifacts", "seals"]),
-  catalogEntry: new Set(["id", "name", "description", "asset_token", "asset_kind", "quality", "star_count", "faction", "career", "rank", "category", "tags", "skills", "progression", "notes"]),
-  catalogSkill: new Set(["name", "type", "description"]),
+  catalogEntry: new Set(["id", "name", "description", "asset_token", "asset_kind", "quality", "star_count", "faction", "career", "rank", "category", "tags", "skills", "progression", "notes", "growth", "star_traces"]),
+  catalogSkill: new Set(["name", "type", "description", "pets"]),
   catalogStage: new Set(["label", "description"]),
+  heroGrowth: new Set(["initial_attributes","min_star","max_star","max_level"]),
+  artifactGrowth: new Set(["max_level","stars"]),
+  artifactStar: new Set(["star","attributes","all_attributes_percent"]),
+  growth: new Set(["updated_on","attributes","hero_careers","hero_limits","artifact_qualities"]),
+  careerGrowth: new Set(["name","levels","stages"]),
+  qualityGrowth: new Set(["quality","levels"]),
+  growthLevel: new Set(["level","materials","attributes"]),
+  growthStage: new Set(["stage","level_limit","materials","attributes"]),
+  heroLimit: new Set(["star","max_level","max_stage"]),
   rotationData: new Set(["channel", "updated_at_china", "rotations", "groups"]),
   rotation: new Set(["slot", "label", "ids", "names"]),
   serverGroup: new Set([
@@ -164,10 +173,23 @@ test("catalogs contain only public display fields, plain text, and existing imag
         assert.match(entry.asset_token, /^[A-Za-z0-9_]+$/);
         assert(fs.existsSync(path.join(ROOT, "assets/item-assets", entry.asset_token + ".png")), `${location} has a missing image`);
       }
-      for (const skill of entry.skills) assertKeys(skill, "catalogSkill", location + ".skills");
+      for (const skill of entry.skills) {
+        assertKeys(skill, "catalogSkill", location + ".skills");
+        if(kind === "seals") assert(Array.isArray(skill.pets) && skill.pets.every(name => data.pets.some(pet => pet.name === name)));
+        else assert.equal(skill.pets,undefined);
+      }
+      if(kind === "heroes") {
+        assertKeys(entry.growth,"heroGrowth",location+".growth");
+        assert(Array.isArray(entry.star_traces));
+        for(const trace of entry.star_traces)assertKeys(trace,"catalogStage",location+".star_traces");
+      }
+      else if(kind === "artifacts") {
+        assertKeys(entry.growth,"artifactGrowth",location+".growth");
+        for(const star of entry.growth.stars) assertKeys(star,"artifactStar",location+".growth.stars");
+      } else assert.equal(entry.growth,undefined);
       for (const stage of entry.progression) assertKeys(stage, "catalogStage", location + ".progression");
       const strings = [entry.name, entry.description, entry.faction, entry.career, entry.rank, entry.category,
-        ...entry.tags, ...entry.notes, ...entry.skills.flatMap(skill => Object.values(skill)), ...entry.progression.flatMap(stage => Object.values(stage))];
+        ...entry.tags, ...entry.notes, ...entry.skills.flatMap(skill => [skill.name,skill.type,skill.description,...(skill.pets||[])]), ...entry.progression.flatMap(stage => Object.values(stage)), ...(entry.star_traces||[]).flatMap(stage=>[stage.label,stage.description])];
       for (const value of strings) {
         assert.equal(typeof value, "string");
         assert(!/<[^>]+>/.test(value), `${location} contains client rich text`);
@@ -179,6 +201,24 @@ test("catalogs contain only public display fields, plain text, and existing imag
   const hiddenRunes = new Set([90110209, 90110213, 90110218, 90110301, 90110310, 90110403, 90110415, 90110417]);
   assert.equal(data.runes.filter(entry => hiddenRunes.has(entry.id)).length, 0, "hidden runes must not be exported");
   assert.equal(data.heroes.filter(entry => ["主角", "福袋"].includes(entry.name)).length, 0, "internal encounter units must not be exported");
+});
+
+test("growth export uses display-only white lists and public material references",()=>{
+  const data=readJson(path.join(API_ROOT,"growth.json"));
+  assertKeys(data,"growth","growth");assert.deepEqual(data.attributes,["生命","攻击","物理防御","法术防御"]);
+  const publicItems=new Set(readJson(path.join(API_ROOT,"items.json")).items.map(item=>item.id));
+  function row(value,type){
+    assertKeys(value,type,"growth row");assert.equal(value.attributes.length,4);
+    assert(value.attributes.every(number=>Number.isSafeInteger(number)&&number>=0));
+    for(const item of value.materials){assertKeys(item,"content","growth material");assert(publicItems.has(item.id));assert(Number.isSafeInteger(item.count)&&item.count>=0);}
+  }
+  assert.equal(data.hero_careers.length,4);
+  for(const table of data.hero_careers){assertKeys(table,"careerGrowth","growth career");assert(["输出","术士","肉盾","辅助"].includes(table.name));assert.equal(table.levels.length,1500);table.levels.forEach(value=>row(value,"growthLevel"));table.stages.forEach(value=>row(value,"growthStage"));}
+  assert.equal(data.artifact_qualities.length,3);
+  for(const table of data.artifact_qualities){assertKeys(table,"qualityGrowth","growth quality");assert([4,5,6].includes(table.quality));assert.equal(table.levels.length,2000);table.levels.forEach(value=>row(value,"growthLevel"));}
+  for(const value of data.hero_limits)assertKeys(value,"heroLimit","growth limit");
+  assertNoPrivateData(data,"growth");
+  assert(!/System\.register|chunks:\/\/|s2t3ar|l2o3ss|b2a3se_id|source_manifest|[A-Z]:[\\/]/.test(JSON.stringify(data)));
 });
 
 test("production files do not include client modules, raw configuration tables, or game-server collectors", () => {

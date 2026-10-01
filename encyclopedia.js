@@ -59,31 +59,45 @@
     $("search").value = state.filters.query;
     $("rare-field").hidden = tab !== "seals";
     $("rare").checked = state.filters.rareOnly;
+    $("pet-field").hidden = tab !== "seals";
+    $("pet").innerHTML = '<option value="all">全部魔宠</option>' + C.facets(entries,"pet").map(value => `<option value="${escape(value)}">${escape(value)}</option>`).join("");
+    $("pet").value = state.filters.pet;
+    $("late-field").hidden = tab !== "heroes";
+    $("trace-field").hidden = tab !== "heroes";
+    $("late").checked = state.filters.lateOnly;
+    $("trace").checked = state.filters.traceOnly;
   }
   function renderDetail() {
     const entry = data[tab].find(candidate => candidate.id === view().selected);
     if (!entry) {
       $("detail").innerHTML = '<div class="empty-state">没有匹配条目，可清除筛选后重新选择。</div>';
+      window.CatalogGrowthUI.mount(null,tab);
       return;
     }
     const skills = C.visibleSkills(entry, view().filters, tab === "seals");
+    const skillCard = skill => `<article class="catalog-skill${C.isRare(skill) ? " rare-skill" : ""}"><span>${escape(skill.type)}</span><h5>${escape(skill.name)}</h5><p>${escape(skill.description)}</p>${tab === "seals" ? `<small>适用：${escape(skill.pets?.length ? skill.pets.join("、") : "所有魔宠")}</small>` : ""}</article>`;
+    const common = skills.filter(C.isCommon), exclusive = skills.filter(skill => !C.isCommon(skill));
+    const skillSection = tab === "seals" ? `<section class="catalog-skills"><h4>兽印词条 · ${skills.length} 条</h4><div class="catalog-seal-columns"><section><h5 class="catalog-seal-column-title">通用词条 · ${common.length} 条</h5>${common.map(skillCard).join("") || '<p>当前筛选没有通用词条。</p>'}</section><section><h5 class="catalog-seal-column-title">${escape(view().filters.pet === "all" ? "专属词条" : view().filters.pet + "专属词条")} · ${exclusive.length} 条</h5>${exclusive.map(skillCard).join("") || '<p>当前筛选没有专属词条。</p>'}</section></div></section>` : skills.length ? `<section class="catalog-skills"><h4>技能与效果</h4>${skills.map(skillCard).join("")}</section>` : "";
     $("detail").innerHTML = `<div class="catalog-detail-header">
       ${visual(entry, true)}<div><span class="eyebrow">${escape(C.TABS[tab].noun)}</span><h3>${escape(entry.name)}</h3>
       <div class="catalog-tags">${badges(entry)}</div><p class="catalog-id">物品编号 #${entry.id}</p></div></div>
       <p class="catalog-description">${escape(entry.description)}</p>
       ${entry.notes.length ? `<ul class="catalog-notes">${entry.notes.map(note => `<li>${escape(note)}</li>`).join("")}</ul>` : ""}
-      ${skills.length ? `<section class="catalog-skills"><h4>${tab === "seals" ? `兽印词条 · ${skills.length} 条` : "技能与效果"}</h4>${skills.map(skill =>
-        `<article class="catalog-skill${C.isRare(skill) ? " rare-skill" : ""}"><span>${escape(skill.type)}</span><h5>${escape(skill.name)}</h5><p>${escape(skill.description)}</p></article>`).join("")}</section>` : ""}
-      ${entry.progression.length ? `<section class="catalog-progression"><h4>成长效果</h4><label class="catalog-stage-label">选择成长阶段<select id="catalog-stage">${entry.progression.map((stage, index) => `<option value="${index}">${escape(stage.label)}</option>`).join("")}</select></label><p id="catalog-stage-description">${escape(entry.progression[0].description)}</p><details><summary>查看全部成长效果（${entry.progression.length} 项）</summary><dl>${entry.progression.map(stage => `<dt>${escape(stage.label)}</dt><dd>${escape(stage.description)}</dd>`).join("")}</dl></details></section>` : ""}`;
+      ${skillSection}
+      ${entry.progression.length ? `<section class="catalog-progression"><h4>成长效果</h4><label class="catalog-stage-label">选择成长阶段<select id="catalog-stage">${entry.progression.map((stage, index) => `<option value="${index}">${escape(stage.label)}</option>`).join("")}</select></label><p id="catalog-stage-description">${escape(entry.progression[0].description)}</p><details><summary>查看全部成长效果（${entry.progression.length} 项）</summary><dl>${entry.progression.map(stage => `<dt>${escape(stage.label)}</dt><dd>${escape(stage.description)}</dd>`).join("")}</dl></details></section>` : ""}
+      ${entry.star_traces?.length ? `<section class="catalog-progression catalog-star-traces"><h4>星痕天赋 · 1～15 阶</h4><p class="catalog-trace-note">以下为各阶新增效果，等级曲线与星痕天赋分别展示。</p><label class="catalog-stage-label">选择星痕阶段<select id="catalog-trace-stage">${entry.star_traces.map((trace,index)=>`<option value="${index}">${escape(trace.label)}</option>`).join('')}</select></label><p id="catalog-trace-description">${escape(entry.star_traces[0].description)}</p><details><summary>查看全部星痕说明（${entry.star_traces.length} 阶）</summary><dl>${entry.star_traces.map(trace=>`<dt>${escape(trace.label)}</dt><dd>${escape(trace.description)}</dd>`).join('')}</dl></details></section>` : ""}`;
     $("stage")?.addEventListener("change", () => {
       $("stage-description").textContent = entry.progression[Number($("stage").value)].description;
     });
+    $("trace-stage")?.addEventListener("change",()=>{$("trace-description").textContent=entry.star_traces[Number($("trace-stage").value)].description;});
+    window.CatalogGrowthUI.mount(entry,tab);
   }
   function render() {
     if (!data || tab === "items") return;
     const state = view(), entries = C.filter(data[tab], state.filters);
     const page = C.page(entries, state.page, pageSize);
     state.page = page.number;
+    if(tab === "heroes" && state.selected === null) state.selected = page.entries.find(entry=>entry.growth?.max_level>1000)?.id ?? null;
     if (!page.entries.some(entry => entry.id === state.selected)) state.selected = page.entries[0]?.id ?? null;
     $("summary").textContent = `收录 ${data[tab].length} 个${C.TABS[tab].noun} · 筛选结果 ${entries.length} 个 · 资料版本 ${data.updated_on}`;
     $("page").textContent = entries.length ? `第 ${page.number} / ${page.pages} 页` : "没有结果";
@@ -127,6 +141,8 @@
     });
     document.getElementById("encyclopedia-items").hidden = tab !== "items";
     $("panel").hidden = tab === "items";
+    $("panel").dataset.kind = tab;
+    if (!["heroes","artifacts"].includes(tab)) window.CatalogGrowthUI.mount(null,tab);
     $("panel").setAttribute("aria-labelledby", "encyclopedia-tab-" + tab);
     if (updateHistory) updateURL();
     if (tab === "items") { showItems(); return; }
@@ -153,10 +169,12 @@
     });
     $("filters").addEventListener("submit", event => event.preventDefault());
     $("search").addEventListener("input", () => { view().filters.query = $("search").value; view().page = 1; render(); });
-    for (const field of ["faction", "career", "category", "quality"]) {
+    for (const field of ["faction", "career", "category", "quality", "pet"]) {
       $(field).addEventListener("change", () => { view().filters[field] = $(field).value; view().page = 1; render(); });
     }
     $("rare").addEventListener("change", () => { view().filters.rareOnly = $("rare").checked; view().page = 1; render(); });
+    $("late").addEventListener("change",()=>{view().filters.lateOnly=$("late").checked;view().page=1;render();});
+    $("trace").addEventListener("change",()=>{view().filters.traceOnly=$("trace").checked;view().page=1;render();});
     $("clear").addEventListener("click", () => { view().filters = C.freshFilters(); view().page = 1; populateFilters(); render(); });
     $("retry").addEventListener("click", load);
     for (const [id, delta] of [["prev", -1], ["next", 1]]) $(id).addEventListener("click", () => { view().page += delta; render(); });
@@ -183,5 +201,5 @@
     }
     activate(requested, false);
   }
-  window.EncyclopediaUI = {init};
+  window.EncyclopediaUI = {init,showLateGrowth(){view().filters={...C.freshFilters(),lateOnly:true};view().page=1;view().selected=null;populateFilters();render();}};
 })();
