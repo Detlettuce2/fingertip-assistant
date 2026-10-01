@@ -233,8 +233,10 @@ function setView(view, updateHistory = true) {
   }
   if (state.view === "server" && !state.data) loadData();
   if (state.view === "global") setGlobalView(state.globalView);
-  if (state.view === "encyclopedia" && !state.items) loadItems();
-  else if (state.view === "encyclopedia") scheduleItemPageSize();
+  if (state.view === "encyclopedia") window.EncyclopediaUI.init(() => {
+    if (!state.items) loadItems();
+    else scheduleItemPageSize();
+  });
   if (state.view === "seal") window.BeastSealUI.init();
   else window.BeastSealUI.stop();
 }
@@ -1032,7 +1034,7 @@ function filteredItems() {
 }
 
 function itemIcon(item, large = false) {
-  if (!item.asset_token) return `<span class="item-icon-fallback">无素材</span>`;
+  if (!item.asset_token) return `<span class="item-icon-fallback">暂无图标</span>`;
   const source = `assets/item-assets/${encodeURIComponent(item.asset_token)}.png`;
   return `<img class="item-icon${large ? " large" : ""}" src="${source}" alt="">`;
 }

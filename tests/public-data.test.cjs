@@ -25,6 +25,10 @@ const ALLOWED_KEYS = {
     "is_fragment", "show_fragment_badge", "is_hero_heart", "contents",
   ]),
   content: new Set(["id", "count"]),
+  catalogs: new Set(["updated_on", "heroes", "runes", "pets", "artifacts", "seals"]),
+  catalogEntry: new Set(["id", "name", "description", "asset_token", "asset_kind", "quality", "star_count", "faction", "career", "rank", "category", "tags", "skills", "progression", "notes"]),
+  catalogSkill: new Set(["name", "type", "description"]),
+  catalogStage: new Set(["label", "description"]),
   rotationData: new Set(["channel", "updated_at_china", "rotations", "groups"]),
   rotation: new Set(["slot", "label", "ids", "names"]),
   serverGroup: new Set([
@@ -134,6 +138,57 @@ test("public encyclopedia export exposes only approved fields", () => {
       assertKeys(content, "content", `api/items.json.items[${index}].contents[${contentIndex}]`));
   }
   assertNoPrivateData(data, "api/items.json");
+});
+
+test("catalogs contain only public display fields, plain text, and existing images", () => {
+  const data = readJson(path.join(API_ROOT, "catalogs.json"));
+  assertKeys(data, "catalogs", "api/catalogs.json");
+  assert.match(data.updated_on, /^\d{4}-\d{2}-\d{2}$/);
+  const counts = {heroes: 87, runes: 60, pets: 16, artifacts: 43, seals: 7};
+  const publicItems = new Map(readJson(path.join(API_ROOT, "items.json")).items.map(item => [item.id, item]));
+  const newPublicItems = new Map([[150110638, "守护圣盾"], [150110639, "霜结冰花"]]);
+  for (const [kind, count] of Object.entries(counts)) {
+    const ids = new Set();
+    assert.equal(data[kind].length, count, `${kind} catalog must not silently lose entries`);
+    for (const entry of data[kind]) {
+      const location = `catalogs.${kind}.${entry.id}`;
+      assertKeys(entry, "catalogEntry", location);
+      assert(!ids.has(entry.id), `${location} duplicates a public item`); ids.add(entry.id);
+      assert(Number.isSafeInteger(entry.id) && entry.id > 0);
+      assert(publicItems.has(entry.id) || newPublicItems.get(entry.id) === entry.name, `${location} is not a public item reference`);
+      if (kind === "heroes") assert.equal(publicItems.get(entry.id).asset_kind, "hero");
+      assert(entry.name && entry.description, `${location} must have display text`);
+      assert(entry.quality >= 1 && entry.quality <= 8);
+      assert(["hero", "rune", "pet", "item"].includes(entry.asset_kind));
+      if (entry.asset_token) {
+        assert.match(entry.asset_token, /^[A-Za-z0-9_]+$/);
+        assert(fs.existsSync(path.join(ROOT, "assets/item-assets", entry.asset_token + ".png")), `${location} has a missing image`);
+      }
+      for (const skill of entry.skills) assertKeys(skill, "catalogSkill", location + ".skills");
+      for (const stage of entry.progression) assertKeys(stage, "catalogStage", location + ".progression");
+      const strings = [entry.name, entry.description, entry.faction, entry.career, entry.rank, entry.category,
+        ...entry.tags, ...entry.notes, ...entry.skills.flatMap(skill => Object.values(skill)), ...entry.progression.flatMap(stage => Object.values(stage))];
+      for (const value of strings) {
+        assert.equal(typeof value, "string");
+        assert(!/<[^>]+>/.test(value), `${location} contains client rich text`);
+        assert(!/(?:https?:\/\/|chunks:\/\/|(?:eff|res|assets)\/|\.ts\b|(?:Config|modules|完整脚本)[\\/]|[A-Z]:[\\/])/i.test(value), `${location} contains a resource or source path`);
+      }
+      assertNoPrivateData(entry, location);
+    }
+  }
+  const hiddenRunes = new Set([90110209, 90110213, 90110218, 90110301, 90110310, 90110403, 90110415, 90110417]);
+  assert.equal(data.runes.filter(entry => hiddenRunes.has(entry.id)).length, 0, "hidden runes must not be exported");
+  assert.equal(data.heroes.filter(entry => ["主角", "福袋"].includes(entry.name)).length, 0, "internal encounter units must not be exported");
+});
+
+test("production files do not include client modules, raw configuration tables, or game-server collectors", () => {
+  for (const entry of fs.readdirSync(ROOT, {withFileTypes: true})) {
+    if (!entry.isFile() || !/\.(js|html)$/.test(entry.name)) continue;
+    const source = fs.readFileSync(path.join(ROOT, entry.name), "utf8");
+    assert(!/System\.register\(|chunks:\/\/|_RF\.push\(|original_encrypted_source|bcsgproto|source_manifest\.json/.test(source), `${entry.name} contains client code or source metadata`);
+    assert(!/fetch\(\s*["'`]https?:\/\/|wss?:\/\//.test(source), `${entry.name} accesses an external game service`);
+  }
+  for (const file of jsonFiles(API_ROOT)) assert(!/_cfg\.json$|bcsgproto|source_manifest|module_index/.test(path.basename(file)), `${file} is an internal table or source index`);
 });
 
 test("public server data contains a complete rotation table and approved fields", () => {

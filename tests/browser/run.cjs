@@ -17,7 +17,7 @@ const server = http.createServer((req,res)=>{
   const baseURL = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch({headless:true,...(process.env.BROWSER_EXECUTABLE ? {executablePath:process.env.BROWSER_EXECUTABLE} : {})});
   try {
-    for (const name of ['flows','edge-flows','reel-flows']) {
+    for (const name of ['flows','edge-flows','reel-flows','catalog-flows']) {
       const context = await browser.newContext({viewport:{width:1440,height:1050}});
       const page = await context.newPage();
       try {

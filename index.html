@@ -86,7 +86,15 @@
     </section>
 
     <section id="encyclopedia-view" class="page-view" role="tabpanel" hidden>
-      <section class="encyclopedia-section" aria-labelledby="encyclopedia-title">
+      <nav class="encyclopedia-navigation" role="tablist" aria-label="百科图鉴分类">
+        <button id="encyclopedia-tab-items" class="encyclopedia-tab active" type="button" role="tab" aria-selected="true" aria-controls="encyclopedia-items" data-catalog="items">物品图鉴</button>
+        <button id="encyclopedia-tab-heroes" class="encyclopedia-tab" type="button" role="tab" aria-selected="false" aria-controls="catalog-panel" data-catalog="heroes" tabindex="-1">角色图鉴</button>
+        <button id="encyclopedia-tab-runes" class="encyclopedia-tab" type="button" role="tab" aria-selected="false" aria-controls="catalog-panel" data-catalog="runes" tabindex="-1">符文图鉴</button>
+        <button id="encyclopedia-tab-pets" class="encyclopedia-tab" type="button" role="tab" aria-selected="false" aria-controls="catalog-panel" data-catalog="pets" tabindex="-1">魔宠图鉴</button>
+        <button id="encyclopedia-tab-artifacts" class="encyclopedia-tab" type="button" role="tab" aria-selected="false" aria-controls="catalog-panel" data-catalog="artifacts" tabindex="-1">圣物图鉴</button>
+        <button id="encyclopedia-tab-seals" class="encyclopedia-tab" type="button" role="tab" aria-selected="false" aria-controls="catalog-panel" data-catalog="seals" tabindex="-1">兽印图鉴</button>
+      </nav>
+      <section id="encyclopedia-items" class="encyclopedia-section" role="tabpanel" aria-labelledby="encyclopedia-tab-items">
         <div class="encyclopedia-heading">
           <div>
             <span class="eyebrow">物品图鉴</span>
@@ -120,6 +128,27 @@
           <aside id="item-detail" class="item-detail" aria-live="polite">
             <div class="empty-state">选择一个物品查看详情。</div>
           </aside>
+        </div>
+      </section>
+      <section id="catalog-panel" class="encyclopedia-section catalog-panel" role="tabpanel" aria-labelledby="encyclopedia-tab-heroes" hidden>
+        <div class="catalog-heading">
+          <div><span class="eyebrow">指尖百科</span><h2 id="catalog-title">角色图鉴</h2><p id="catalog-summary" role="status">正在读取图鉴资料…</p></div>
+          <button id="catalog-retry" class="secondary-button" type="button" hidden>重新加载</button>
+        </div>
+        <form id="catalog-filters" class="catalog-filters" role="search">
+          <label class="search-field"><span id="catalog-search-label">搜索角色</span><input id="catalog-search" type="search" autocomplete="off" placeholder="名称、定位或技能效果"></label>
+          <label id="catalog-faction-field" class="item-filter-field"><span>阵营</span><select id="catalog-faction"><option value="all">全部阵营</option></select></label>
+          <label id="catalog-career-field" class="item-filter-field"><span>定位</span><select id="catalog-career"><option value="all">全部定位</option></select></label>
+          <label id="catalog-category-field" class="item-filter-field" hidden><span>类型</span><select id="catalog-category"><option value="all">全部类型</option></select></label>
+          <label class="item-filter-field"><span>品质</span><select id="catalog-quality"><option value="all">全部品质</option></select></label>
+          <label id="catalog-rare-field" class="catalog-rare-filter" hidden><input id="catalog-rare" type="checkbox"> 仅看稀有词条</label>
+          <button id="catalog-clear" class="secondary-button" type="button">清除筛选</button>
+        </form>
+        <div class="catalog-layout">
+          <div class="catalog-browser"><div id="catalog-grid" class="catalog-grid" aria-live="polite"></div>
+            <nav class="item-pagination" aria-label="图鉴分页"><button id="catalog-prev" class="secondary-button" type="button">上一页</button><span id="catalog-page">第 1 页</span><button id="catalog-next" class="secondary-button" type="button">下一页</button></nav>
+          </div>
+          <aside id="catalog-detail" class="catalog-detail" aria-live="polite"><div class="empty-state">选择条目查看技能和成长效果。</div></aside>
         </div>
       </section>
     </section>
@@ -272,6 +301,8 @@
   </dialog>
   <script src="beast-seal-core.js" defer></script>
   <script src="beast-seal.js" defer></script>
+  <script src="encyclopedia-core.js" defer></script>
+  <script src="encyclopedia.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>
