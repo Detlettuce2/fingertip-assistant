@@ -332,9 +332,12 @@ function activityStatus(type) {
     else if (now < todayClose) stage = timedStage("今日挑战中", todayOpen, todayClose, "21:00 日榜结算");
     else stage = timedStage("休赛期", todayClose, dayStart + DAY + 8 * HOUR, "明日 08:00 恢复挑战");
     stage.weeklyProgress = Math.min(1, Math.max(0, (now - seasonOpen) / (seasonClose - seasonOpen)));
+    stage.mainEnd = now < seasonOpen ? seasonOpen : (now < seasonClose ? seasonClose : weekStart + 7 * DAY + 8 * HOUR);
+    stage.mainLabel = now < seasonOpen || now >= seasonClose ? "下次开赛还有 " : "本周剩余 ";
     stage.dailyProgress = {
       label: stage.label === "今日挑战中" ? "今日挑战" : "休赛阶段",
       ratio: stage.ratio,
+      remainingLabel: stage.label === "今日挑战中" ? "今日剩余 " : "休赛剩余 ",
     };
     return stage;
   }
@@ -387,6 +390,8 @@ function activityStatus(type) {
     else if (now < restOpen) stage = timedStage("战斗阶段", battleOpen, restOpen);
     else stage = timedStage("休整阶段", restOpen, dayStart + DAY + 8 * HOUR);
     stage.weeklyProgress = Math.min(1, Math.max(0, (now - weeklyOpen) / (weeklyClose - weeklyOpen)));
+    stage.mainEnd = weeklyClose;
+    stage.mainLabel = "本周剩余 ";
     stage.dailyProgress = {label: stage.label.replace("阶段", ""), ratio: stage.ratio};
     return stage;
   }
@@ -419,7 +424,9 @@ function activityStatus(type) {
       stage.noDetail = true;
     }
     stage.weeklyProgress = (now - cycleStart) / cycle;
-    stage.secondaryProgress = {label: `第${week}周`, ratio: (now - weekStart) / (7 * DAY)};
+    stage.mainEnd = cycleEnd;
+    stage.mainLabel = "赛季剩余 ";
+    stage.secondaryProgress = {label: `第${week}周`, ratio: (now - weekStart) / (7 * DAY), end: weekStart + 7 * DAY, remainingLabel: "本周剩余 "};
     stage.note = `战令积分上限：${[1500, 3000, 4500, 6000][week - 1]}`;
     return stage;
   }
@@ -457,8 +464,8 @@ function rotationWeekInfo() {
     const dayStart = beijingDayStart();
     const dailyOpen = dayStart + 8 * HOUR;
     const dailyClose = dayStart + DAY;
-    if (now < dailyOpen) status.dailyProgress = {label: "休整中", ratio: (now - dayStart) / (8 * HOUR)};
-    else status.dailyProgress = {label: "活动中", ratio: (now - dailyOpen) / (dailyClose - dailyOpen)};
+    if (now < dailyOpen) status.dailyProgress = {label: "休整中", ratio: (now - dayStart) / (8 * HOUR), end: dailyOpen};
+    else status.dailyProgress = {label: "活动中", ratio: (now - dailyOpen) / (dailyClose - dailyOpen), end: dailyClose, remainingLabel: "今日剩余 "};
   }
   return {
     currentCard,
@@ -483,16 +490,27 @@ function activityCard(card, suppliedStatus = null, extraClass = "") {
       ? `<div class="activity-progress unavailable" aria-hidden="true"><span></span></div>`
       : `<div class="activity-progress" role="progressbar" aria-label="${escapeHtml(card.name)}周进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(mainRatio * 100)}"><span style="width:${mainRatio * 100}%"></span></div>`);
   const secondaryProgress = status.secondaryProgress || status.dailyProgress;
+  const mainEnd = status.mainEnd || status.end;
+  const mainRemaining = !status.noProgress && mainEnd
+    ? `${status.mainLabel || (secondaryProgress ? "本周剩余 " : status.countdownPrefix || "剩余 ")}${formatRemaining(mainEnd - Date.now()).replace(/^剩余\s*/, "")}`
+    : "";
+  const smallEnd = secondaryProgress?.end || status.end;
+  const smallRemaining = secondaryProgress && smallEnd
+    ? `${secondaryProgress.remainingLabel || "阶段剩余 "}${formatRemaining(smallEnd - Date.now()).replace(/^剩余\s*/, "")}`
+    : "";
+  // Tournament transitions remain separate from the season and week clocks.
+  const stageRemaining = status.noProgress || card.schedule === "holyland" ? remaining : "";
+  const smallClock = smallRemaining ? `<span class="activity-small-clock">${escapeHtml(smallRemaining)}</span>` : "";
   const dailyMarkup = secondaryProgress
     ? `<div class="activity-daily-progress"><b>${escapeHtml(secondaryProgress.label)}</b><span><i style="width:${Math.min(1, Math.max(0, secondaryProgress.ratio)) * 100}%"></i></span></div>`
     : "";
   return `<article class="activity-card tone-${card.tone}${secondaryProgress ? " has-daily-progress" : ""}${extraClass ? ` ${extraClass}` : ""}">
     <div class="activity-art" aria-hidden="true">${icon}</div>
     <div class="activity-card-copy">
-      <span class="activity-kind">${escapeHtml(card.group)}</span>
+      <div class="activity-card-heading"><span class="activity-kind">${escapeHtml(card.group)}</span>${mainRemaining ? `<span class="activity-main-clock">${escapeHtml(mainRemaining)}</span>` : ""}</div>
       ${title}
-      <div class="activity-stage"><strong>${escapeHtml(status.label)}</strong>${remaining ? `<span>${escapeHtml(remaining)}</span>` : ""}</div>
-      ${status.note ? `<div class="activity-note">${escapeHtml(status.note)}</div>` : ""}
+      <div class="activity-stage"><strong>${escapeHtml(status.label)}</strong>${stageRemaining ? `<span>${escapeHtml(stageRemaining)}</span>` : ""}${!status.note ? smallClock : ""}</div>
+      ${status.note ? `<div class="activity-note-row"><span class="activity-note">${escapeHtml(status.note)}</span>${smallClock}</div>` : ""}
       ${dailyMarkup}
     </div>
     ${progressMarkup}
