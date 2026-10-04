@@ -10,6 +10,10 @@ module.exports=async(page,baseURL)=>{
   ok(await page.locator('[data-catalog]').count()===6,'百科有六个图鉴子选项');
   const itemCount=(await(await page.request.get(baseURL+'/api/items.json')).json()).items.length;
   ok((await page.locator('#item-summary').innerText()).includes(itemCount.toLocaleString('zh-CN')),'物品图鉴保留已有全部公开资料');
+  await page.locator('#item-search').fill('守护圣盾');
+  await page.waitForFunction(()=>{const image=document.querySelector('#item-detail .item-icon');return image?.complete&&image.naturalWidth>0;});
+  ok(await page.locator('#item-detail .item-icon').getAttribute('src')==='assets/item-assets/icon_150110638.png','守护圣盾碎片使用已有贴图而非占位');
+  await page.locator('#item-search').fill('');
   await page.getByRole('tab',{name:'角色图鉴',exact:true}).click();
   await page.locator('.catalog-card').first().waitFor();
   ok((await page.locator('#catalog-summary').innerText()).includes('87 个角色'),'角色静态资料已加载');

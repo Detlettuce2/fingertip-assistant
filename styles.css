@@ -403,13 +403,25 @@ h2 { margin-bottom: 4px; font-size: 19px; }
 .activity-mark { display: block; width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 6px 7px rgba(4,19,38,.34)); image-rendering: auto; }
 .activity-mark-text { display: grid; place-items: center; color: #fff; background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.6); border-radius: 50%; font-size: 32px; font-weight: 900; }
 .activity-card-copy { display: flex; min-width: 0; flex-direction: column; justify-content: center; padding: 17px 15px 28px 2px; }
-.activity-kind { margin-bottom: 5px; color: rgba(255,255,255,.75); font-size: 11px; font-weight: 700; }
+.activity-card-heading, .activity-note-row { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; min-width: 0; }
+.activity-card-heading { margin-bottom: 5px; }
+.activity-note-row { margin-top: 3px; }
+.activity-main-clock { color: rgba(255,255,255,.94); font-size: 11px; line-height: 1.4; text-align: right; white-space: nowrap; }
+.activity-small-clock { color: rgba(255,255,255,.88); font-size: 11px; line-height: 1.4; text-align: right; white-space: nowrap; }
+@media (max-width: 600px) {
+  .activity-card { grid-template-columns: 80px minmax(0, 1fr); }
+  .activity-art { padding-right: 4px; padding-left: 8px; }
+  .activity-mark { width: 64px; height: 64px; }
+  .activity-main-clock, .activity-small-clock { font-size: 10px; }
+  .activity-note { font-size: 9px; }
+}
+.activity-kind { color: rgba(255,255,255,.75); font-size: 11px; font-weight: 700; white-space: nowrap; }
 .activity-title-sprite { display: block; width: min(184px, 100%); height: 48px; object-fit: contain; object-position: left center; filter: drop-shadow(0 2px 2px rgba(0,0,0,.22)); }
 .activity-title-text { min-height: 48px; display: flex; align-items: center; font-size: 25px; line-height: 1.1; text-shadow: 0 2px 3px rgba(0,0,0,.25); }
 .activity-stage { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 3px; }
 .activity-stage strong { font-size: 13px; white-space: nowrap; }
 .activity-stage span { overflow: hidden; color: rgba(255,255,255,.82); font-size: 11px; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
-.activity-note { margin-top: 3px; color: rgba(255,255,255,.86); font-size: 10px; font-weight: 700; line-height: 1.2; }
+.activity-note { color: rgba(255,255,255,.86); font-size: 10px; font-weight: 700; line-height: 1.2; white-space: nowrap; }
 .activity-progress { position: absolute; right: 0; bottom: 0; left: 0; height: 10px; background: rgba(5,20,38,.38); }
 .activity-progress span { display: block; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,.6), #fff); box-shadow: 0 0 9px rgba(255,255,255,.5); transition: width .4s linear; }
 .activity-progress.unavailable span { width: 100%; opacity: .22; background: repeating-linear-gradient(135deg, #fff 0 6px, transparent 6px 12px); }

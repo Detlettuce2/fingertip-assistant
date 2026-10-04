@@ -149,6 +149,16 @@ test("public encyclopedia export exposes only approved fields", () => {
   assertNoPrivateData(data, "api/items.json");
 });
 
+test("available item artwork must not be left as an empty mapping", () => {
+  const items = readJson(path.join(API_ROOT, "items.json")).items;
+  for (const item of items) {
+    if (item.asset_token || !item.icon_id) continue;
+    const image = path.join(ROOT, "assets/item-assets", `icon_${item.icon_id}.png`);
+    assert.equal(fs.existsSync(image), false, `${item.name} has artwork but no mapping`);
+  }
+  assert.equal(items.find(item => item.id === 150110638).asset_token, "icon_150110638");
+});
+
 test("catalogs contain only public display fields, plain text, and existing images", () => {
   const data = readJson(path.join(API_ROOT, "catalogs.json"));
   assertKeys(data, "catalogs", "api/catalogs.json");
