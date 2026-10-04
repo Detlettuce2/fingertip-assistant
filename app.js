@@ -13,6 +13,7 @@ const HOLYLAND_CHANNELS = {
   xkgdt: {label: "奥术殿", realms: [1, 2]},
 };
 const HOLYLAND_SEASONS = {
+  S15: {label: "S15", channels: {xkbeta: [1,2,3,4,5,6,7], xkapp: [1], xkstorebeta: [1], xkgdt: [1,2,3], xkhw: [1], xkghb: [1]}},
   S14: {label: "S14"},
 };
 const ITEM_CLASS_LABELS = {
@@ -119,7 +120,7 @@ const storedGlobalView = preferences.getItem("globalCalendarView");
 const state = {
   data: null,
   holyland: null,
-  holylandSeason: preferences.getItem("holylandSeason") || "S14",
+  holylandSeason: preferences.getItem("holylandSeason") || "S15",
   holylandChannel: preferences.getItem("holylandChannel") || "xkbeta",
   holylandRealm: preferences.getItem("holylandRealm") || "1",
   holylandLoading: false,
@@ -246,9 +247,13 @@ function activeChannel() {
 }
 
 function populateHolylandRealms() {
+  const available = HOLYLAND_SEASONS[state.holylandSeason]?.channels || {xkbeta: [1,2,3,4,5,6,7,8], xkgdt: [1,2]};
+  if (!available[state.holylandChannel]) state.holylandChannel = Object.keys(available)[0];
+  els.holylandChannel.innerHTML = Object.keys(available).map(channel => `<option value="${channel}">${CHANNELS[channel].label}</option>`).join("");
+  els.holylandChannel.value = state.holylandChannel;
   const config = HOLYLAND_CHANNELS[state.holylandChannel] || HOLYLAND_CHANNELS.xkbeta;
-  state.holylandChannel = HOLYLAND_CHANNELS[state.holylandChannel] ? state.holylandChannel : "xkbeta";
-  const realms = config.realms.map(String);
+  state.holylandChannel = available[state.holylandChannel] ? state.holylandChannel : "xkbeta";
+  const realms = available[state.holylandChannel].map(String);
   if (!realms.includes(state.holylandRealm)) state.holylandRealm = realms[0];
   els.holylandRealm.innerHTML = realms.map(realm => `<option value="${realm}">${realm}区</option>`).join("");
   els.holylandRealm.value = state.holylandRealm;
@@ -694,7 +699,7 @@ function drawBracketConnectors() {
 function renderHolyland() {
   if (!state.holyland) return;
   const seasonLabel = HOLYLAND_SEASONS[state.holylandSeason]?.label || state.holylandSeason;
-  const channelLabel = HOLYLAND_CHANNELS[state.holylandChannel]?.label || "未知系列";
+  const channelLabel = CHANNELS[state.holylandChannel]?.label || "未知系列";
   els.holylandResultLabel.textContent = `${seasonLabel}赛果`;
   els.holylandSummary.textContent = `${seasonLabel} · ${channelLabel} · 圣域${state.holyland.realm}区 · 比赛记录 ${state.holyland.captured_at_china} 读取`;
   els.holylandBracket.innerHTML = `<div class="bracket-board">
@@ -1308,6 +1313,7 @@ els.holylandRealm.addEventListener("change", () => {
 els.holylandSeason.addEventListener("change", () => {
   state.holylandSeason = els.holylandSeason.value;
   state.holyland = null;
+  populateHolylandRealms();
   preferences.setItem("holylandSeason", state.holylandSeason);
   loadHolyland();
 });

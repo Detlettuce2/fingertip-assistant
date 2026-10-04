@@ -1,0 +1,646 @@
+{
+  "realm": 1,
+  "captured_at_china": "2026-10-04 17:35",
+  "rounds": [
+    {
+      "key": "round32",
+      "label": "32强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 448,
+              "name": "强壮古守望者",
+              "avatar_id": "300270",
+              "frame_id": "400730",
+              "result": "win"
+            },
+            {
+              "server_id": 94,
+              "name": "画中人",
+              "avatar_id": "300750",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "c11d0f55d28fe3b5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 396,
+              "name": "瓦尔帕莱索",
+              "avatar_id": "11504011",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 3,
+              "name": "芣苢",
+              "avatar_id": "300010",
+              "frame_id": "400320",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "986345ff20105ee0"
+        },
+        {
+          "players": [
+            {
+              "server_id": 150,
+              "name": "秘之守护者",
+              "avatar_id": "300010",
+              "frame_id": "409000",
+              "result": "win"
+            },
+            {
+              "server_id": 310,
+              "name": "灵之精灵游侠",
+              "avatar_id": "300220",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "e889a410a7a77156"
+        },
+        {
+          "players": [
+            {
+              "server_id": 134,
+              "name": "不给糖就捣蛋",
+              "avatar_id": "11504011",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 120,
+              "name": "翠林猎人",
+              "avatar_id": "300050",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "054c0704a6e9a502"
+        },
+        {
+          "players": [
+            {
+              "server_id": 247,
+              "name": "Toki",
+              "avatar_id": "300560",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 494,
+              "name": "乂翳风乂",
+              "avatar_id": "300750",
+              "frame_id": "400400",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "dbc7e8301327ac15"
+        },
+        {
+          "players": [
+            {
+              "server_id": 109,
+              "name": "芙宁娜",
+              "avatar_id": "50510011",
+              "frame_id": "400730",
+              "result": "loss"
+            },
+            {
+              "server_id": 113,
+              "name": "浮月星影",
+              "avatar_id": "300560",
+              "frame_id": "400710",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "210f2c18b7fe4da6"
+        },
+        {
+          "players": [
+            {
+              "server_id": 88,
+              "name": "一言",
+              "avatar_id": "300580",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 113,
+              "name": "不听话丶",
+              "avatar_id": "50510011",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "e5263461ed692ea7"
+        },
+        {
+          "players": [
+            {
+              "server_id": 33,
+              "name": "野火巫师学徒",
+              "avatar_id": "300580",
+              "frame_id": "400730",
+              "result": "win"
+            },
+            {
+              "server_id": 446,
+              "name": "不想玩了退钱",
+              "avatar_id": "41504011",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "256747464672e261"
+        },
+        {
+          "players": [
+            {
+              "server_id": 118,
+              "name": "青离",
+              "avatar_id": "11504011",
+              "frame_id": "400623",
+              "result": "win"
+            },
+            {
+              "server_id": 318,
+              "name": "清火",
+              "avatar_id": "300820",
+              "frame_id": "400730",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "b2c45de7624175bf"
+        },
+        {
+          "players": [
+            {
+              "server_id": 270,
+              "name": "温柔的枫",
+              "avatar_id": "300890",
+              "frame_id": "400030",
+              "result": "loss"
+            },
+            {
+              "server_id": 453,
+              "name": "顾君卿",
+              "avatar_id": "300820",
+              "frame_id": "400260",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "7c0358d8e6c75561"
+        },
+        {
+          "players": [
+            {
+              "server_id": 318,
+              "name": "碧波星辰",
+              "avatar_id": "300640",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 150,
+              "name": "小幽",
+              "avatar_id": "50514011",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "5846d548174413af"
+        },
+        {
+          "players": [
+            {
+              "server_id": 199,
+              "name": "沫沫",
+              "avatar_id": "300230",
+              "frame_id": "400500",
+              "result": "win"
+            },
+            {
+              "server_id": 256,
+              "name": "顷刻炼化",
+              "avatar_id": "300700",
+              "frame_id": "400616",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "b26fcc3280fc8709"
+        },
+        {
+          "players": [
+            {
+              "server_id": 29,
+              "name": "还是好困",
+              "avatar_id": "300450",
+              "frame_id": "400270",
+              "result": "loss"
+            },
+            {
+              "server_id": 379,
+              "name": "妲己把朕迎",
+              "avatar_id": "300890",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "6f715207de0030e6"
+        },
+        {
+          "players": [
+            {
+              "server_id": 200,
+              "name": "玄铁守护者",
+              "avatar_id": "300550",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 195,
+              "name": "我要到处跑",
+              "avatar_id": "11504011",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "805127f13607014d"
+        },
+        {
+          "players": [
+            {
+              "server_id": 154,
+              "name": "小图",
+              "avatar_id": "300030",
+              "frame_id": "400618",
+              "result": "win"
+            },
+            {
+              "server_id": 457,
+              "name": "不玩了退钱",
+              "avatar_id": "300100",
+              "frame_id": "400050",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "1cec1f457daa57a3"
+        },
+        {
+          "players": [
+            {
+              "server_id": 301,
+              "name": "南鱼座",
+              "avatar_id": "21503011",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 488,
+              "name": "北方刀匠帝",
+              "avatar_id": "300880",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "fc75cf7b1f788311"
+        }
+      ]
+    },
+    {
+      "key": "round16",
+      "label": "16强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 448,
+              "name": "强壮古守望者",
+              "avatar_id": "300270",
+              "frame_id": "400730",
+              "result": "win"
+            },
+            {
+              "server_id": 396,
+              "name": "瓦尔帕莱索",
+              "avatar_id": "11504011",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "2ebfbea259b37cab"
+        },
+        {
+          "players": [
+            {
+              "server_id": 150,
+              "name": "秘之守护者",
+              "avatar_id": "300010",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 134,
+              "name": "不给糖就捣蛋",
+              "avatar_id": "11504011",
+              "frame_id": "400260",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "4f54ff93fb4cacfa"
+        },
+        {
+          "players": [
+            {
+              "server_id": 247,
+              "name": "Toki",
+              "avatar_id": "300560",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 113,
+              "name": "浮月星影",
+              "avatar_id": "300560",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "b52d41d6a58ee874"
+        },
+        {
+          "players": [
+            {
+              "server_id": 113,
+              "name": "不听话丶",
+              "avatar_id": "50510011",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 33,
+              "name": "野火巫师学徒",
+              "avatar_id": "300580",
+              "frame_id": "400730",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "6c530fdde0f347f5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 118,
+              "name": "青离",
+              "avatar_id": "11504011",
+              "frame_id": "400623",
+              "result": "win"
+            },
+            {
+              "server_id": 453,
+              "name": "顾君卿",
+              "avatar_id": "300820",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "9bbc86414a6a1d26"
+        },
+        {
+          "players": [
+            {
+              "server_id": 150,
+              "name": "小幽",
+              "avatar_id": "50514011",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 199,
+              "name": "沫沫",
+              "avatar_id": "300230",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "6a6fb9d9e59afa05"
+        },
+        {
+          "players": [
+            {
+              "server_id": 379,
+              "name": "妲己把朕迎",
+              "avatar_id": "300890",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 200,
+              "name": "玄铁守护者",
+              "avatar_id": "300550",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "8d547f00a12853c5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 154,
+              "name": "小图",
+              "avatar_id": "300030",
+              "frame_id": "400618",
+              "result": "win"
+            },
+            {
+              "server_id": 301,
+              "name": "南鱼座",
+              "avatar_id": "21503011",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "c4fdd947b81fb0a6"
+        }
+      ]
+    },
+    {
+      "key": "quarterfinal",
+      "label": "8强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 448,
+              "name": "强壮古守望者",
+              "avatar_id": "300270",
+              "frame_id": "400730",
+              "result": "loss"
+            },
+            {
+              "server_id": 134,
+              "name": "不给糖就捣蛋",
+              "avatar_id": "11504011",
+              "frame_id": "400260",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "32e898a9f2a2de34"
+        },
+        {
+          "players": [
+            {
+              "server_id": 247,
+              "name": "Toki",
+              "avatar_id": "300560",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 113,
+              "name": "不听话丶",
+              "avatar_id": "50510011",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "c738ada0f3080688"
+        },
+        {
+          "players": [
+            {
+              "server_id": 118,
+              "name": "青离",
+              "avatar_id": "11504011",
+              "frame_id": "400623",
+              "result": "loss"
+            },
+            {
+              "server_id": 150,
+              "name": "小幽",
+              "avatar_id": "50514011",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "c2a7ec4f451b7f67"
+        },
+        {
+          "players": [
+            {
+              "server_id": 200,
+              "name": "玄铁守护者",
+              "avatar_id": "300550",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 154,
+              "name": "小图",
+              "avatar_id": "300030",
+              "frame_id": "400618",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "0a32d4a340a633f3"
+        }
+      ]
+    },
+    {
+      "key": "semifinal",
+      "label": "半决赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 134,
+              "name": "不给糖就捣蛋",
+              "avatar_id": "11504011",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 113,
+              "name": "不听话丶",
+              "avatar_id": "50510011",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "3756ed2d74fe20bc"
+        },
+        {
+          "players": [
+            {
+              "server_id": 150,
+              "name": "小幽",
+              "avatar_id": "50514011",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 154,
+              "name": "小图",
+              "avatar_id": "300030",
+              "frame_id": "400618",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "309da80683695ff1"
+        }
+      ]
+    },
+    {
+      "key": "final",
+      "label": "冠军赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 113,
+              "name": "不听话丶",
+              "avatar_id": "50510011",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 154,
+              "name": "小图",
+              "avatar_id": "300030",
+              "frame_id": "400618",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "9f3f1b1930a669bb"
+        }
+      ]
+    }
+  ],
+  "bronze_match": {
+    "players": [
+      {
+        "server_id": 134,
+        "name": "不给糖就捣蛋",
+        "avatar_id": "11504011",
+        "frame_id": "400260",
+        "result": "loss"
+      },
+      {
+        "server_id": 150,
+        "name": "小幽",
+        "avatar_id": "50514011",
+        "frame_id": "400000",
+        "result": "win"
+      }
+    ],
+    "lineup_id": "b9ff863afe2d7267"
+  },
+  "channel": "xkstorebeta",
+  "season": "S15"
+}

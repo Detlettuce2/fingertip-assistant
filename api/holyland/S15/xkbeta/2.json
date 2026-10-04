@@ -1,0 +1,646 @@
+{
+  "realm": 2,
+  "captured_at_china": "2026-10-04 17:35",
+  "rounds": [
+    {
+      "key": "round32",
+      "label": "32强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 1692,
+              "name": "南瓜将军",
+              "avatar_id": "300880",
+              "frame_id": "409000",
+              "result": "win"
+            },
+            {
+              "server_id": 1382,
+              "name": "熊大",
+              "avatar_id": "300050",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "b57082803007924c"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1343,
+              "name": "风里笑",
+              "avatar_id": "300880",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 1628,
+              "name": "鸢尾鱼",
+              "avatar_id": "300550",
+              "frame_id": "400250",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "2c6f836bfcb30175"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1820,
+              "name": "蓝天白云",
+              "avatar_id": "50501011",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 1767,
+              "name": "风岚",
+              "avatar_id": "300870",
+              "frame_id": "400730",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "e622db2101e54ce0"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1460,
+              "name": "问天",
+              "avatar_id": "300700",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 1663,
+              "name": "澹月市区",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "be3b791e0cfb21dc"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1764,
+              "name": "风来城",
+              "avatar_id": "300280",
+              "frame_id": "400210",
+              "result": "loss"
+            },
+            {
+              "server_id": 1678,
+              "name": "澹月雪恨",
+              "avatar_id": "300640",
+              "frame_id": "400260",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "7d3be4d5054a108e"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1727,
+              "name": "澹月公社",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "win"
+            },
+            {
+              "server_id": 1411,
+              "name": "临安初雨后",
+              "avatar_id": "300840",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "b43851d6e5c1626a"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1624,
+              "name": "鸣潮调律者",
+              "avatar_id": "300890",
+              "frame_id": "400620",
+              "result": "win"
+            },
+            {
+              "server_id": 1661,
+              "name": "下雪",
+              "avatar_id": "11501011",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "404db110492a261d"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1595,
+              "name": "佩特拉",
+              "avatar_id": "300740",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 1607,
+              "name": "白嫖老怪",
+              "avatar_id": "300650",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "df4d6e3d23dbc8eb"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1532,
+              "name": "幻境",
+              "avatar_id": "11504011",
+              "frame_id": "400330",
+              "result": "win"
+            },
+            {
+              "server_id": 1922,
+              "name": "澹月雪拫",
+              "avatar_id": "300880",
+              "frame_id": "400330",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "99bb25f0e26cc436"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1885,
+              "name": "提蓝",
+              "avatar_id": "300880",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 1878,
+              "name": "叱咤月海猫猫",
+              "avatar_id": "300550",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "aef70c8f529e3891"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1715,
+              "name": "检疫合格的猪",
+              "avatar_id": "300220",
+              "frame_id": "400300",
+              "result": "win"
+            },
+            {
+              "server_id": 1747,
+              "name": "摆烂骑士",
+              "avatar_id": "300590",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "5fa950e22b544545"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1746,
+              "name": "澹月比巴卜",
+              "avatar_id": "300250",
+              "frame_id": "409000",
+              "result": "win"
+            },
+            {
+              "server_id": 1435,
+              "name": "白⼂泽",
+              "avatar_id": "11501011",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "4fb886f849e2ea05"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1532,
+              "name": "穆末",
+              "avatar_id": "300110",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 1887,
+              "name": "澹月骑士团",
+              "avatar_id": "300700",
+              "frame_id": "400220",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "1f3bb13c42e786ea"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1660,
+              "name": "非酋来的澹月",
+              "avatar_id": "300620",
+              "frame_id": "400220",
+              "result": "win"
+            },
+            {
+              "server_id": 1435,
+              "name": "恶臭雪豹",
+              "avatar_id": "50510011",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "75fed28fff29f21a"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1467,
+              "name": "露娜的强化卷",
+              "avatar_id": "300830",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 1623,
+              "name": "鵺鵺",
+              "avatar_id": "300880",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "c81993141ddd5bb2"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1920,
+              "name": "幽夜星辰法师",
+              "avatar_id": "300100",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 1757,
+              "name": "黎明路上相逢",
+              "avatar_id": "300840",
+              "frame_id": "400614",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "9c50644e68a941e1"
+        }
+      ]
+    },
+    {
+      "key": "round16",
+      "label": "16强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 1692,
+              "name": "南瓜将军",
+              "avatar_id": "300880",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 1343,
+              "name": "风里笑",
+              "avatar_id": "300880",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "bda7357816621174"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1767,
+              "name": "风岚",
+              "avatar_id": "300870",
+              "frame_id": "400730",
+              "result": "loss"
+            },
+            {
+              "server_id": 1663,
+              "name": "澹月市区",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "9adcb5d83a0b5ecd"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1678,
+              "name": "澹月雪恨",
+              "avatar_id": "300640",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 1727,
+              "name": "澹月公社",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "c1d92fde1b465013"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1624,
+              "name": "鸣潮调律者",
+              "avatar_id": "300890",
+              "frame_id": "400620",
+              "result": "loss"
+            },
+            {
+              "server_id": 1607,
+              "name": "白嫖老怪",
+              "avatar_id": "300650",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "fe00a0e143193318"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1532,
+              "name": "幻境",
+              "avatar_id": "11504011",
+              "frame_id": "400330",
+              "result": "win"
+            },
+            {
+              "server_id": 1878,
+              "name": "叱咤月海猫猫",
+              "avatar_id": "300550",
+              "frame_id": "400250",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "85bebe2012ce2290"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1715,
+              "name": "检疫合格的猪",
+              "avatar_id": "300220",
+              "frame_id": "400300",
+              "result": "win"
+            },
+            {
+              "server_id": 1746,
+              "name": "澹月比巴卜",
+              "avatar_id": "300250",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "d3eb460f98172c49"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1887,
+              "name": "澹月骑士团",
+              "avatar_id": "300700",
+              "frame_id": "400220",
+              "result": "win"
+            },
+            {
+              "server_id": 1660,
+              "name": "非酋来的澹月",
+              "avatar_id": "300620",
+              "frame_id": "400220",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "97f8339230eafba7"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1467,
+              "name": "露娜的强化卷",
+              "avatar_id": "300830",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 1920,
+              "name": "幽夜星辰法师",
+              "avatar_id": "300100",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "0f7c87f5ff59d657"
+        }
+      ]
+    },
+    {
+      "key": "quarterfinal",
+      "label": "8强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 1343,
+              "name": "风里笑",
+              "avatar_id": "300880",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 1663,
+              "name": "澹月市区",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "c4c8cc64bc8ee066"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1727,
+              "name": "澹月公社",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "loss"
+            },
+            {
+              "server_id": 1607,
+              "name": "白嫖老怪",
+              "avatar_id": "300650",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "7ffb8ffd49093dd5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1532,
+              "name": "幻境",
+              "avatar_id": "11504011",
+              "frame_id": "400330",
+              "result": "win"
+            },
+            {
+              "server_id": 1715,
+              "name": "检疫合格的猪",
+              "avatar_id": "300220",
+              "frame_id": "400300",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "9d7e0eb70a64993c"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1887,
+              "name": "澹月骑士团",
+              "avatar_id": "300700",
+              "frame_id": "400220",
+              "result": "win"
+            },
+            {
+              "server_id": 1467,
+              "name": "露娜的强化卷",
+              "avatar_id": "300830",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "2f519b4a2d516aee"
+        }
+      ]
+    },
+    {
+      "key": "semifinal",
+      "label": "半决赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 1663,
+              "name": "澹月市区",
+              "avatar_id": "300700",
+              "frame_id": "400613",
+              "result": "loss"
+            },
+            {
+              "server_id": 1607,
+              "name": "白嫖老怪",
+              "avatar_id": "300650",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "e30ff9f3a73f14f9"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1532,
+              "name": "幻境",
+              "avatar_id": "11504011",
+              "frame_id": "400330",
+              "result": "loss"
+            },
+            {
+              "server_id": 1887,
+              "name": "澹月骑士团",
+              "avatar_id": "300700",
+              "frame_id": "400220",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "aea95ea694897338"
+        }
+      ]
+    },
+    {
+      "key": "final",
+      "label": "冠军赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 1607,
+              "name": "白嫖老怪",
+              "avatar_id": "300650",
+              "frame_id": "409000",
+              "result": "win"
+            },
+            {
+              "server_id": 1887,
+              "name": "澹月骑士团",
+              "avatar_id": "300700",
+              "frame_id": "400220",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "126e3d4bfece1b52"
+        }
+      ]
+    }
+  ],
+  "bronze_match": {
+    "players": [
+      {
+        "server_id": 1663,
+        "name": "澹月市区",
+        "avatar_id": "300700",
+        "frame_id": "400613",
+        "result": "loss"
+      },
+      {
+        "server_id": 1532,
+        "name": "幻境",
+        "avatar_id": "11504011",
+        "frame_id": "400330",
+        "result": "win"
+      }
+    ],
+    "lineup_id": "86275938360dcd63"
+  },
+  "channel": "xkbeta",
+  "season": "S15"
+}

@@ -1,0 +1,411 @@
+{
+  "round_end": 10,
+  "round_max": 20,
+  "captured_at_china": "2026-10-04 14:25",
+  "sides": [
+    {
+      "server_id": 3627,
+      "name": "时光守护者",
+      "on_field": [
+        {
+          "name": "伊格拉",
+          "level": 685,
+          "star": 30,
+          "stand": 1,
+          "asset_token": "hricon_115030110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 7,
+          "strength": 5
+        },
+        {
+          "name": "霜星·雪女",
+          "level": 685,
+          "star": 29,
+          "stand": 2,
+          "asset_token": "hricon_215040110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 8,
+          "strength": 5
+        },
+        {
+          "name": "辉夜姬",
+          "level": 685,
+          "star": 31,
+          "stand": 3,
+          "asset_token": "hricon_415060110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 10,
+          "strength": 5
+        },
+        {
+          "name": "菲尼克斯",
+          "level": 685,
+          "star": 29,
+          "stand": 4,
+          "asset_token": "hricon_315020110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 9,
+          "strength": 5
+        },
+        {
+          "name": "维纳斯",
+          "level": 692,
+          "star": 31,
+          "stand": 5,
+          "asset_token": "hricon_115010110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 7,
+          "strength": 5
+        },
+        {
+          "name": "至尊·青龙",
+          "level": 820,
+          "star": 31,
+          "stand": 6,
+          "asset_token": "hricon_115040110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 7,
+          "strength": 5
+        }
+      ],
+      "assists": [
+        {
+          "name": "荷鲁斯",
+          "level": 685,
+          "star": 26,
+          "stand": 7,
+          "asset_token": "hricon_505080110",
+          "quality": 8,
+          "star_mark_sprite": "wh5",
+          "star_mark_tier": 15,
+          "realm": 5,
+          "strength": 5
+        },
+        {
+          "name": "常曦",
+          "level": 685,
+          "star": 29,
+          "stand": 8,
+          "asset_token": "hricon_505100110",
+          "quality": 8,
+          "star_mark_sprite": "wh5",
+          "star_mark_tier": 15,
+          "realm": 5,
+          "strength": 5
+        }
+      ],
+      "pets": [
+        {
+          "name": "瞌睡熊",
+          "level": 9,
+          "star": 15,
+          "stand": 1,
+          "asset_token": "icon_110110304",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "水仙女王",
+          "level": 9,
+          "star": 15,
+          "stand": 2,
+          "asset_token": "icon_110110301",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "急救鼠",
+          "level": 9,
+          "star": 10,
+          "stand": 3,
+          "asset_token": "icon_110110308",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "暴怒鲨",
+          "level": 15,
+          "star": 15,
+          "stand": 4,
+          "asset_token": "icon_110110309",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "地狱犬",
+          "level": 9,
+          "star": 9,
+          "stand": 5,
+          "asset_token": "icon_110110310",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "梦魇",
+          "level": 9,
+          "star": 12,
+          "stand": 6,
+          "asset_token": "icon_110110307",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "九尾狐",
+          "level": 9,
+          "star": 15,
+          "stand": 7,
+          "asset_token": "icon_110110303",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "暗阎狮",
+          "level": 9,
+          "star": 15,
+          "stand": 8,
+          "asset_token": "icon_110110302",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        }
+      ]
+    },
+    {
+      "server_id": 3706,
+      "name": "一页书",
+      "on_field": [
+        {
+          "name": "霜星·雪女",
+          "level": 605,
+          "star": 29,
+          "stand": 1,
+          "asset_token": "hricon_215040110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 13,
+          "realm": 8,
+          "strength": 5
+        },
+        {
+          "name": "维纳斯",
+          "level": 605,
+          "star": 27,
+          "stand": 2,
+          "asset_token": "hricon_115010110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 7,
+          "strength": 5
+        },
+        {
+          "name": "伊格拉",
+          "level": 605,
+          "star": 27,
+          "stand": 3,
+          "asset_token": "hricon_115030110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 7,
+          "strength": 5
+        },
+        {
+          "name": "辉夜姬",
+          "level": 605,
+          "star": 30,
+          "stand": 4,
+          "asset_token": "hricon_415060110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 10,
+          "strength": 5
+        },
+        {
+          "name": "至尊·青龙",
+          "level": 924,
+          "star": 31,
+          "stand": 5,
+          "asset_token": "hricon_115040110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 7,
+          "strength": 5
+        },
+        {
+          "name": "菲尼克斯",
+          "level": 605,
+          "star": 21,
+          "stand": 6,
+          "asset_token": "hricon_315020110",
+          "quality": 8,
+          "star_mark_sprite": "sp5",
+          "star_mark_tier": 15,
+          "realm": 9,
+          "strength": 5
+        }
+      ],
+      "assists": [
+        {
+          "name": "荷鲁斯",
+          "level": 605,
+          "star": 26,
+          "stand": 7,
+          "asset_token": "hricon_505080110",
+          "quality": 8,
+          "star_mark_sprite": "wh5",
+          "star_mark_tier": 15,
+          "realm": 5,
+          "strength": 5
+        },
+        {
+          "name": "常曦",
+          "level": 605,
+          "star": 21,
+          "stand": 8,
+          "asset_token": "hricon_505100110",
+          "quality": 8,
+          "star_mark_sprite": "wh5",
+          "star_mark_tier": 13,
+          "realm": 5,
+          "strength": 5
+        }
+      ],
+      "pets": [
+        {
+          "name": "瞌睡熊",
+          "level": 10,
+          "star": 15,
+          "stand": 1,
+          "asset_token": "icon_110110304",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "暴怒鲨",
+          "level": 15,
+          "star": 15,
+          "stand": 2,
+          "asset_token": "icon_110110309",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "水仙女王",
+          "level": 10,
+          "star": 15,
+          "stand": 3,
+          "asset_token": "icon_110110301",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "九尾狐",
+          "level": 13,
+          "star": 15,
+          "stand": 4,
+          "asset_token": "icon_110110303",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "地狱犬",
+          "level": 9,
+          "star": 12,
+          "stand": 5,
+          "asset_token": "icon_110110310",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "急救鼠",
+          "level": 9,
+          "star": 10,
+          "stand": 6,
+          "asset_token": "icon_110110308",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "狂噬虎",
+          "level": 15,
+          "star": 15,
+          "stand": 7,
+          "asset_token": "icon_110110311",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        },
+        {
+          "name": "暗阎狮",
+          "level": 15,
+          "star": 15,
+          "stand": 8,
+          "asset_token": "icon_110110302",
+          "quality": 6,
+          "star_mark_sprite": "",
+          "star_mark_tier": 0,
+          "realm": null,
+          "strength": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,646 @@
+{
+  "realm": 4,
+  "captured_at_china": "2026-10-04 17:35",
+  "rounds": [
+    {
+      "key": "round32",
+      "label": "32强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 2965,
+              "name": "暗月煞无",
+              "avatar_id": "300310",
+              "frame_id": "400710",
+              "result": "win"
+            },
+            {
+              "server_id": 2832,
+              "name": "纳兹",
+              "avatar_id": "50511011",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "3aa359ff9ca96b6f"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2914,
+              "name": "奶水不够足",
+              "avatar_id": "300850",
+              "frame_id": "400624",
+              "result": "loss"
+            },
+            {
+              "server_id": 3048,
+              "name": "青稞",
+              "avatar_id": "21503011",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "89cdf836883f18ba"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2647,
+              "name": "愿之精灵使者",
+              "avatar_id": "11504011",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 2816,
+              "name": "可乐柠檬糖",
+              "avatar_id": "300600",
+              "frame_id": "400235",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "46c858b40fb4feff"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2892,
+              "name": "辉光",
+              "avatar_id": "50506011",
+              "frame_id": "400710",
+              "result": "win"
+            },
+            {
+              "server_id": 2965,
+              "name": "炭波波",
+              "avatar_id": "300720",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "e1c27ab749942ed5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2692,
+              "name": "老板不加香菜",
+              "avatar_id": "50506011",
+              "frame_id": "400200",
+              "result": "win"
+            },
+            {
+              "server_id": 2634,
+              "name": "月光",
+              "avatar_id": "50514011",
+              "frame_id": "400230",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "60a0c6864b088a78"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2950,
+              "name": "雨下区中区",
+              "avatar_id": "50514011",
+              "frame_id": "400235",
+              "result": "win"
+            },
+            {
+              "server_id": 3028,
+              "name": "厌世紫泽",
+              "avatar_id": "11501011",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "b23caaae3f7db09e"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2806,
+              "name": "夏若乘风",
+              "avatar_id": "300250",
+              "frame_id": "400710",
+              "result": "win"
+            },
+            {
+              "server_id": 3038,
+              "name": "圣域八强果奔",
+              "avatar_id": "300640",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "bde43d52809bd47e"
+        },
+        {
+          "players": [
+            {
+              "server_id": 3047,
+              "name": "玄天月神",
+              "avatar_id": "50514011",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 2777,
+              "name": "草世白泽",
+              "avatar_id": "50514011",
+              "frame_id": "400500",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "a7573156fcc31039"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2893,
+              "name": "我是大导演",
+              "avatar_id": "300750",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 2740,
+              "name": "小佳",
+              "avatar_id": "300880",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "dd5452d243e227e2"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2932,
+              "name": "和天下",
+              "avatar_id": "300400",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 2910,
+              "name": "缘之神圣法师",
+              "avatar_id": "300280",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "28db9d2de962cf18"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2974,
+              "name": "挽笙",
+              "avatar_id": "300890",
+              "frame_id": "400200",
+              "result": "loss"
+            },
+            {
+              "server_id": 2727,
+              "name": "神乐",
+              "avatar_id": "300880",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "697e8442e5b92dd3"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2658,
+              "name": "灰原哀",
+              "avatar_id": "300300",
+              "frame_id": "400710",
+              "result": "loss"
+            },
+            {
+              "server_id": 2701,
+              "name": "谁家的小谁",
+              "avatar_id": "300380",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "f51d5c3e30e24cf5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2695,
+              "name": "红色电电龙",
+              "avatar_id": "50506011",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 2972,
+              "name": "重生门",
+              "avatar_id": "300380",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "ff38ba110d8503a1"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2849,
+              "name": "小小格温",
+              "avatar_id": "300160",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 2850,
+              "name": "月光探险家",
+              "avatar_id": "300880",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "9fdd4dbd917fd8b2"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2659,
+              "name": "十六夜之雨",
+              "avatar_id": "21503011",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 2963,
+              "name": "虹之猎人",
+              "avatar_id": "300550",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "46eb15babaa7a029"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2695,
+              "name": "香菜不吃老板",
+              "avatar_id": "300850",
+              "frame_id": "400230",
+              "result": "loss"
+            },
+            {
+              "server_id": 2795,
+              "name": "努力摸大魚",
+              "avatar_id": "50501011",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "5c80bf7d3c7ce343"
+        }
+      ]
+    },
+    {
+      "key": "round16",
+      "label": "16强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 2965,
+              "name": "暗月煞无",
+              "avatar_id": "300310",
+              "frame_id": "400710",
+              "result": "loss"
+            },
+            {
+              "server_id": 3048,
+              "name": "青稞",
+              "avatar_id": "21503011",
+              "frame_id": "409000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "350a024171babe1f"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2816,
+              "name": "可乐柠檬糖",
+              "avatar_id": "300600",
+              "frame_id": "400235",
+              "result": "loss"
+            },
+            {
+              "server_id": 2892,
+              "name": "辉光",
+              "avatar_id": "50506011",
+              "frame_id": "400710",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "a297782dd294713f"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2692,
+              "name": "老板不加香菜",
+              "avatar_id": "50506011",
+              "frame_id": "400200",
+              "result": "loss"
+            },
+            {
+              "server_id": 2950,
+              "name": "雨下区中区",
+              "avatar_id": "50514011",
+              "frame_id": "400235",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "43d762d14fa32d8c"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2806,
+              "name": "夏若乘风",
+              "avatar_id": "300250",
+              "frame_id": "400710",
+              "result": "win"
+            },
+            {
+              "server_id": 2777,
+              "name": "草世白泽",
+              "avatar_id": "50514011",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "edc812d15ce7a0bf"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2893,
+              "name": "我是大导演",
+              "avatar_id": "300750",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 2910,
+              "name": "缘之神圣法师",
+              "avatar_id": "300280",
+              "frame_id": "409000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "a0bf0cf4df4d3a5c"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2727,
+              "name": "神乐",
+              "avatar_id": "300880",
+              "frame_id": "400250",
+              "result": "win"
+            },
+            {
+              "server_id": 2701,
+              "name": "谁家的小谁",
+              "avatar_id": "300380",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "27a81f4603ebc2f8"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2972,
+              "name": "重生门",
+              "avatar_id": "300380",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 2849,
+              "name": "小小格温",
+              "avatar_id": "300160",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "e4eb987d879b5c19"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2659,
+              "name": "十六夜之雨",
+              "avatar_id": "21503011",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 2795,
+              "name": "努力摸大魚",
+              "avatar_id": "50501011",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "52bd3dd61d4b208d"
+        }
+      ]
+    },
+    {
+      "key": "quarterfinal",
+      "label": "8强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 3048,
+              "name": "青稞",
+              "avatar_id": "21503011",
+              "frame_id": "409000",
+              "result": "loss"
+            },
+            {
+              "server_id": 2892,
+              "name": "辉光",
+              "avatar_id": "50506011",
+              "frame_id": "400710",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "3fc576a4da781684"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2950,
+              "name": "雨下区中区",
+              "avatar_id": "50514011",
+              "frame_id": "400235",
+              "result": "win"
+            },
+            {
+              "server_id": 2806,
+              "name": "夏若乘风",
+              "avatar_id": "300250",
+              "frame_id": "400710",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "c419ecd7b8983dce"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2893,
+              "name": "我是大导演",
+              "avatar_id": "300750",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 2727,
+              "name": "神乐",
+              "avatar_id": "300880",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "0e2ff075912584dd"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2972,
+              "name": "重生门",
+              "avatar_id": "300380",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 2795,
+              "name": "努力摸大魚",
+              "avatar_id": "50501011",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "b33ead92051d440a"
+        }
+      ]
+    },
+    {
+      "key": "semifinal",
+      "label": "半决赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 2892,
+              "name": "辉光",
+              "avatar_id": "50506011",
+              "frame_id": "400710",
+              "result": "win"
+            },
+            {
+              "server_id": 2950,
+              "name": "雨下区中区",
+              "avatar_id": "50514011",
+              "frame_id": "400235",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "73149a180b65939f"
+        },
+        {
+          "players": [
+            {
+              "server_id": 2727,
+              "name": "神乐",
+              "avatar_id": "300880",
+              "frame_id": "400250",
+              "result": "win"
+            },
+            {
+              "server_id": 2795,
+              "name": "努力摸大魚",
+              "avatar_id": "50501011",
+              "frame_id": "400250",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "9e08e4b580d46c8e"
+        }
+      ]
+    },
+    {
+      "key": "final",
+      "label": "冠军赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 2892,
+              "name": "辉光",
+              "avatar_id": "50506011",
+              "frame_id": "400710",
+              "result": "win"
+            },
+            {
+              "server_id": 2727,
+              "name": "神乐",
+              "avatar_id": "300880",
+              "frame_id": "400250",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "71644db1c6ac5f89"
+        }
+      ]
+    }
+  ],
+  "bronze_match": {
+    "players": [
+      {
+        "server_id": 2950,
+        "name": "雨下区中区",
+        "avatar_id": "50514011",
+        "frame_id": "400235",
+        "result": "loss"
+      },
+      {
+        "server_id": 2795,
+        "name": "努力摸大魚",
+        "avatar_id": "50501011",
+        "frame_id": "400250",
+        "result": "win"
+      }
+    ],
+    "lineup_id": "456643f1631fb68f"
+  },
+  "channel": "xkbeta",
+  "season": "S15"
+}
