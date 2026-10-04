@@ -1,4 +1,4 @@
-module.exports = async page => {
+module.exports = async (page, baseURL) => {
   const checks = [], errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const ok = (condition, name) => { if (!condition) throw new Error(name); checks.push(name); };
@@ -92,7 +92,8 @@ module.exports = async page => {
   ok(await page.locator('#encyclopedia-view').isVisible(), '原有百科可用');
   const itemClassLabels = await page.locator('#item-class-filter option').allTextContents();
   ok(itemClassLabels.includes('兽印') && itemClassLabels.includes('未使用物品'), '百科新分类已加载');
-  ok((await page.locator('#item-summary').innerText()).includes('5,672'), '百科完整静态数据已加载');
+  const itemCount = (await (await page.request.get(baseURL + '/api/items.json')).json()).items.length;
+  ok((await page.locator('#item-summary').innerText()).includes(itemCount.toLocaleString('zh-CN')), '百科完整静态数据已加载');
   await page.getByRole('tab',{name:'全服日历',exact:true}).click();
   ok(await page.locator('#global-calendar-view').isVisible(), '原有全服日历可用');
   await page.getByRole('tab',{name:'圣域回顾',exact:true}).click();

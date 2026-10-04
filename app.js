@@ -1075,7 +1075,8 @@ function itemStars(item) {
   // Past 20 stars the banner replaces the marks and the tier number sits on its
   // middle star, so the legend variant centres the digit instead of right-aligning.
   const legend = value > 20;
-  return `<span class="item-stars${legend ? " item-stars-legend" : ""}" aria-label="${value} 星">${marks}${legend ? `<b>${value - 21}</b>` : ""}</span>`;
+  const legendTier = value - 21;
+  return `<span class="item-stars${legend ? " item-stars-legend" : ""}" aria-label="${value} 星">${marks}${legend && legendTier > 0 ? `<b>${legendTier}</b>` : ""}</span>`;
 }
 
 function itemSpecialBadges(item) {

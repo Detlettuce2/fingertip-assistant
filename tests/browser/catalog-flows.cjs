@@ -8,7 +8,8 @@ module.exports=async(page,baseURL)=>{
   await page.goto(baseURL+'/?view=encyclopedia&catalog=items');
   await page.locator('.item-card').first().waitFor();
   ok(await page.locator('[data-catalog]').count()===6,'百科有六个图鉴子选项');
-  ok((await page.locator('#item-summary').innerText()).includes('5,672'),'物品图鉴保留已有全部公开资料');
+  const itemCount=(await(await page.request.get(baseURL+'/api/items.json')).json()).items.length;
+  ok((await page.locator('#item-summary').innerText()).includes(itemCount.toLocaleString('zh-CN')),'物品图鉴保留已有全部公开资料');
   await page.getByRole('tab',{name:'角色图鉴',exact:true}).click();
   await page.locator('.catalog-card').first().waitFor();
   ok((await page.locator('#catalog-summary').innerText()).includes('87 个角色'),'角色静态资料已加载');
@@ -34,7 +35,8 @@ module.exports=async(page,baseURL)=>{
   ok(await page.locator('.catalog-card').count()===1 && (await page.locator('#catalog-detail').innerText()).includes('流放'),'九尾狐技能和成长说明可查');
   await page.getByRole('tab',{name:'圣物图鉴',exact:true}).click();
   await page.locator('#catalog-search').fill('守护圣盾');
-  ok(await page.locator('.catalog-card').count()===1 && await page.locator('#catalog-detail img').count()===0,'缺少新素材的圣物显示占位而非断图');
+  await page.waitForFunction(()=>{const image=document.querySelector('#catalog-detail .item-icon');return image?.complete&&image.naturalWidth>0;});
+  ok(await page.locator('.catalog-card').count()===1,'新增圣物静态贴图完整加载');
   await page.getByRole('tab',{name:'兽印图鉴',exact:true}).click();
   await page.locator('#catalog-search').fill('九尾狐');
   await page.locator('#catalog-rare').check();
