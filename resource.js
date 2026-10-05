@@ -51,8 +51,9 @@
     });
     $('building-controls-heading').textContent = highBattle ? '调整五座收益建筑的等级与进驻加成' : '调整九座生产建筑的等级与进驻加成';
     $('scope-note').textContent = highBattle
-      ? '高战口径：每日副本只计金币与经验；建筑计入四座重点建筑与星辰之塔，排除只产魔王币的集市、温泉、咖啡厅和魔法工坊。'
-      : '全资源口径：可计入全部九座建筑与四种副本。进驻仍按四座重点建筑的顺序优先分配，其余建筑使用剩余角色。';
+      ? '高战口径：每日副本只计金币与经验；建筑计入五座重点建筑，排除只产魔王币的集市、温泉、咖啡厅和魔法工坊。'
+      : '全资源口径：可计入全部九座建筑与四种副本。进驻仍按五座重点建筑的顺序优先分配，其余建筑使用剩余角色。';
+    $('tower-note').hidden = settings.station !== 'maximum';
     $('lifetime-benefits').textContent = '产能 +10% · 每日 100 星钻 · 金色点金 +3次/轮' + (highBattle ? '' : ' · 装备扫荡 +1次/天');
     $('dungeon-paid-note').textContent = highBattle ? '按 VIP 等级计算金币 / 经验付费次数，星钻消耗单列' : '随 VIP 等级及终身卡权益更新，星钻消耗单列';
     $('custom-quick').hidden = settings.quickPaid !== 'custom';
@@ -160,7 +161,7 @@
     $('loading').hidden = false; $('retry').hidden = true; $('loading-text').textContent = '正在读取资源资料…';
     pending = (async () => {
       try {
-        const response = await fetch('api/resources.json?v=highbattle-20261005');
+        const response = await fetch('api/resources.json?v=tower-priority-20261005');
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const value = await response.json();
         if (value.vip_levels?.length !== 21 || value.buildings?.length !== 9 || !value.resources?.length || !value.adventure?.length) throw new Error('资料不完整');

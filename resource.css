@@ -25,7 +25,7 @@
 .resource-note { margin: 10px 0 0; font-size: 13px; }
 .resource-subsection { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
 .resource-subsection h4 { margin-bottom: 12px; }
-.resource-priority-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.resource-priority-cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
 .resource-priority-card { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 14px; border: 1px solid #bbdad4; border-radius: 10px; background: var(--teal-soft); }
 .resource-priority-card span, .resource-priority-card small { color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }
 .resource-priority-card span { font-size: 13px; }
@@ -101,6 +101,7 @@
   .resource-actions { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .resource-actions > :last-child { grid-column: 1 / -1; }
   .resource-checks, .resource-building-results { grid-template-columns: 1fr; }
+  .resource-priority-card:last-child { grid-column: 1 / -1; }
   .resource-control-grid { gap: 12px; }
   .resource-field { font-size: 13px; }
   .resource-field select, .resource-field input { padding-inline: 8px; }

@@ -134,7 +134,7 @@ test('priority stationing shares no character between buildings and restores the
   assert.equal(result.quick.paid, 0);
   assert.equal(result.buildings.length, 5);
   assert.deepEqual(result.buildings.map(building => [building.name, building.stationPercent]),
-    [['传送阵',67],['远古遗迹',67],['冒险者公会',64],['空港',66],['星辰之塔',66]]);
+    [['传送阵',67],['远古遗迹',67],['星辰之塔',66],['冒险者公会',64],['空港',66]]);
   assert(result.buildings.every(building => building.naturalHours === 24));
 });
 
@@ -209,7 +209,7 @@ test('CSV contains all 21 VIPs and applies the selected resource scope consisten
   assert.equal(rows.length, 23);
   assert(rows[0].includes(data.updated_on));
   assert(!rows[1].includes('魔王币') && rows[1].includes('魔石原矿'));
-  assert(rows[0].includes('高战收菜') && rows[0].includes('传送阵 > 远古遗迹 > 冒险者公会 > 空港'));
+  assert(rows[0].includes('高战收菜') && rows[0].includes('传送阵 > 远古遗迹 > 星辰之塔 > 冒险者公会 > 空港'));
   assert(C.csv(data, {...C.maximum(data), scope: 'all'}).split('\r\n')[1].includes('魔王币'));
   assert(rows[2].startsWith('"0"')); assert(rows[22].startsWith('"20"'));
 });

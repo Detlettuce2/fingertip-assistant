@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="beast-seal.css">
   <link rel="stylesheet" href="growth.css">
-  <link rel="stylesheet" href="resource.css?v=highbattle-20261005">
+  <link rel="stylesheet" href="resource.css?v=tower-priority-20261005">
 </head>
 <body>
   <main class="shell">
@@ -117,7 +117,7 @@
             </div>
             <div id="resource-cards" class="resource-checks"></div>
             <p id="resource-scope-note" class="resource-note"></p>
-            <div class="resource-subsection"><h4>重点建筑进驻</h4><p class="resource-note">满配分配顺序：传送阵 → 远古遗迹 → 冒险者公会 → 空港。先保证前一座建筑的加成，再最大化下一座；同一角色只使用一次，剩余角色再分配至星辰之塔。</p><div id="resource-priority-cards" class="resource-priority-cards"></div></div>
+            <div class="resource-subsection"><h4>重点建筑进驻</h4><p class="resource-note">满配分配顺序：传送阵 → 远古遗迹 → 星辰之塔 → 冒险者公会 → 空港。先保证前一座建筑的加成，再最大化下一座；同一角色只使用一次。</p><div id="resource-priority-cards" class="resource-priority-cards"></div><p id="resource-tower-note" class="resource-note" hidden>保留传送阵、远古遗迹各 67% 时，当前资料中星辰之塔最高为 66%。星辰之塔达到 67% 需要蔷薇丝塔，她已用于传送阵；采用 66% 后继续分配冒险者公会和空港。</p></div>
             <p id="resource-benefits" class="resource-note"></p>
             <p id="resource-quick-summary" class="resource-note"></p>
             <p id="resource-storage-note" class="resource-note"></p>
@@ -157,7 +157,7 @@
           <li>产能采用游戏资源说明中的静态数值，资料日期 2026-09-30；按 24 小时生产和设定收取间隔测算。冒险关卡决定传送阵基础产能，建筑等级决定其他建筑基础产能。仓库需有余量，升级中的停产需自行扣除。</li>
           <li>产能 = 基础产能 ×（1 + 繁荣加成 + 时间加速加成 + 终身卡加成 + 进驻加成 + 对应 VIP 加成）。各项百分数相加；VIP 产能加成只作用于传送阵的金币和英雄经验。</li>
           <li>高战满配预设将繁荣设为 50 级、收益建筑设为资料内最高等级，启用加速特权和终身卡，选择末关冒险与金币 / 经验副本。魔王币、符文 / 装备副本不计入该口径。保留所选 VIP、卡类与额外收益；可继续调整实际条件。</li>
-          <li>满配进驻按传送阵 → 远古遗迹 → 冒险者公会 → 空港依次最大化，可同时达到 67%、67%、64%、66%，余下角色使星辰之塔达到 66%。这是同一角色不能重复使用时的联合分配；经营技能、天赋及队友加级条件需全部满足。</li>
+          <li>满配进驻按传送阵 → 远古遗迹 → 星辰之塔 → 冒险者公会 → 空港依次最大化，可同时达到 67%、67%、66%、64%、66%。星辰之塔已在第三优先级下取满可达加成，随后继续分配其余建筑。这是同一角色不能重复使用时的联合分配；经营技能、天赋及队友加级条件需全部满足。</li>
           <li>快速生产每次获得 2 小时建筑收益；VIP0～20 的付费上限均为 3 次，时间加速特权额外增加 2 次。付费次数从第一次起依次消耗 50、100、200、300、300 星钻。</li>
           <li>金币副本从 VIP1 起、经验副本从 VIP5 起各增加 2 次付费扫荡。终身卡增加 1 次装备试炼付费扫荡，不增加免费次数。首次通关奖励、随机额外掉落、付费购买时的一次性礼包不纳入稳定日收益。</li>
           <li>终身卡每日星钻与建筑加成纳入勾选项；额外 10 张招募卷的领取周期未明确，仅在勾选“今天领取”时加入当天汇总。豪华月卡、至尊月卡和招募周卡仅在已开通且处于有效期时计入。</li>
@@ -390,8 +390,8 @@
   <script src="growth-core.js" defer></script>
   <script src="growth.js" defer></script>
   <script src="encyclopedia.js" defer></script>
-  <script src="resource-core.js?v=highbattle-20261005" defer></script>
-  <script src="resource.js?v=highbattle-20261005" defer></script>
+  <script src="resource-core.js?v=tower-priority-20261005" defer></script>
+  <script src="resource.js?v=tower-priority-20261005" defer></script>
   <script src="app.js?v=resources-20261005" defer></script>
 </body>
 </html>

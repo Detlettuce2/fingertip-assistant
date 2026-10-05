@@ -13,7 +13,7 @@
   const choice = (value, options, fallback) => options.includes(value) ? value : fallback;
   const enabled = (value, fallback = false) => value === undefined ? fallback : value === true;
   const rounded = value => Math.round(value * 1e6) / 1e6;
-  const priority = ['传送阵', '远古遗迹', '冒险者公会', '空港'];
+  const priority = ['传送阵', '远古遗迹', '星辰之塔', '冒险者公会', '空港'];
   const order = [1, 2, 3, 20110401, 30450301, 30450302, 5, 1005001, 4, 20210100, 16, 34];
 
   function resources(data, input = {}) {

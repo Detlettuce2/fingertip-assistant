@@ -18,7 +18,9 @@ module.exports = async (page, baseURL) => {
   ok(await page.locator('#resource-scope').inputValue() === 'highBattle', '满配按钮采用高战口径');
   ok(await page.locator('#resource-dungeon-field-2').isHidden() && await page.locator('#resource-dungeon-field-3').isHidden(), '高战副本只显示金币和经验');
   ok(await page.locator('#resource-totals [data-resource-id="34"]').count() === 0 && await page.locator('#resource-metric option[value="34"]').count() === 0, '高战汇总和比较选项均排除魔王币');
-  ok(JSON.stringify(await page.locator('.resource-priority-card strong').allTextContents()) === JSON.stringify(['进驻 +67%', '进驻 +67%', '进驻 +64%', '进驻 +66%']), '四座重点建筑按优先顺序显示联合最大加成');
+  ok(JSON.stringify(await page.locator('.resource-priority-card strong').allTextContents()) === JSON.stringify(['进驻 +67%', '进驻 +67%', '进驻 +66%', '进驻 +64%', '进驻 +66%'])
+    && JSON.stringify(await page.locator('.resource-priority-card > span').allTextContents()) === JSON.stringify(['优先 1 · 传送阵','优先 2 · 远古遗迹','优先 3 · 星辰之塔','优先 4 · 冒险者公会','优先 5 · 空港']), '星辰之塔优先级第三，空港第五，五座建筑显示联合最大加成');
+  ok(await page.locator('#resource-tower-note').isVisible() && (await page.locator('#resource-tower-note').innerText()).includes('最高为 66%'), '满配说明星辰之塔不能同时达到67%的角色冲突');
   ok((await page.locator('.resource-priority-card').first().innerText()).includes('雅典娜') && (await page.locator('.resource-priority-card').first().innerText()).includes('蔷薇丝塔'), '传送阵67%的队友配合名单可直接查看');
   await page.locator('#resource-scope').selectOption('all');
   ok(await page.locator('#resource-dungeon-field-2').isVisible() && await page.locator('#resource-dungeon-field-3').isVisible(), '全部资源口径仍可显示符文和装备副本');
@@ -35,6 +37,7 @@ module.exports = async (page, baseURL) => {
   await page.locator('#resource-maximum-free').click();
   ok(await page.locator('#resource-star-cost').innerText() === '0', '满配免费方案不支出星钻');
   await page.locator('#resource-station').selectOption('custom');
+  ok(await page.locator('#resource-tower-note').isHidden(), '自定义进驻时隐藏满配角色冲突说明');
   await page.locator('#resource-building-controls').evaluate(el => {el.closest('details').open = true;});
   await page.locator('#resource-station-0').fill('35');
   await page.locator('#resource-station-0').blur();
@@ -60,7 +63,8 @@ module.exports = async (page, baseURL) => {
   await download.saveAs('output/playwright/resources.csv');
   const csv = fs.readFileSync('output/playwright/resources.csv', 'utf8');
   ok(csv.charCodeAt(0) === 65279 && csv.trimEnd().split('\r\n').length === 23, 'CSV包含条件、表头和21个VIP');
-  ok(csv.split('\r\n')[0].includes('高战收菜') && !csv.split('\r\n')[1].includes('魔王币'), '导出遵循高战统计口径');
+  ok(csv.split('\r\n')[0].includes('高战收菜') && csv.split('\r\n')[0].includes('传送阵 > 远古遗迹 > 星辰之塔 > 冒险者公会 > 空港')
+    && !csv.split('\r\n')[1].includes('魔王币'), '导出遵循高战统计口径和星辰之塔第三优先级');
   await page.reload(); await page.locator('#resource-content').waitFor({state: 'visible'});
   const restoredVip = await page.locator('#resource-vip').inputValue();
   const restoredExtra = await page.locator('#resource-extra-list').textContent();
