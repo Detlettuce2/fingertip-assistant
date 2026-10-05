@@ -41,7 +41,8 @@ module.exports = async (page, baseURL) => {
   ok(await page.locator('.resource-assigned-hero').count() === 0 && (await page.locator('#resource-planner-status').innerText()).includes('0 名'), '清空角色时不生成虚构搭配');
   await page.locator('#resource-hero-search').fill('雅典娜'); await page.getByRole('checkbox', {name: '拥有雅典娜', exact: true}).check();
   await page.locator('#resource-hero-search').fill('蔷薇丝塔'); await page.getByRole('checkbox', {name: '拥有蔷薇丝塔', exact: true}).check();
-  ok(await page.locator('.resource-assigned-hero').count() === 2 && await page.locator('.resource-plan-percent').first().innerText() === '+45%', '仅有两名角色时保留真实队友配合与人数');
+  ok(await page.locator('.resource-assigned-hero').count() === 2
+    && JSON.stringify(await page.locator('.resource-plan-percent').allTextContents()) === JSON.stringify(['+22%','+22%','+0%','+0%','+0%']), '仅有两名角色时遵守建筑适用性，分别分配且保留空位');
   await page.locator('#resource-heroes-all').click(); await page.locator('#resource-hero-search').fill('');
   await page.locator('#resource-reset-priority').click();
   const handle = page.locator('[data-building="星辰之塔"] .resource-drag-handle');
