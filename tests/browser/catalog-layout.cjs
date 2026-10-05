@@ -38,6 +38,7 @@ module.exports = function inspectCatalogLayout() {
   if (header && [...header.children].some(child => !contains(rect(header), rect(child)))) issues.push('详情标题或图标溢出');
   if (pagination.bottom > rect(detail).top + 1 && window.innerWidth <= 920) issues.push('分页遮挡详情');
   if (window.innerWidth <= 920 && rect(document.querySelector('.site-credit')).top < rect(document.querySelector('main')).bottom - 1) issues.push('署名遮挡正文');
-  if (document.documentElement.scrollWidth > window.innerWidth) issues.push('页面横向溢出');
+  const zoom = Number(getComputedStyle(document.documentElement).zoom) || 1;
+  if (document.documentElement.scrollWidth * zoom > window.innerWidth + 1) issues.push('页面横向溢出');
   return {width: window.innerWidth, cards: cards.length, issues};
 };

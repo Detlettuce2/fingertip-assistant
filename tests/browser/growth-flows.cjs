@@ -77,7 +77,7 @@ module.exports=async(page,baseURL)=>{
     await page.setViewportSize({width,height:900});
     for(const tab of ['heroes','artifacts']){
       await page.locator(`[data-catalog="${tab}"]`).click();await page.locator('#growth-form').waitFor();
-      const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,clipped:[...document.querySelectorAll('#growth-form input,#growth-form button,#growth-title,[data-growth-material] strong')].some(e=>e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+1)||[...document.querySelectorAll('#growth-attributes td')].some(e=>{const range=document.createRange();range.selectNodeContents(e);return range.getClientRects().length!==1;})}));
+      const layout=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth*(Number(getComputedStyle(document.documentElement).zoom)||1)>innerWidth+1,clipped:[...document.querySelectorAll('#growth-form input,#growth-form button,#growth-title,[data-growth-material] strong')].some(e=>e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+1)||[...document.querySelectorAll('#growth-attributes td')].some(e=>{const range=document.createRange();range.selectNodeContents(e);return range.getClientRects().length!==1;})}));
       ok(!layout.overflow&&!layout.clipped,`${width}px ${tab}成长表单、数值与曲线无外溢`);
     }
   }

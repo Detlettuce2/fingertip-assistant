@@ -47,14 +47,19 @@ module.exports = async (page, baseURL) => {
   const csv = fs.readFileSync('output/playwright/resources.csv', 'utf8');
   ok(csv.charCodeAt(0) === 65279 && csv.trimEnd().split('\r\n').length === 23, 'CSV包含条件、表头和21个VIP');
   await page.reload(); await page.locator('#resource-content').waitFor({state: 'visible'});
-  ok(await page.locator('#resource-vip').inputValue() === '6' && (await page.locator('#resource-extra-list').innerText()).includes('125'), '刷新保留VIP和额外收益');
+  const restoredVip = await page.locator('#resource-vip').inputValue();
+  const restoredExtra = await page.locator('#resource-extra-list').textContent();
+  const restoredIncome = Number((await page.locator('#resource-star-income').innerText()).replaceAll(',', ''));
+  ok(restoredVip === '6' && restoredExtra.includes('125') && Math.abs(restoredIncome - starsBefore - 125) < 0.001,
+    `刷新保留VIP和额外收益：VIP=${restoredVip}，收入=${restoredIncome}，额外收益=${restoredExtra}`);
   for (const width of [320,390,540,768,1440]) {
     await page.setViewportSize({width, height: 950});
     await page.locator('#resource-content details').evaluateAll(els => els.forEach(el => {el.open = true;}));
     const issues = await page.evaluate(() => {
       const problems = [], rect = el => el.getBoundingClientRect();
       const contains = (a, b) => b.left >= a.left - 1 && b.right <= a.right + 1 && b.top >= a.top - 1 && b.bottom <= a.bottom + 1;
-      if (document.documentElement.scrollWidth > window.innerWidth) problems.push('页面横向溢出');
+      const zoom = Number(getComputedStyle(document.documentElement).zoom) || 1;
+      if (document.documentElement.scrollWidth * zoom > window.innerWidth + 1) problems.push('页面横向溢出');
       for (const el of document.querySelectorAll('.resource-total, .resource-check, .resource-field, .resource-building-control, .resource-building-result')) {
         if (!el.getClientRects().length) continue;
         if (el.scrollWidth > el.clientWidth + 1) problems.push('控件或卡片横向溢出');
