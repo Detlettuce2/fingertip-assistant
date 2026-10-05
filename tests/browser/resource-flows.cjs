@@ -14,7 +14,19 @@ module.exports = async (page, baseURL) => {
   await page.locator('#resource-vip').selectOption('20');
   await page.locator('#resource-maximum-paid').click();
   ok((await page.locator('#resource-quick-summary').innerText()).includes('1 次免费 + 5 次付费'), '满配采用加速后的快速生产次数');
-  ok(await page.locator('#resource-star-cost').innerText() === '2,110', '完整付费星钻支出对平');
+  ok(await page.locator('#resource-star-cost').innerText() === '1,810', '高战付费星钻支出只含金币和经验扫荡');
+  ok(await page.locator('#resource-scope').inputValue() === 'highBattle', '满配按钮采用高战口径');
+  ok(await page.locator('#resource-dungeon-field-2').isHidden() && await page.locator('#resource-dungeon-field-3').isHidden(), '高战副本只显示金币和经验');
+  ok(await page.locator('#resource-totals [data-resource-id="34"]').count() === 0 && await page.locator('#resource-metric option[value="34"]').count() === 0, '高战汇总和比较选项均排除魔王币');
+  ok(JSON.stringify(await page.locator('.resource-priority-card strong').allTextContents()) === JSON.stringify(['进驻 +67%', '进驻 +67%', '进驻 +64%', '进驻 +66%']), '四座重点建筑按优先顺序显示联合最大加成');
+  ok((await page.locator('.resource-priority-card').first().innerText()).includes('雅典娜') && (await page.locator('.resource-priority-card').first().innerText()).includes('蔷薇丝塔'), '传送阵67%的队友配合名单可直接查看');
+  await page.locator('#resource-scope').selectOption('all');
+  ok(await page.locator('#resource-dungeon-field-2').isVisible() && await page.locator('#resource-dungeon-field-3').isVisible(), '全部资源口径仍可显示符文和装备副本');
+  await page.locator('#resource-dungeon-2').selectOption('40');
+  await page.locator('#resource-dungeon-3').selectOption('60');
+  ok(await page.locator('#resource-star-cost').innerText() === '2,110' && await page.locator('#resource-totals [data-resource-id="34"]').count() === 1, '全资源模式恢复其他副本与魔王币收益');
+  await page.locator('#resource-scope').selectOption('highBattle');
+  ok(await page.locator('#resource-star-cost').innerText() === '1,810' && await page.locator('#resource-dungeon-2').inputValue() === '0' && await page.locator('#resource-dungeon-3').inputValue() === '0', '切回高战口径清除其他副本的收入和费用');
   ok(await page.locator('#resource-comparison tr.selected').getAttribute('data-resource-vip') === '20', '当前VIP在对比表中高亮');
   await page.locator('#resource-metric').selectOption('30450302');
   ok(await page.locator('#resource-metric-heading').innerText() === '魔石原矿', '对比表可切换全部产出资源');
@@ -30,7 +42,9 @@ module.exports = async (page, baseURL) => {
   ok((await page.locator('.resource-building-result').first().innerText()).includes('进驻 +35%'), '自定义进驻率更新明细');
   await page.locator('#resource-station').selectOption('maximum');
   const teams = await page.locator('.resource-team').allTextContents();
-  ok(teams.length === 9, '满配显示九座建筑的公开角色名单');
+  ok(teams.length === 5, '高战满配显示五座收益建筑的公开角色名单');
+  ok(await page.locator('#resource-building-control-3').isHidden() && await page.locator('#resource-building-control-4').isHidden()
+    && await page.locator('#resource-building-control-5').isHidden() && await page.locator('#resource-building-control-6').isHidden(), '高战配置隐藏四座只产魔王币的建筑');
   await page.locator('#resource-collectHours').selectOption('24');
   ok((await page.locator('#resource-storage-note').innerText()).includes('会停产'), '单日领取可见存满停产影响');
   await page.locator('#resource-collectHours').selectOption('12');
@@ -46,11 +60,12 @@ module.exports = async (page, baseURL) => {
   await download.saveAs('output/playwright/resources.csv');
   const csv = fs.readFileSync('output/playwright/resources.csv', 'utf8');
   ok(csv.charCodeAt(0) === 65279 && csv.trimEnd().split('\r\n').length === 23, 'CSV包含条件、表头和21个VIP');
+  ok(csv.split('\r\n')[0].includes('高战收菜') && !csv.split('\r\n')[1].includes('魔王币'), '导出遵循高战统计口径');
   await page.reload(); await page.locator('#resource-content').waitFor({state: 'visible'});
   const restoredVip = await page.locator('#resource-vip').inputValue();
   const restoredExtra = await page.locator('#resource-extra-list').textContent();
   const restoredIncome = Number((await page.locator('#resource-star-income').innerText()).replaceAll(',', ''));
-  ok(restoredVip === '6' && restoredExtra.includes('125') && Math.abs(restoredIncome - starsBefore - 125) < 0.001,
+  ok(restoredVip === '6' && await page.locator('#resource-scope').inputValue() === 'highBattle' && restoredExtra.includes('125') && Math.abs(restoredIncome - starsBefore - 125) < 0.001,
     `刷新保留VIP和额外收益：VIP=${restoredVip}，收入=${restoredIncome}，额外收益=${restoredExtra}`);
   for (const width of [320,390,540,768,1440]) {
     await page.setViewportSize({width, height: 950});
@@ -60,7 +75,7 @@ module.exports = async (page, baseURL) => {
       const contains = (a, b) => b.left >= a.left - 1 && b.right <= a.right + 1 && b.top >= a.top - 1 && b.bottom <= a.bottom + 1;
       const zoom = Number(getComputedStyle(document.documentElement).zoom) || 1;
       if (document.documentElement.scrollWidth * zoom > window.innerWidth + 1) problems.push('页面横向溢出');
-      for (const el of document.querySelectorAll('.resource-total, .resource-check, .resource-field, .resource-building-control, .resource-building-result')) {
+      for (const el of document.querySelectorAll('.resource-total, .resource-check, .resource-field, .resource-building-control, .resource-building-result, .resource-priority-card')) {
         if (!el.getClientRects().length) continue;
         if (el.scrollWidth > el.clientWidth + 1) problems.push('控件或卡片横向溢出');
         if ([...el.children].filter(child => child.getClientRects().length).some(child => !contains(rect(el), rect(child)))) problems.push('控件或卡片内容遮挡');
@@ -83,11 +98,11 @@ module.exports = async (page, baseURL) => {
   const context = await page.context().browser().newContext();
   try {
     const failed = await context.newPage();
-    await failed.route('**/api/resources.json', route => route.abort());
+    await failed.route('**/api/resources.json*', route => route.abort());
     await failed.goto(baseURL + '/?view=resources');
     await failed.locator('#resource-retry').waitFor({state: 'visible'});
     ok(await failed.locator('#resource-content').isHidden(), '读取失败不会显示未就绪的控件');
-    await failed.unroute('**/api/resources.json'); await failed.locator('#resource-retry').click();
+    await failed.unroute('**/api/resources.json*'); await failed.locator('#resource-retry').click();
     await failed.locator('#resource-content').waitFor({state: 'visible'});
     ok(await failed.locator('#resource-comparison tr').count() === 21, '重试后成功恢复计算');
     await failed.evaluate(() => localStorage.setItem('fingertipResourceSettings:v1', '{broken'));

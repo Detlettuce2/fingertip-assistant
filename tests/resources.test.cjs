@@ -5,7 +5,7 @@ const data = require('../api/resources.json');
 const catalogs = require('../api/catalogs.json');
 
 function isolated(overrides = {}) {
-  return {...C.normalize(data), buildings: data.buildings.map(() => ({level: 0, percent: 60})),
+  return {...C.normalize(data), scope: 'all', buildings: data.buildings.map(() => ({level: 0, percent: 60})),
     freeQuick: false, dailyGift: false, gold: 'off', ...overrides};
 }
 const amount = (result, id) => result.totals.find(item => item.id === id)?.income || 0;
@@ -41,9 +41,9 @@ test('production percentages add; VIP never boosts 魔王经验 or other buildin
     buildings: [{level: 1}, {level: 1}, ...data.buildings.slice(2).map(() => ({level: 0}))]});
   const result = C.calculate(data, settings);
   assert.equal(result.globalPercent, 160);
-  assert.equal(amount(result, 2), 65664);
-  assert.equal(amount(result, 3), 328320);
-  assert.equal(amount(result, 4), 234720);
+  assert.equal(amount(result, 2), 65808);
+  assert.equal(amount(result, 3), 329040);
+  assert.equal(amount(result, 4), 235440);
   assert.equal(amount(result, 1), 256.48); // Tower 156.48 + daily lifetime 100.
   const lower = C.calculate(data, {...settings, vip: 0});
   assert.equal(amount(lower, 4), amount(result, 4));
@@ -122,17 +122,53 @@ test('daily quick-production task requires three attempts before its reward is c
   assert.equal(completed.activity, 180);
 });
 
-test('maximum stationing uses 27 distinct public characters and valid skill-level percentages', () => {
+test('priority stationing shares no character between buildings and restores the portal teammate skill', () => {
   const names = data.buildings.flatMap(building => building.stationed.map(hero => hero.name));
   assert.equal(names.length, 27); assert.equal(new Set(names).size, 27);
   const publicNames = new Set(catalogs.heroes.map(hero => hero.name));
   assert(names.every(name => publicNames.has(name)));
-  assert.deepEqual(data.buildings.map(building => building.stationed.reduce((sum, hero) => sum + hero.percent, 0)), [66,66,67,65,64,65,64,66,64]);
+  assert.deepEqual(data.buildings.map(building => building.stationed.reduce((sum, hero) => sum + hero.percent, 0)), [67,66,66,65,64,65,64,64,67]);
+  assert.deepEqual(data.buildings[0].stationed.map(hero => [hero.name, hero.percent]), [['雅典娜',22],['柳公子',22],['蔷薇丝塔',23]]);
   const result = C.calculate(data, C.maximum(data, {vip: 6}, false));
   assert.equal(result.settings.vip, 6);
   assert.equal(result.quick.paid, 0);
-  assert.equal(result.buildings.length, 9);
+  assert.equal(result.buildings.length, 5);
+  assert.deepEqual(result.buildings.map(building => [building.name, building.stationPercent]),
+    [['传送阵',67],['远古遗迹',67],['冒险者公会',64],['空港',66],['星辰之塔',66]]);
   assert(result.buildings.every(building => building.naturalHours === 24));
+});
+
+test('high-battle presets exclude irrelevant production and sweeps from income and spending', () => {
+  const result = C.calculate(data, C.maximum(data, {vip: 20, scope: 'all', cards: [true,false,false], extra: {1: 125, 34: 999}}, true));
+  assert.equal(result.settings.scope, 'highBattle');
+  assert.deepEqual(result.settings.cards, [true,false,false]);
+  assert.deepEqual(result.settings.extra, {1: 125});
+  assert.deepEqual(result.settings.dungeons, [100,100,0,0]);
+  assert.deepEqual(result.dungeons.map(dungeon => dungeon.name), ['金币副本','经验副本']);
+  assert.equal(result.stars.spent, 1810); // Quick 950 + gold/experience sweeps 200 + gold exchange 660.
+  assert.equal(result.buildings.flatMap(building => building.team).length, 15);
+  assert(!result.totals.some(item => item.id === 34));
+  assert(result.sources.every(source => source.materials.every(item => item.id !== 34)));
+  assert(!result.sources.some(source => /符文试炼|装备试炼|集市|温泉|咖啡厅|魔法工坊/.test(source.name)));
+  assert.equal(amount(result, 2), 2045 * 60 * 4.57 * 36 + 2620000 * 5 + (67000 + 133000 + 333000 * 4) * 3 * 2.5);
+  assert.equal(amount(result, 20110401), 7 * 3.27 * 36);
+  assert.equal(amount(result, 5), 360 * 3.24 * 36);
+  assert.equal(amount(result, 1005001), 1.6 * 3.26 * 36);
+});
+
+test('all-resource scope remains available and high-battle scope normalizes old saved selections', () => {
+  const settings = {...C.maximum(data, {vip: 20}, true), scope: 'all', dungeons: [100,100,40,60], extra: {34: 999}};
+  const result = C.calculate(data, settings);
+  assert.equal(result.buildings.length, 9);
+  assert.equal(result.dungeons.length, 4);
+  assert.equal(result.stars.spent, 2110);
+  assert(amount(result, 34) > 999);
+  const legacy = {...settings}; delete legacy.scope;
+  const normalized = C.normalize(data, legacy);
+  assert.equal(normalized.scope, 'highBattle');
+  assert.deepEqual(normalized.dungeons, [100,100,0,0]);
+  assert.deepEqual(normalized.extra, {});
+  assert(!C.resources(data, normalized).some(resource => resource.id === 34));
 });
 
 test('VIP comparison stays within one scenario and reconciles every source against totals', () => {
@@ -155,7 +191,7 @@ test('VIP comparison stays within one scenario and reconciles every source again
 test('invalid saved settings are bounded and unknown resource fields cannot enter totals', () => {
   const settings = C.normalize(data, {vip: Infinity, adventure: 99999, prosperity: -1, kingLevel: 99999,
     speed: 'false', station: 'unknown', buildings: [{level: -2, percent: NaN}],
-    dungeons: [999, -1, NaN, 60], extra: {'secret': 999, 1: -10, 2: 1e20}});
+    scope: 'all', dungeons: [999, -1, NaN, 60], extra: {'secret': 999, 1: -10, 2: 1e20}});
   assert.equal(settings.vip, 0); assert.equal(settings.adventure, 1484);
   assert.equal(settings.prosperity, 0); assert.equal(settings.kingLevel, 300);
   assert.equal(settings.speed, false); assert.equal(settings.station, 'none');
@@ -166,12 +202,14 @@ test('invalid saved settings are bounded and unknown resource fields cannot ente
   assert.doesNotThrow(() => C.normalize(data, null));
 });
 
-test('CSV contains all 21 VIPs, every public resource and scenario information', () => {
+test('CSV contains all 21 VIPs and applies the selected resource scope consistently', () => {
   const csv = C.csv(data, C.maximum(data, {vip: 20}, true));
   assert.equal(csv.charCodeAt(0), 65279);
   const rows = csv.trimEnd().split('\r\n');
   assert.equal(rows.length, 23);
   assert(rows[0].includes(data.updated_on));
-  assert(rows[1].includes('魔王币') && rows[1].includes('魔石原矿'));
+  assert(!rows[1].includes('魔王币') && rows[1].includes('魔石原矿'));
+  assert(rows[0].includes('高战收菜') && rows[0].includes('传送阵 > 远古遗迹 > 冒险者公会 > 空港'));
+  assert(C.csv(data, {...C.maximum(data), scope: 'all'}).split('\r\n')[1].includes('魔王币'));
   assert(rows[2].startsWith('"0"')); assert(rows[22].startsWith('"20"'));
 });

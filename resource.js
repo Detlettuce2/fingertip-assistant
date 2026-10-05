@@ -21,7 +21,7 @@
     }));
   }
   function setControls() {
-    for (const name of ['vip', 'adventure', 'prosperity', 'collectHours', 'station', 'quickPaid', 'quickCount', 'gold', 'goldCycles', 'kingLevel']) $(name).value = settings[name];
+    for (const name of ['scope', 'vip', 'adventure', 'prosperity', 'collectHours', 'station', 'quickPaid', 'quickCount', 'gold', 'goldCycles', 'kingLevel']) $(name).value = settings[name];
     for (const name of ['speed', 'lifetime', 'lifetimeClaim', 'freeQuick', 'dungeonPaid', 'dailyGift', 'tasks']) $(name).checked = settings[name];
     settings.cards.forEach((value, i) => $('card-' + i).checked = value);
     settings.dungeons.forEach((value, i) => $('dungeon-' + i).value = value);
@@ -32,6 +32,29 @@
     updateDependentControls();
   }
   function updateDependentControls() {
+    const highBattle = settings.scope === 'highBattle';
+    const included = C.resources(data, settings);
+    for (const [name, choices, fallback] of [
+      ['metric', included.filter(resource => ![1, 2, 3].includes(resource.id)), 20110401],
+      ['extra-kind', included, 1],
+    ]) {
+      const previous = Number($(name).value);
+      options($(name), choices.map(resource => [resource.id, resource.name]));
+      $(name).value = choices.some(resource => resource.id === previous) ? previous : fallback;
+    }
+    const includedBuildings = C.buildingIndices(data, settings);
+    data.buildings.forEach((_, i) => { $('building-control-' + i).hidden = !includedBuildings.includes(i); });
+    data.dungeons.forEach((dungeon, i) => {
+      const hidden = highBattle && !['金币副本', '经验副本'].includes(dungeon.name);
+      $('dungeon-field-' + i).hidden = hidden;
+      $('dungeon-' + i).disabled = hidden;
+    });
+    $('building-controls-heading').textContent = highBattle ? '调整五座收益建筑的等级与进驻加成' : '调整九座生产建筑的等级与进驻加成';
+    $('scope-note').textContent = highBattle
+      ? '高战口径：每日副本只计金币与经验；建筑计入四座重点建筑与星辰之塔，排除只产魔王币的集市、温泉、咖啡厅和魔法工坊。'
+      : '全资源口径：可计入全部九座建筑与四种副本。进驻仍按四座重点建筑的顺序优先分配，其余建筑使用剩余角色。';
+    $('lifetime-benefits').textContent = '产能 +10% · 每日 100 星钻 · 金色点金 +3次/轮' + (highBattle ? '' : ' · 装备扫荡 +1次/天');
+    $('dungeon-paid-note').textContent = highBattle ? '按 VIP 等级计算金币 / 经验付费次数，星钻消耗单列' : '随 VIP 等级及终身卡权益更新，星钻消耗单列';
     $('custom-quick').hidden = settings.quickPaid !== 'custom';
     $('lifetimeClaim').disabled = !settings.lifetime;
     $('goldCycles').disabled = settings.gold === 'off';
@@ -43,7 +66,7 @@
   }
   function readControls() {
     const next = {...settings};
-    for (const name of ['vip', 'adventure', 'prosperity', 'collectHours', 'station', 'quickPaid', 'quickCount', 'gold', 'goldCycles', 'kingLevel']) next[name] = $(name).value;
+    for (const name of ['scope', 'vip', 'adventure', 'prosperity', 'collectHours', 'station', 'quickPaid', 'quickCount', 'gold', 'goldCycles', 'kingLevel']) next[name] = $(name).value;
     for (const name of ['speed', 'lifetime', 'lifetimeClaim', 'freeQuick', 'dungeonPaid', 'dailyGift', 'tasks']) next[name] = $(name).checked;
     next.cards = data.cards.slice(1).map((_, i) => $('card-' + i).checked);
     next.dungeons = data.dungeons.map((_, i) => $('dungeon-' + i).value);
@@ -66,7 +89,7 @@
   }
   function render() {
     result = C.calculate(data, settings); comparison = C.compare(data, settings);
-    $('summary').textContent = `VIP${settings.vip} · 每日 24 小时 · ${data.adventure[settings.adventure].label} · ${result.buildings.length} 座生产建筑`;
+    $('summary').textContent = `${settings.scope === 'highBattle' ? '高战收菜' : '全部资源'} · VIP${settings.vip} · 每日 24 小时 · ${data.adventure[settings.adventure].label} · ${result.buildings.length} 座收益建筑`;
     $('version').textContent = '资料日期 ' + data.updated_on;
     $('star-net').textContent = (result.stars.net > 0 ? '+' : '') + number(result.stars.net);
     $('star-net').classList.toggle('resource-negative', result.stars.net < 0);
@@ -78,6 +101,10 @@
     $('task-note').textContent = settings.tasks ? `已计入所勾选的日常任务，活跃度 ${result.activity}。${result.quick.free + result.quick.paid < 3 ? '快速生产不足 3 次，该项任务的 30 星钻与 20 活跃度已排除。' : ''}商店、联盟建设等任务的额外花费需自行补充。` : '勾选日常任务代表完成对应任务条件；相关玩法花费另计。';
     const lost = result.buildings.filter(building => building.lostHours > 0);
     $('storage-note').textContent = lost.length ? `按每 ${settings.collectHours} 小时收取，${lost.map(b => b.name).join('、')}会停产；已扣除存满损失。快速生产收益不受该时长限制。` : '按当前收取频率可持续生产 24 小时；请保持仓库有余量。';
+    $('priority-cards').innerHTML = C.priority.map((name, i) => {
+      const building = result.buildings.find(building => building.name === name);
+      return `<article class="resource-priority-card"><span>优先 ${i + 1} · ${escape(name)}</span><strong>${building ? '进驻 +' + number(building.stationPercent) + '%' : '未计入'}</strong><small>${building?.team.length ? building.team.map(hero => escape(hero.name)).join('、') : '按所选进驻条件计算'}</small></article>`;
+    }).join('');
     $('totals').innerHTML = result.totals.map(item => `<article class="resource-total"><span>${escape(item.name)}</span><strong data-resource-id="${item.id}" data-income="${item.income}" title="${number(item.income)}">${short(item.income)}</strong><small>每日收入${item.spent ? ` · 支出 ${number(item.spent)}` : ''}</small></article>`).join('') || '<p class="resource-muted">当前条件没有资源产出，请开启生产建筑或每日收益。</p>';
     $('building-results').innerHTML = result.buildings.map(building => `<article class="resource-building-result"><div class="resource-building-title"><h4>${escape(building.name)} <small>Lv.${building.level}</small></h4><strong>进驻 +${number(building.stationPercent)}%</strong></div><p class="resource-muted">${escape(building.skill)} · 存储 ${number(building.storageHours)} 小时 · 有效生产 ${number(building.naturalHours)} 小时</p>${building.team.length ? `<p class="resource-team">${building.team.map(hero => escape(hero.name) + ` +${hero.percent}%`).join(' · ')}</p>` : ''}<dl><div><dt>自然生产</dt><dd class="resource-materials">${materials(building.natural)}</dd></div><div><dt>快速生产</dt><dd class="resource-materials">${materials(building.quick)}</dd></div></dl></article>`).join('') || '<p class="resource-muted">尚未启用生产建筑。</p>';
     $('source-rows').innerHTML = result.sources.map(source => `<tr><th scope="row">${escape(source.name)}</th><td><div class="resource-materials">${materials(source.materials)}</div></td><td><div class="resource-materials">${materials(source.costs)}</div></td></tr>`).join('');
@@ -88,13 +115,13 @@
     options($('vip'), data.vip_levels.map(tier => [tier.level, 'VIP' + tier.level]));
     options($('adventure'), data.adventure.map((stage, i) => [i, stage.label]));
     options($('prosperity'), Array.from({length: data.prosperity_max_level + 1}, (_, i) => [i, `Lv.${i} · +${i * data.prosperity_percent_per_level}%`]));
-    options($('metric'), data.resources.filter(resource => ![1, 2, 3].includes(resource.id)).map(resource => [resource.id, resource.name]));
-    $('metric').value = 34;
-    options($('extra-kind'), data.resources.map(resource => [resource.id, resource.name]));
     $('cards').innerHTML = data.cards.slice(1).map((card, i) => `<label class="resource-check"><input id="resource-card-${i}" type="checkbox"><span>${escape(card.name)}<small>${card.daily.map(item => escape(names.get(item.id)) + ' ' + number(item.count)).join('、')} / 天</small></span></label>`).join('');
-    $('dungeon-controls').innerHTML = data.dungeons.map((dungeon, i) => `<label class="resource-field"><span>${escape(dungeon.name)} · 已通关关卡</span><select id="resource-dungeon-${i}"></select></label>`).join('');
+    $('dungeon-controls').innerHTML = data.dungeons.map((dungeon, i) => `<label id="resource-dungeon-field-${i}" class="resource-field"><span>${escape(dungeon.name)} · 已通关关卡</span><select id="resource-dungeon-${i}"></select></label>`).join('');
     data.dungeons.forEach((dungeon, i) => options($('dungeon-' + i), [[0, '未开放 / 不计入'], ...dungeon.levels.map(level => [level.level, '第' + level.level + '关'])]));
-    $('building-controls').innerHTML = data.buildings.map((building, i) => `<div class="resource-building-control"><label class="resource-field"><span>${escape(building.name)} · ${escape(building.skill)}</span><select id="resource-building-${i}"></select></label><label id="resource-station-field-${i}" class="resource-field" hidden><span>进驻总加成（含天赋）%</span><input id="resource-station-${i}" type="number" min="-100" max="1000" step="1" inputmode="decimal"></label></div>`).join('');
+    $('building-controls').innerHTML = C.buildingIndices(data, {scope: 'all'}).map(i => {
+      const building = data.buildings[i];
+      return `<div id="resource-building-control-${i}" class="resource-building-control"><label class="resource-field"><span>${escape(building.name)} · ${escape(building.skill)}</span><select id="resource-building-${i}"></select></label><label id="resource-station-field-${i}" class="resource-field" hidden><span>进驻总加成（含天赋）%</span><input id="resource-station-${i}" type="number" min="-100" max="1000" step="1" inputmode="decimal"></label></div>`;
+    }).join('');
     data.buildings.forEach((building, i) => options($('building-' + i), [[0, '未建造 / 不计入'], ...building.levels.map(level => [level.level, 'Lv.' + level.level])]));
     setControls();
     $('controls').addEventListener('change', () => {clearTimeout(timer); readControls();});
@@ -133,7 +160,7 @@
     $('loading').hidden = false; $('retry').hidden = true; $('loading-text').textContent = '正在读取资源资料…';
     pending = (async () => {
       try {
-        const response = await fetch('api/resources.json');
+        const response = await fetch('api/resources.json?v=highbattle-20261005');
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const value = await response.json();
         if (value.vip_levels?.length !== 21 || value.buildings?.length !== 9 || !value.resources?.length || !value.adventure?.length) throw new Error('资料不完整');

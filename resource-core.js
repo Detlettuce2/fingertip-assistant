@@ -13,20 +13,34 @@
   const choice = (value, options, fallback) => options.includes(value) ? value : fallback;
   const enabled = (value, fallback = false) => value === undefined ? fallback : value === true;
   const rounded = value => Math.round(value * 1e6) / 1e6;
-  const order = [1, 2, 3, 4, 34, 5, 1005001, 20110401, 30450301, 30450302, 20210100, 16];
+  const priority = ['传送阵', '远古遗迹', '冒险者公会', '空港'];
+  const order = [1, 2, 3, 20110401, 30450301, 30450302, 5, 1005001, 4, 20210100, 16, 34];
+
+  function resources(data, input = {}) {
+    return data.resources.filter(resource => input?.scope === 'all' || resource.id !== 34);
+  }
+
+  function buildingIndices(data, input = {}) {
+    const rank = name => priority.includes(name) ? priority.indexOf(name) : priority.length;
+    return data.buildings.map((_, i) => i)
+      .filter(i => input?.scope === 'all' || data.buildings[i].levels.some(level => level.per_hour.some(item => item.id !== 34)))
+      .sort((a, b) => rank(data.buildings[a].name) - rank(data.buildings[b].name));
+  }
 
   function normalize(data, input = {}) {
     if (!input || typeof input !== 'object' || Array.isArray(input)) input = {};
+    const scope = choice(input.scope, ['highBattle', 'all'], 'highBattle');
     const buildings = data.buildings.map((building, i) => ({
       level: integer(input.buildings?.[i]?.level, 1, 0, building.levels.length),
       percent: number(input.buildings?.[i]?.percent, 60, -100, 1000),
     }));
     const extra = {};
-    for (const resource of data.resources) {
+    for (const resource of resources(data, {scope})) {
       const count = number(input.extra?.[resource.id], 0, 0, 1e12);
       if (count > 0) extra[resource.id] = count;
     }
     return {
+      scope,
       vip: integer(input.vip, 0, 0, data.vip_levels.length - 1),
       adventure: integer(input.adventure, 0, 0, data.adventure.length - 1),
       prosperity: integer(input.prosperity, 0, 0, data.prosperity_max_level),
@@ -36,7 +50,8 @@
       cards: data.cards.slice(1).map((_, i) => enabled(input.cards?.[i])),
       freeQuick: enabled(input.freeQuick, true), quickPaid: choice(input.quickPaid, ['none', 'all', 'custom'], 'none'),
       quickCount: integer(input.quickCount, 0, 0, data.quick.paid_costs.length),
-      dungeons: data.dungeons.map((dungeon, i) => integer(input.dungeons?.[i], 0, 0, dungeon.levels.length)),
+      dungeons: data.dungeons.map((dungeon, i) => scope === 'highBattle' && !['金币副本', '经验副本'].includes(dungeon.name)
+        ? 0 : integer(input.dungeons?.[i], 0, 0, dungeon.levels.length)),
       dungeonPaid: enabled(input.dungeonPaid),
       gold: choice(input.gold, ['off', 'free', 'normal', 'all'], 'free'),
       goldCycles: integer(input.goldCycles, 3, 1, 24 / data.gold.refresh_hours),
@@ -48,7 +63,7 @@
 
   function maximum(data, input = {}, paid = false) {
     return normalize(data, {
-      ...normalize(data, input), adventure: data.adventure.length - 1,
+      ...normalize(data, input), scope: 'highBattle', adventure: data.adventure.length - 1,
       prosperity: data.prosperity_max_level, collectHours: 12, station: 'maximum',
       speed: true, lifetime: true, freeQuick: true, quickPaid: paid ? 'all' : 'none',
       dungeonPaid: paid, gold: paid ? 'all' : 'free', goldCycles: 3,
@@ -73,15 +88,17 @@
     const quickCost = data.quick.paid_costs.slice(0, paidCount).reduce((sum, cost) => sum + cost, 0);
     const sources = [], buildings = [], dungeons = [];
     const addSource = (name, materials, costs = [], kind = 'daily') => {
-      const items = materials.filter(item => item.count > 0).map(item => ({id: item.id, count: rounded(item.count)}));
+      const items = materials.filter(item => item.count > 0 && (settings.scope === 'all' || item.id !== 34))
+        .map(item => ({id: item.id, count: rounded(item.count)}));
       if (items.length || costs.length) sources.push({name, kind, materials: items, costs});
     };
 
-    data.buildings.forEach((building, i) => {
+    buildingIndices(data, settings).forEach(i => {
+      const building = data.buildings[i];
       const option = settings.buildings[i];
       if (!option.level) return;
       const level = building.levels[option.level - 1];
-      const isPortal = i === 0;
+      const isPortal = building.name === '传送阵';
       const team = settings.station === 'maximum' ? building.stationed : [];
       const stationPercent = settings.station === 'maximum' ? team.reduce((sum, hero) => sum + hero.percent, 0)
         : settings.station === 'skills' ? 60 : settings.station === 'custom' ? option.percent : 0;
@@ -89,7 +106,7 @@
       const storageHours = (isPortal ? vip.portal_storage_hours : level.storage_hours) * (1 + storagePercent / 100);
       const naturalHours = 24 * Math.min(storageHours, settings.collectHours) / settings.collectHours;
       const hourlyBase = isPortal ? data.adventure[settings.adventure].per_minute.map(item => ({id: item.id, count: item.count * 60})) : level.per_hour;
-      const hourly = hourlyBase.map(item => {
+      const hourly = hourlyBase.filter(item => settings.scope === 'all' || item.id !== 34).map(item => {
         const vipPercent = isPortal ? (item.id === 2 ? vip.portal_gold_percent : item.id === 3 ? vip.portal_experience_percent : 0) : 0;
         return {id: item.id, count: Math.max(0, item.count * (1 + (globalPercent + stationPercent + vipPercent) / 100))};
       });
@@ -150,7 +167,7 @@
       for (const item of source.materials) income.set(item.id, (income.get(item.id) || 0) + item.count);
       for (const item of source.costs) spending.set(item.id, (spending.get(item.id) || 0) + item.count);
     }
-    const totals = data.resources.filter(resource => income.has(resource.id) || spending.has(resource.id)).map(resource => ({
+    const totals = resources(data, settings).filter(resource => income.has(resource.id) || spending.has(resource.id)).map(resource => ({
       ...resource, income: rounded(income.get(resource.id) || 0), spent: rounded(spending.get(resource.id) || 0),
       net: rounded((income.get(resource.id) || 0) - (spending.get(resource.id) || 0)),
     })).sort((a, b) => (order.includes(a.id) ? order.indexOf(a.id) : 100 + a.id) - (order.includes(b.id) ? order.indexOf(b.id) : 100 + b.id));
@@ -165,18 +182,21 @@
   }
 
   function csv(data, settings) {
+    const s = normalize(data, settings);
+    const included = resources(data, s).filter(resource => resource.id !== 1);
     const results = compare(data, settings);
-    const names = ['VIP', '免费快速生产次数', '付费快速生产次数', '星钻收入', '星钻支出', '星钻净变化', ...data.resources.filter(r => r.id !== 1).map(r => r.name)];
+    const names = ['VIP', '免费快速生产次数', '付费快速生产次数', '星钻收入', '星钻支出', '星钻净变化', ...included.map(r => r.name)];
     const rows = results.map(result => [result.vip.level, result.quick.free, result.quick.paid,
       result.stars.income, result.stars.spent, result.stars.net,
-      ...data.resources.filter(r => r.id !== 1).map(resource => result.totals.find(item => item.id === resource.id)?.income || 0)]);
+      ...included.map(resource => result.totals.find(item => item.id === resource.id)?.income || 0)]);
     const cell = value => '"' + String(value).replace(/"/g, '""') + '"';
-    const s = normalize(data, settings);
     const yes = value => value ? '启用' : '关闭';
-    const stationLabel = {none: '不进驻', skills: '三名满级技能', maximum: '满配含天赋', custom: '自定义'};
+    const stationLabel = {none: '不进驻', skills: '三名满级技能', maximum: '重点建筑优先满配含天赋', custom: '自定义'};
     const quickLabel = {none: '仅免费', all: '用满付费次数', custom: '指定付费次数'};
     const goldLabel = {off: '不计入', free: '免费', normal: '免费及白银', all: '全部次数'};
-    const conditions = ['条件', '资料日期 ' + data.updated_on, data.adventure[s.adventure].label,
+    const conditions = ['条件', '资料日期 ' + data.updated_on,
+      '统计口径 ' + (s.scope === 'highBattle' ? '高战收菜：金币/经验副本，忽略魔王币' : '全部资源'),
+      ...(s.station === 'maximum' ? ['进驻优先顺序 ' + priority.join(' > ')] : []), data.adventure[s.adventure].label,
       '繁荣等级 ' + s.prosperity, '进驻 ' + stationLabel[s.station], '加速特权 ' + yes(s.speed), '终身卡 ' + yes(s.lifetime),
       '收取间隔 ' + s.collectHours + '小时', '快速生产 ' + quickLabel[s.quickPaid],
       '免费快速生产 ' + yes(s.freeQuick), '指定快产次数 ' + s.quickCount,
@@ -190,5 +210,5 @@
     return '\uFEFF' + [conditions, names, ...rows].map(row => row.map(cell).join(',')).join('\r\n') + '\r\n';
   }
 
-  return {normalize, maximum, calculate, compare, csv};
+  return {normalize, maximum, calculate, compare, csv, resources, buildingIndices, priority};
 });
