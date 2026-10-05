@@ -25,11 +25,35 @@
 .resource-note { margin: 10px 0 0; font-size: 13px; }
 .resource-subsection { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
 .resource-subsection h4 { margin-bottom: 12px; }
-.resource-priority-cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
-.resource-priority-card { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 14px; border: 1px solid #bbdad4; border-radius: 10px; background: var(--teal-soft); }
-.resource-priority-card span, .resource-priority-card small { color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }
-.resource-priority-card span { font-size: 13px; }
-.resource-priority-card strong { color: var(--teal-dark); font-size: 20px; overflow-wrap: anywhere; }
+.resource-basic-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.resource-quick-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0; }
+.resource-quick-checks .resource-check { padding: 9px 12px; }
+.resource-quick-checks small { display: inline; margin-left: 5px; }
+.resource-priority-list { display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 14px 0 0; list-style: none; }
+.resource-priority-card { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: #f8fbfc; }
+.resource-priority-main { display: grid; gap: 8px; min-width: 0; flex: 1; }
+.resource-priority-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.resource-priority-name { font-size: 16px; font-weight: 700; }
+.resource-plan-percent { color: var(--teal-dark); font-size: 19px; font-variant-numeric: tabular-nums; }
+.resource-plan-team { display: flex; flex-wrap: wrap; gap: 7px 12px; min-width: 0; }
+.resource-assigned-hero { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.resource-assigned-hero img { width: 25px; height: 25px; object-fit: contain; flex: 0 0 auto; }
+.resource-priority-yield { color: var(--muted); line-height: 1.6; overflow-wrap: anywhere; }
+.resource-drag-handle { display: grid; justify-items: center; gap: 4px; flex: 0 0 32px; padding: 10px 2px; color: var(--teal-dark); border: 0; border-radius: 7px; background: #e7f2f0; touch-action: none; cursor: grab !important; user-select: none; }
+.resource-drag-handle > span { font-size: 24px; line-height: 1; }
+.resource-drag-handle small { font-size: 12px; }
+.resource-dragging { border-color: var(--teal); box-shadow: 0 3px 14px #176f6525; background: var(--teal-soft); user-select: none; }
+.resource-dragging .resource-drag-handle { cursor: grabbing !important; }
+.resource-order-buttons { display: grid; gap: 4px; flex: 0 0 32px; }
+.resource-order-buttons button { width: 32px; min-height: 35px; border: 1px solid #cfdfdf; border-radius: 7px; background: #fff; color: var(--teal-dark); font-size: 17px; }
+.resource-roster-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; margin-top: 14px; }
+.resource-roster-tools input { min-width: 0; width: 100%; padding: 10px; border: 1px solid #bfcdda; border-radius: 8px; font: inherit; }
+.resource-heroes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-height: 420px; overflow-y: auto; overscroll-behavior: contain; padding: 5px 2px; margin-top: 12px; }
+.resource-hero { display: flex; align-items: center; gap: 7px; min-width: 0; padding: 9px; border: 1px solid #bbdad4; border-radius: 9px; background: var(--teal-soft); cursor: pointer; }
+.resource-hero input { width: 18px; height: 18px; margin: 0; flex: 0 0 auto; accent-color: var(--teal); }
+.resource-hero img { width: 30px; height: 30px; object-fit: contain; flex: 0 0 auto; }
+.resource-hero span { min-width: 0; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.resource-unowned { background: #fff; border-color: var(--line); color: var(--muted); }
 .resource-page details > summary { padding: 4px 0; color: var(--teal-dark); font-weight: 700; cursor: pointer; line-height: 1.6; }
 .resource-building-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
 .resource-building-control { display: grid; gap: 12px; padding: 14px; background: #f7fafc; border: 1px solid var(--line); border-radius: 10px; }
@@ -86,7 +110,7 @@
   .brand-navigation { width: 100%; }
   .primary-navigation { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .clock-block { display: flex; align-items: baseline; justify-content: space-between; width: 100%; gap: 12px; }
-  .resource-control-grid, .resource-building-controls, .resource-priority-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .resource-control-grid, .resource-building-controls, .resource-heroes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .resource-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .resource-totals { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .resource-block { padding: 18px; }
@@ -101,7 +125,20 @@
   .resource-actions { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .resource-actions > :last-child { grid-column: 1 / -1; }
   .resource-checks, .resource-building-results { grid-template-columns: 1fr; }
-  .resource-priority-card:last-child { grid-column: 1 / -1; }
+  .resource-quick-checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .resource-quick-checks .resource-check { padding: 9px; }
+  .resource-quick-checks small { display: block; margin: 2px 0 0; }
+  .resource-priority-card { padding: 10px; gap: 8px; }
+  .resource-drag-handle { flex-basis: 28px; }
+  .resource-priority-name { font-size: 14px; }
+  .resource-plan-percent { font-size: 17px; }
+  .resource-assigned-hero { font-size: 12px; gap: 4px; }
+  .resource-plan-team { gap: 6px 8px; }
+  .resource-assigned-hero img { width: 21px; height: 21px; }
+  .resource-order-buttons { flex-basis: 28px; }
+  .resource-order-buttons button { width: 28px; }
+  .resource-roster-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .resource-roster-tools > input { grid-column: 1 / -1; }
   .resource-control-grid { gap: 12px; }
   .resource-field { font-size: 13px; }
   .resource-field select, .resource-field input { padding-inline: 8px; }

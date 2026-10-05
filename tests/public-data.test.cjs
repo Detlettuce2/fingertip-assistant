@@ -38,13 +38,14 @@ const ALLOWED_KEYS = {
   growthLevel: new Set(["level","materials","attributes"]),
   growthStage: new Set(["stage","level_limit","materials","attributes"]),
   heroLimit: new Set(["star","max_level","max_stage"]),
-  resources: new Set(["updated_on","vip_levels","buildings","adventure","speed","cards","prosperity_percent_per_level","prosperity_max_level","quick","dungeons","gold","daily_gift","tasks","task_box","resources"]),
+  resources: new Set(["updated_on","vip_levels","buildings","stationing_heroes","adventure","speed","cards","prosperity_percent_per_level","prosperity_max_level","quick","dungeons","gold","daily_gift","tasks","task_box","resources"]),
   resourceName: new Set(["id","name"]),
   resourceVip: new Set(["level","portal_gold_percent","portal_experience_percent","portal_storage_hours","quick_paid_count","gold_percent","dungeon_paid"]),
   resourceVipDungeon: new Set(["金币副本","经验副本"]),
   resourceBuilding: new Set(["name","skill","levels","stationed"]),
   resourceBuildingLevel: new Set(["level","per_hour","storage_hours"]),
   resourceStation: new Set(["name","percent","storage_percent"]),
+  resourceStationingHero: new Set(["name","asset_token","buildings","skill_percent","production_percent","teammate_skill_bonus","storage_percent"]),
   resourceAdventure: new Set(["label","per_minute"]),
   resourceSpeed: new Set(["name","production_percent","quick_paid_count"]),
   resourceCard: new Set(["name","daily","production_percent","extra_gold_count","extra_equipment_count","claim_bonus"]),
@@ -266,6 +267,20 @@ test("resource statistics expose only whitelisted display values and existing pu
     assert.equal(row.level, i);
   });
   assert.equal(data.buildings.length, 9);
+  assert.equal(data.stationing_heroes.length, 87);
+  const buildingNames = new Set(data.buildings.map(building => building.name)), candidateNames = new Set();
+  data.stationing_heroes.forEach(hero => {
+    audit(hero, "resourceStationingHero"); assert(heroes.has(hero.name));
+    assert(!candidateNames.has(hero.name)); candidateNames.add(hero.name);
+    assert(hero.buildings.every(name => buildingNames.has(name)));
+    assert.equal(new Set(hero.buildings).size, hero.buildings.length);
+    assert(Number.isInteger(hero.skill_percent) && hero.skill_percent >= 0 && hero.skill_percent <= 20);
+    assert(Number.isInteger(hero.production_percent) && Math.abs(hero.production_percent) <= 10);
+    assert([0,1].includes(hero.teammate_skill_bonus));
+    assert(Number.isFinite(hero.storage_percent) && hero.storage_percent >= 0 && hero.storage_percent <= 100);
+    assert.match(hero.asset_token, /^[A-Za-z0-9_]+$/);
+    assert(fs.existsSync(path.join(ROOT, 'assets/item-assets', hero.asset_token + '.png')));
+  });
   const stationed = new Set();
   data.buildings.forEach(building => {
     audit(building, "resourceBuilding");

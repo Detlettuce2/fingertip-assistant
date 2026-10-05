@@ -15,13 +15,22 @@
   const rounded = value => Math.round(value * 1e6) / 1e6;
   const priority = ['传送阵', '远古遗迹', '星辰之塔', '冒险者公会', '空港'];
   const order = [1, 2, 3, 20110401, 30450301, 30450302, 5, 1005001, 4, 20210100, 16, 34];
+  const S = typeof module === 'object' && module.exports ? require('./resource-stationing.js') : globalThis.ResourceStationing;
+  const stationCache = new WeakMap();
+
+  function buildingPriority(data, input = {}) {
+    const names = data.buildings.map(building => building.name);
+    return [...new Set([...(Array.isArray(input?.priority) ? input.priority : []), ...priority, ...names])]
+      .filter(name => names.includes(name));
+  }
 
   function resources(data, input = {}) {
     return data.resources.filter(resource => input?.scope === 'all' || resource.id !== 34);
   }
 
   function buildingIndices(data, input = {}) {
-    const rank = name => priority.includes(name) ? priority.indexOf(name) : priority.length;
+    const sequence = buildingPriority(data, input);
+    const rank = name => sequence.indexOf(name);
     return data.buildings.map((_, i) => i)
       .filter(i => input?.scope === 'all' || data.buildings[i].levels.some(level => level.per_hour.some(item => item.id !== 34)))
       .sort((a, b) => rank(data.buildings[a].name) - rank(data.buildings[b].name));
@@ -41,6 +50,8 @@
     }
     return {
       scope,
+      priority: buildingPriority(data, input),
+      ownedHeroes: data.stationing_heroes.filter(hero => !Array.isArray(input.ownedHeroes) || input.ownedHeroes.includes(hero.name)).map(hero => hero.name),
       vip: integer(input.vip, 0, 0, data.vip_levels.length - 1),
       adventure: integer(input.adventure, 0, 0, data.adventure.length - 1),
       prosperity: integer(input.prosperity, 0, 0, data.prosperity_max_level),
@@ -73,6 +84,20 @@
     });
   }
 
+  function stationing(data, input = {}) {
+    const settings = normalize(data, input);
+    const names = buildingIndices(data, settings).filter(i => settings.buildings[i].level > 0).map(i => data.buildings[i].name);
+    const key = JSON.stringify([names, settings.ownedHeroes]);
+    let cache = stationCache.get(data);
+    if (!cache) {cache = new Map(); stationCache.set(data, cache);}
+    if (!cache.has(key)) {
+      const preferred = Object.fromEntries(data.buildings.map(building => [building.name, building.stationed.map(hero => hero.name)]));
+      cache.set(key, S.optimize(data.stationing_heroes, names, settings.ownedHeroes, preferred));
+      if (cache.size > 12) cache.delete(cache.keys().next().value);
+    }
+    return cache.get(key);
+  }
+
   function calculate(data, input = {}) {
     const settings = normalize(data, input);
     const vip = data.vip_levels[settings.vip];
@@ -87,6 +112,7 @@
     const quickHours = (freeCount + paidCount) * data.quick.hours;
     const quickCost = data.quick.paid_costs.slice(0, paidCount).reduce((sum, cost) => sum + cost, 0);
     const sources = [], buildings = [], dungeons = [];
+    const allocation = settings.station === 'maximum' ? stationing(data, settings) : null;
     const addSource = (name, materials, costs = [], kind = 'daily') => {
       const items = materials.filter(item => item.count > 0 && (settings.scope === 'all' || item.id !== 34))
         .map(item => ({id: item.id, count: rounded(item.count)}));
@@ -99,7 +125,7 @@
       if (!option.level) return;
       const level = building.levels[option.level - 1];
       const isPortal = building.name === '传送阵';
-      const team = settings.station === 'maximum' ? building.stationed : [];
+      const team = allocation?.buildings.find(plan => plan.name === building.name)?.team || [];
       const stationPercent = settings.station === 'maximum' ? team.reduce((sum, hero) => sum + hero.percent, 0)
         : settings.station === 'skills' ? 60 : settings.station === 'custom' ? option.percent : 0;
       const storagePercent = team.reduce((sum, hero) => sum + hero.storage_percent, 0);
@@ -196,7 +222,8 @@
     const goldLabel = {off: '不计入', free: '免费', normal: '免费及白银', all: '全部次数'};
     const conditions = ['条件', '资料日期 ' + data.updated_on,
       '统计口径 ' + (s.scope === 'highBattle' ? '高战收菜：金币/经验副本，忽略魔王币' : '全部资源'),
-      ...(s.station === 'maximum' ? ['进驻优先顺序 ' + priority.join(' > ')] : []), data.adventure[s.adventure].label,
+      ...(s.station === 'maximum' ? ['进驻优先顺序 ' + buildingIndices(data, s).map(i => data.buildings[i].name).join(' > '),
+        '已拥有角色 ' + s.ownedHeroes.join('/') ] : []), data.adventure[s.adventure].label,
       '繁荣等级 ' + s.prosperity, '进驻 ' + stationLabel[s.station], '加速特权 ' + yes(s.speed), '终身卡 ' + yes(s.lifetime),
       '收取间隔 ' + s.collectHours + '小时', '快速生产 ' + quickLabel[s.quickPaid],
       '免费快速生产 ' + yes(s.freeQuick), '指定快产次数 ' + s.quickCount,
@@ -210,5 +237,5 @@
     return '\uFEFF' + [conditions, names, ...rows].map(row => row.map(cell).join(',')).join('\r\n') + '\r\n';
   }
 
-  return {normalize, maximum, calculate, compare, csv, resources, buildingIndices, priority};
+  return {normalize, maximum, calculate, compare, csv, resources, buildingIndices, priority, buildingPriority, stationing};
 });
