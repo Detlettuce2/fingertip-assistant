@@ -114,7 +114,7 @@ const storedChannel = preferences.getItem("voidRotationChannel");
 const initialChannel = urlParams.get("channel") || storedChannel || "xkbeta";
 const storedDescending = preferences.getItem("voidRotationDescending");
 const requestedView = urlParams.get("view") || preferences.getItem("assistantView") || "server";
-const initialView = ["global", "server", "encyclopedia", "seal"].includes(requestedView) ? requestedView : "server";
+const initialView = ["global", "server", "encyclopedia", "seal", "resources"].includes(requestedView) ? requestedView : "server";
 const storedGlobalView = preferences.getItem("globalCalendarView");
 
 const state = {
@@ -157,6 +157,7 @@ const els = {
   serverView: document.querySelector("#server-calendar-view"),
   encyclopediaView: document.querySelector("#encyclopedia-view"),
   sealView: document.querySelector("#beast-seal-view"),
+  resourcesView: document.querySelector("#resources-view"),
   holylandRealm: document.querySelector("#holyland-realm"),
   holylandSeason: document.querySelector("#holyland-season"),
   holylandChannel: document.querySelector("#holyland-channel"),
@@ -211,20 +212,21 @@ function setGlobalView(view) {
 }
 
 function setView(view, updateHistory = true) {
-  state.view = ["global", "server", "encyclopedia", "seal"].includes(view) ? view : "server";
+  state.view = ["global", "server", "encyclopedia", "seal", "resources"].includes(view) ? view : "server";
   preferences.setItem("assistantView", state.view);
   document.body.classList.toggle("seal-active", state.view === "seal");
   els.globalView.hidden = state.view !== "global";
   els.serverView.hidden = state.view !== "server";
   els.encyclopediaView.hidden = state.view !== "encyclopedia";
   els.sealView.hidden = state.view !== "seal";
+  els.resourcesView.hidden = state.view !== "resources";
   els.navigationTabs.forEach(tab => {
     const active = tab.dataset.view === state.view;
     tab.classList.toggle("active", active);
     tab.setAttribute("aria-selected", String(active));
     tab.tabIndex = active ? 0 : -1;
   });
-  const viewTitles = {global: "全服日历", server: "区服日历", encyclopedia: "指尖百科", seal: "兽印洗炼"};
+  const viewTitles = {global: "全服日历", server: "区服日历", encyclopedia: "指尖百科", seal: "兽印洗炼", resources: "资源统计器"};
   document.title = `指尖小助手 · ${viewTitles[state.view]}`;
   if (updateHistory) {
     const url = new URL(location.href);
@@ -240,6 +242,7 @@ function setView(view, updateHistory = true) {
   });
   if (state.view === "seal") window.BeastSealUI.init();
   else window.BeastSealUI.stop();
+  if (state.view === "resources") window.ResourceUI.init();
 }
 
 function activeChannel() {

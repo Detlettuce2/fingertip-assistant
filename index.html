@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>指尖小助手 · 区服日历</title>
-  <meta name="description" content="查询全服与区服活动日历。">
+  <meta name="description" content="查询活动日历、指尖百科，模拟兽印洗炼并统计每日资源。">
   <link rel="icon" href="assets/item-assets/icon_310107010.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="beast-seal.css">
   <link rel="stylesheet" href="growth.css">
+  <link rel="stylesheet" href="resource.css">
 </head>
 <body>
   <main class="shell">
@@ -20,6 +21,7 @@
           <button class="navigation-tab" type="button" role="tab" data-view="server" aria-controls="server-calendar-view">区服日历</button>
           <button class="navigation-tab" type="button" role="tab" data-view="encyclopedia" aria-controls="encyclopedia-view">指尖百科</button>
           <button class="navigation-tab" type="button" role="tab" data-view="seal" aria-controls="beast-seal-view">兽印洗炼</button>
+          <button class="navigation-tab" type="button" role="tab" data-view="resources" aria-controls="resources-view">资源统计器</button>
         </nav>
       </div>
       <div class="clock-block">
@@ -84,6 +86,80 @@
         <section id="lineup-panel" class="lineup-panel" aria-live="polite" hidden></section>
       </section>
       </section>
+    </section>
+
+    <section id="resources-view" class="page-view resource-page" role="tabpanel" aria-labelledby="resource-title" hidden>
+      <div id="resource-loading" class="resource-block" role="status"><p id="resource-loading-text">正在读取资源资料…</p><button id="resource-retry" class="secondary-button" type="button" hidden>重试</button></div>
+      <div id="resource-content" class="resource-page" hidden>
+        <section class="resource-block">
+          <div class="resource-heading">
+            <div><span class="eyebrow">每日收菜计划</span><h2 id="resource-title">资源统计器</h2><p>比较 VIP0～20 的每日收益，按自己的建筑、特权和进驻条件计算。</p><span id="resource-version" class="resource-version"></span></div>
+            <div class="resource-actions"><button id="resource-maximum-free" class="secondary-button" type="button">满配 · 免费次数</button><button id="resource-maximum-paid" class="primary-button" type="button">满配 · 全部次数</button><button id="resource-reset" class="secondary-button" type="button">恢复初始条件</button></div>
+          </div>
+          <div id="resource-controls">
+            <div class="resource-control-grid">
+              <label class="resource-field"><span>VIP 等级</span><select id="resource-vip"></select></label>
+              <label class="resource-field"><span>已通关冒险关卡</span><select id="resource-adventure"></select></label>
+              <label class="resource-field"><span>繁荣等级</span><select id="resource-prosperity"></select></label>
+              <label class="resource-field"><span>建筑资源收取间隔</span><select id="resource-collectHours"><option value="1">及时收取（每小时）</option><option value="4">每 4 小时</option><option value="8">每 8 小时</option><option value="12">每 12 小时</option><option value="24">每天收取 1 次</option></select></label>
+              <label class="resource-field"><span>进驻角色加成</span><select id="resource-station"><option value="none">不进驻</option><option value="skills">3 名满级技能 · +60%</option><option value="maximum">满配进驻 · 含经营天赋</option><option value="custom">填写各建筑实际加成</option></select></label>
+              <label class="resource-field"><span>快速生产付费次数</span><select id="resource-quickPaid"><option value="none">不使用付费次数</option><option value="all">用满当前付费上限</option><option value="custom">指定付费次数</option></select></label>
+              <label id="resource-custom-quick" class="resource-field" hidden><span>指定每日付费次数</span><input id="resource-quickCount" type="number" min="0" max="5" step="1" inputmode="numeric"></label>
+            </div>
+            <div class="resource-checks">
+              <label class="resource-check"><input id="resource-speed" type="checkbox"><span>时间加速特权<small>所有建筑产能 +50% · 快速生产付费次数 +2</small></span></label>
+              <label class="resource-check"><input id="resource-lifetime" type="checkbox"><span>终身卡<small>产能 +10% · 每日 100 星钻 · 金色点金 +3次/轮 · 装备扫荡 +1次/天</small></span></label>
+              <label class="resource-check"><input id="resource-freeQuick" type="checkbox" checked><span>使用免费快速生产<small>每日 1 次 · 每次获得 2 小时建筑产出</small></span></label>
+              <label class="resource-check"><input id="resource-dailyGift" type="checkbox" checked><span>领取每日福利礼包<small>每日 20 星钻 + 1 张招募卷</small></span></label>
+              <label class="resource-check"><input id="resource-lifetimeClaim" type="checkbox" disabled><span>今天领取终身卡招募赠礼<small>额外 10 张招募卷；领取周期未明确，默认不计入稳定日收益</small></span></label>
+              <label class="resource-check"><input id="resource-tasks" type="checkbox"><span>完成日常任务与活跃奖励<small>快速生产任务按本页次数判断；其他任务需实际完成</small></span></label>
+            </div>
+            <div id="resource-cards" class="resource-checks"></div>
+            <p id="resource-benefits" class="resource-note"></p>
+            <p id="resource-quick-summary" class="resource-note"></p>
+            <p id="resource-storage-note" class="resource-note"></p>
+            <details class="resource-subsection"><summary>调整九座生产建筑的等级与进驻加成</summary><p class="resource-note">未建造的建筑选“不计入”。满配方案使用 27 名不重复角色，经营技能达到上限；只比较生产收益，按现有完整角色图鉴分配。可展开下方建筑明细查看名单。</p><div id="resource-building-controls" class="resource-building-controls"></div></details>
+            <div class="resource-subsection">
+              <h4>每日副本</h4><p class="resource-note">选择已经通关的关卡。只计扫荡中必得的资源，首次通关与随机额外掉落另计。</p>
+              <div id="resource-dungeon-controls" class="resource-control-grid"></div>
+              <label class="resource-check"><input id="resource-dungeonPaid" type="checkbox"><span>用满副本付费扫荡次数<small>随 VIP 等级及终身卡权益更新，星钻消耗单列</small></span></label>
+              <ul id="resource-dungeon-summary" class="resource-dungeon-summary"></ul>
+            </div>
+            <div class="resource-subsection">
+              <h4>点钻成金</h4>
+              <div class="resource-control-grid">
+                <label class="resource-field"><span>每日点金范围</span><select id="resource-gold"><option value="off">不计入</option><option value="free">只领免费点金</option><option value="normal">免费 + 白银点金</option><option value="all">免费 + 白银 + 金色点金</option></select></label>
+                <label class="resource-field"><span>魔王等级（点金收益）</span><input id="resource-kingLevel" type="number" min="1" max="300" step="1" inputmode="numeric"></label>
+                <label class="resource-field"><span>当天领取轮数</span><select id="resource-goldCycles"><option value="1">1 轮</option><option value="2">2 轮</option><option value="3">3 轮</option></select></label>
+              </div>
+              <p id="resource-gold-summary" class="resource-note"></p><p class="resource-note">每 8 小时刷新一轮，24 小时最多 3 轮。按每日免费 1 次、白银 1 次、金色 1 次计算；终身卡为每轮额外增加 3 次金色点金。</p>
+            </div>
+            <p id="resource-task-note" class="resource-note"></p>
+          </div>
+        </section>
+        <section class="resource-block" aria-labelledby="resource-results-title">
+          <h3 id="resource-results-title">每日资源汇总</h3><p id="resource-summary" class="resource-note" role="status"></p>
+          <div class="resource-budget"><div><span>星钻净变化 / 天</span><strong id="resource-star-net"></strong></div><div><span>星钻收入 / 天</span><strong id="resource-star-income"></strong></div><div><span>星钻支出 / 天</span><strong id="resource-star-cost"></strong></div></div>
+          <p class="resource-note">净变化仅扣除本页快速生产、扫荡和点金的支出，其他玩法花费另计。小数表示平均产能，实际领取按游戏取整。</p>
+          <div id="resource-totals" class="resource-totals"></div>
+        </section>
+        <section class="resource-block" aria-labelledby="resource-compare-title">
+          <div class="resource-section-heading"><div><h3 id="resource-compare-title">各 VIP 等级每日对比</h3><p class="resource-note">保持其他条件相同，点击 VIP 可切换到该等级。手机上可左右滑动表格。</p></div><label class="resource-field"><span>追加比较的资源</span><select id="resource-metric"></select></label><button id="resource-export" class="secondary-button" type="button">导出全部资源 CSV</button></div>
+          <div class="resource-table-wrap" tabindex="0" role="region" aria-label="VIP 每日资源对比，可横向滚动"><table class="resource-table"><thead><tr><th scope="col">VIP</th><th scope="col">传送阵金币 / 经验</th><th scope="col">快速生产次数</th><th scope="col">星钻净变化</th><th scope="col">金币</th><th scope="col">英雄经验</th><th id="resource-metric-heading" scope="col">魔王币</th></tr></thead><tbody id="resource-comparison"></tbody></table></div>
+        </section>
+        <details class="resource-block"><summary>建筑产出与满配进驻名单</summary><div id="resource-building-results" class="resource-building-results"></div></details>
+        <details class="resource-block"><summary>各项资源来源与支出明细</summary><div class="resource-table-wrap" tabindex="0" role="region" aria-label="资源来源明细，可横向滚动"><table class="resource-table resource-source-table"><thead><tr><th scope="col">来源</th><th scope="col">每日收入</th><th scope="col">每日支出</th></tr></thead><tbody id="resource-source-rows"></tbody></table></div></details>
+        <details class="resource-block"><summary>补充其他每日收益</summary><p class="resource-note">可填写联盟、排行榜或其他玩法每天稳定获得的资源；只追加未在本页计入的部分。</p><div class="resource-extra-form"><label class="resource-field"><span>资源</span><select id="resource-extra-kind"></select></label><label class="resource-field"><span>额外每日数量</span><input id="resource-extra-count" type="number" min="0" max="1000000000000" step="any" inputmode="decimal" value="0"></label><button id="resource-extra-add" class="secondary-button" type="button">添加 / 更新</button></div><p id="resource-extra-error" class="resource-error" role="alert"></p><ul id="resource-extra-list" class="resource-extra-list"></ul></details>
+        <details class="resource-block"><summary>统计口径与特权规则</summary><ul class="resource-rules">
+          <li>产能采用游戏资源说明中的静态数值，资料日期 2026-09-30；按 24 小时生产和设定收取间隔测算。冒险关卡决定传送阵基础产能，建筑等级决定其他建筑基础产能。仓库需有余量，升级中的停产需自行扣除。</li>
+          <li>产能 = 基础产能 ×（1 + 繁荣加成 + 时间加速加成 + 终身卡加成 + 进驻加成 + 对应 VIP 加成）。各项百分数相加；VIP 产能加成只作用于传送阵的金币和英雄经验。</li>
+          <li>满配预设将繁荣设为 50 级、建筑设为资料内最高等级，启用加速特权和终身卡，选择末关冒险与副本。保留所选 VIP；可继续调整成自己的实际条件。进驻预设考虑经营天赋和队友技能提升效果，同一角色只用一次。</li>
+          <li>快速生产每次获得 2 小时建筑收益；VIP0～20 的付费上限均为 3 次，时间加速特权额外增加 2 次。付费次数从第一次起依次消耗 50、100、200、300、300 星钻。</li>
+          <li>金币副本从 VIP1 起、经验副本从 VIP5 起各增加 2 次付费扫荡。终身卡增加 1 次装备试炼付费扫荡，不增加免费次数。首次通关奖励、随机额外掉落、付费购买时的一次性礼包不纳入稳定日收益。</li>
+          <li>终身卡每日星钻与建筑加成纳入勾选项；额外 10 张招募卷的领取周期未明确，仅在勾选“今天领取”时加入当天汇总。豪华月卡、至尊月卡和招募周卡仅在已开通且处于有效期时计入。</li>
+          <li>委托、竞技排行、联盟奖励、签到与限时活动等收益随进度变化，未自动推算。可在“补充其他每日收益”中按实际情况追加。</li>
+        </ul></details>
+      </div>
     </section>
 
     <section id="encyclopedia-view" class="page-view" role="tabpanel" hidden>
@@ -310,6 +386,8 @@
   <script src="growth-core.js" defer></script>
   <script src="growth.js" defer></script>
   <script src="encyclopedia.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="resource-core.js" defer></script>
+  <script src="resource.js" defer></script>
+  <script src="app.js?v=resources-20261005" defer></script>
 </body>
 </html>

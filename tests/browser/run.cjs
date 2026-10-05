@@ -16,7 +16,7 @@ const server = http.createServer((req,res)=>{
   await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
   const baseURL = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch({headless:true,...(process.env.BROWSER_EXECUTABLE ? {executablePath:process.env.BROWSER_EXECUTABLE} : {})});
-  const suites=process.argv.length>2?process.argv.slice(2):['flows','edge-flows','reel-flows','catalog-flows','growth-flows'];
+  const suites=process.argv.length>2?process.argv.slice(2):['flows','edge-flows','reel-flows','catalog-flows','growth-flows','resource-flows'];
   try {
     for (const name of suites) {
       const context = await browser.newContext({viewport:{width:1440,height:1050}});

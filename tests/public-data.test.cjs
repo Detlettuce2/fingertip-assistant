@@ -38,6 +38,23 @@ const ALLOWED_KEYS = {
   growthLevel: new Set(["level","materials","attributes"]),
   growthStage: new Set(["stage","level_limit","materials","attributes"]),
   heroLimit: new Set(["star","max_level","max_stage"]),
+  resources: new Set(["updated_on","vip_levels","buildings","adventure","speed","cards","prosperity_percent_per_level","prosperity_max_level","quick","dungeons","gold","daily_gift","tasks","task_box","resources"]),
+  resourceName: new Set(["id","name"]),
+  resourceVip: new Set(["level","portal_gold_percent","portal_experience_percent","portal_storage_hours","quick_paid_count","gold_percent","dungeon_paid"]),
+  resourceVipDungeon: new Set(["金币副本","经验副本"]),
+  resourceBuilding: new Set(["name","skill","levels","stationed"]),
+  resourceBuildingLevel: new Set(["level","per_hour","storage_hours"]),
+  resourceStation: new Set(["name","percent","storage_percent"]),
+  resourceAdventure: new Set(["label","per_minute"]),
+  resourceSpeed: new Set(["name","production_percent","quick_paid_count"]),
+  resourceCard: new Set(["name","daily","production_percent","extra_gold_count","extra_equipment_count","claim_bonus"]),
+  resourceQuick: new Set(["free_count","hours","paid_costs"]),
+  resourceDungeon: new Set(["name","free_count","paid_count","paid_costs","levels"]),
+  resourceDungeonLevel: new Set(["level","materials"]),
+  resourceGold: new Set(["refresh_hours","free_count","paid_counts","paid_costs","levels"]),
+  resourceGoldLevel: new Set(["level","counts"]),
+  resourceTask: new Set(["name","materials","activity","quick_required"]),
+  resourceTaskBox: new Set(["activity","materials"]),
   rotationData: new Set(["channel", "updated_at_china", "rotations", "groups"]),
   rotation: new Set(["slot", "label", "ids", "names"]),
   serverGroup: new Set([
@@ -229,6 +246,68 @@ test("growth export uses display-only white lists and public material references
   for(const value of data.hero_limits)assertKeys(value,"heroLimit","growth limit");
   assertNoPrivateData(data,"growth");
   assert(!/System\.register|chunks:\/\/|s2t3ar|l2o3ss|b2a3se_id|source_manifest|[A-Z]:[\\/]/.test(JSON.stringify(data)));
+});
+
+test("resource statistics expose only whitelisted display values and existing public item references", () => {
+  const data = readJson(path.join(API_ROOT, "resources.json"));
+  const items = new Map(readJson(path.join(API_ROOT, "items.json")).items.map(item => [item.id, item.name]));
+  const heroes = new Set(readJson(path.join(API_ROOT, "catalogs.json")).heroes.map(hero => hero.name));
+  const audit = (value, type) => assertKeys(value, type, `resources.${type}`);
+  const material = values => values.forEach(value => {
+    audit(value, "content");
+    assert(items.has(value.id), `resource references unpublished item ${value.id}`);
+    assert(Number.isFinite(value.count) && value.count >= 0, "resource amount must be a finite public number");
+  });
+  audit(data, "resources");
+  assert.match(data.updated_on, /^\d{4}-\d{2}-\d{2}$/);
+  assert.equal(data.vip_levels.length, 21);
+  data.vip_levels.forEach((row, i) => {
+    audit(row, "resourceVip"); audit(row.dungeon_paid, "resourceVipDungeon");
+    assert.equal(row.level, i);
+  });
+  assert.equal(data.buildings.length, 9);
+  const stationed = new Set();
+  data.buildings.forEach(building => {
+    audit(building, "resourceBuilding");
+    building.levels.forEach((level, i) => {
+      audit(level, "resourceBuildingLevel"); material(level.per_hour);
+      assert.equal(level.level, i + 1); assert(level.storage_hours > 0);
+    });
+    assert.equal(building.stationed.length, 3);
+    building.stationed.forEach(hero => {
+      audit(hero, "resourceStation"); assert(heroes.has(hero.name));
+      assert(!stationed.has(hero.name), "a public stationing preset cannot reuse a character");
+      stationed.add(hero.name); assert(hero.percent >= 0 && hero.percent <= 25);
+    });
+  });
+  assert.equal(data.adventure.length, 1485);
+  data.adventure.forEach(stage => {audit(stage, "resourceAdventure"); material(stage.per_minute);});
+  audit(data.speed, "resourceSpeed");
+  data.cards.forEach(card => {
+    audit(card, "resourceCard"); material(card.daily); if (card.claim_bonus) material(card.claim_bonus);
+  });
+  audit(data.quick, "resourceQuick");
+  assert(data.quick.paid_costs.every(Number.isFinite));
+  data.dungeons.forEach(dungeon => {
+    audit(dungeon, "resourceDungeon");
+    dungeon.levels.forEach((level, i) => {audit(level, "resourceDungeonLevel"); material(level.materials); assert.equal(level.level, i + 1);});
+  });
+  audit(data.gold, "resourceGold");
+  assert.equal(data.gold.levels.length, 300);
+  data.gold.levels.forEach((level, i) => {
+    audit(level, "resourceGoldLevel"); assert.equal(level.level, i + 1);
+    assert.equal(level.counts.length, 3); assert(level.counts.every(Number.isFinite));
+  });
+  material(data.daily_gift);
+  data.tasks.forEach(task => {audit(task, "resourceTask"); material(task.materials);});
+  audit(data.task_box, "resourceTaskBox"); material(data.task_box.materials);
+  const resourceIds = new Set();
+  data.resources.forEach(resource => {
+    audit(resource, "resourceName"); assert.equal(resource.name, items.get(resource.id));
+    assert(!resourceIds.has(resource.id)); resourceIds.add(resource.id);
+  });
+  assertNoPrivateData(data, "api/resources.json");
+  assert(!/b2a3se_id|p2o3ol_id|sl_passive|bulid_id|g2u3ard_id|hero_star|l2a3ng_id|_cfg|chunks:\/\//.test(JSON.stringify(data)), "resource data contains original source fields");
 });
 
 test("production files do not include client modules, raw configuration tables, or game-server collectors", () => {

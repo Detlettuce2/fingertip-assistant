@@ -29,10 +29,23 @@ jobs:
           node-version: 22
       - name: Test public data and page models
         run: npm test
+      - name: Install browser test dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Check resource calculator and encyclopedia layouts
+        run: node tests/browser/run.cjs resource-flows catalog-flows growth-flows
+      - name: Preserve browser check results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-checks
+          path: output/playwright/
+          if-no-files-found: ignore
       - name: Assemble static site
         run: |
           mkdir -p _site
-          cp index.html app.js styles.css beast-seal*.js beast-seal.css encyclopedia*.js growth*.js growth.css .nojekyll _site/
+          cp index.html app.js styles.css beast-seal*.js beast-seal.css encyclopedia*.js growth*.js growth.css resource*.js resource.css .nojekyll _site/
           cp -R assets api _site/
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
