@@ -16,7 +16,14 @@ module.exports=async(page,baseURL)=>{
   await page.locator('#item-search').fill('');
   await page.getByRole('tab',{name:'角色图鉴',exact:true}).click();
   await page.locator('.catalog-card').first().waitFor();
-  ok((await page.locator('#catalog-summary').innerText()).includes('87 个角色'),'角色静态资料已加载');
+  ok((await page.locator('#catalog-summary').innerText()).includes('89 个角色'),'角色静态资料已加载');
+  await page.locator('#catalog-search').fill('丰饶·芙蕾雅');
+  ok(await page.locator('.catalog-card').count()===1,'新版芙蕾雅已收录');
+  await page.waitForFunction(()=>[...document.querySelectorAll('#catalog-detail img')].some(image=>image.complete&&image.naturalWidth>0&&image.src.includes('hricon_115050110')));
+  await page.locator('#catalog-stage').selectOption(String((await page.locator('#catalog-stage option').count())-1));
+  ok((await page.locator('#catalog-stage-description').innerText()).includes('丰饶祝福'),'芙蕾雅十五阶月痕及真实头像加载');
+  await page.screenshot({path:'output/playwright/freya-catalog.png',fullPage:true});
+  await page.locator('#catalog-clear').click();
   await page.locator('#catalog-faction').selectOption('虚空');
   await page.locator('#catalog-career').selectOption('术士');
   ok(await page.locator('.catalog-card').count()>0,'阵营与定位组合筛选有效');
