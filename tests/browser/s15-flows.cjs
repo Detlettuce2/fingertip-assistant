@@ -8,6 +8,7 @@ module.exports = async (page, baseURL) => {
   });
   await page.goto(baseURL + '/?view=global');
   await page.locator('[data-global-view="holyland"]').click();
+  await page.locator('#holyland-season').selectOption('S15');
   await page.waitForFunction(() => document.querySelector('#holyland-result-label').textContent === 'S15赛果');
   const targets = {xkbeta:7, xkapp:1, xkstorebeta:1, xkgdt:3, xkhw:1, xkghb:1};
   let realms = 0;

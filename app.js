@@ -13,6 +13,7 @@ const HOLYLAND_CHANNELS = {
   xkgdt: {label: "奥术殿", realms: [1, 2]},
 };
 const HOLYLAND_SEASONS = {
+  S16: {label: "S16", channels: {"xkapp":[1],"xkbeta":[1,2,3,4,5,6,7],"xkgdt":[1,2,3],"xkhw":[1],"xkstorebeta":[1]}},
   S15: {label: "S15", channels: {xkbeta: [1,2,3,4,5,6,7], xkapp: [1], xkstorebeta: [1], xkgdt: [1,2,3], xkhw: [1], xkghb: [1]}},
   S14: {label: "S14"},
 };
@@ -120,7 +121,7 @@ const storedGlobalView = preferences.getItem("globalCalendarView");
 const state = {
   data: null,
   holyland: null,
-  holylandSeason: preferences.getItem("holylandSeason") || "S15",
+  holylandSeason: preferences.getItem("holylandSeason") || "S16",
   holylandChannel: preferences.getItem("holylandChannel") || "xkbeta",
   holylandRealm: preferences.getItem("holylandRealm") || "1",
   holylandLoading: false,
