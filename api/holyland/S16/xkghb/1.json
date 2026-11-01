@@ -1,0 +1,646 @@
+{
+  "realm": 1,
+  "captured_at_china": "2026-11-01 18:18",
+  "rounds": [
+    {
+      "key": "round32",
+      "label": "32强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 52,
+              "name": "熊的力量",
+              "avatar_id": "300720",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 9,
+              "name": "桃子",
+              "avatar_id": "300560",
+              "frame_id": "400260",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "7ed9e3d2c6fae282"
+        },
+        {
+          "players": [
+            {
+              "server_id": 46,
+              "name": "没昵称",
+              "avatar_id": "300880",
+              "frame_id": "400500",
+              "result": "win"
+            },
+            {
+              "server_id": 1,
+              "name": "六七",
+              "avatar_id": "300880",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "735d6c32b7451166"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1,
+              "name": "大魔王潇潇",
+              "avatar_id": "300870",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 58,
+              "name": "南夕",
+              "avatar_id": "300880",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "008e8d907b7564c1"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1,
+              "name": "小昀宝",
+              "avatar_id": "300880",
+              "frame_id": "400330",
+              "result": "loss"
+            },
+            {
+              "server_id": 42,
+              "name": "派凯蒙宁",
+              "avatar_id": "300810",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "84b0cd10cd485a4d"
+        },
+        {
+          "players": [
+            {
+              "server_id": 6,
+              "name": "泪眼灼灼",
+              "avatar_id": "11503011",
+              "frame_id": "400300",
+              "result": "loss"
+            },
+            {
+              "server_id": 13,
+              "name": "安晴",
+              "avatar_id": "300840",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "89e93ab86e3f7e57"
+        },
+        {
+          "players": [
+            {
+              "server_id": 16,
+              "name": "NNNNN",
+              "avatar_id": "11501011",
+              "frame_id": "400740",
+              "result": "win"
+            },
+            {
+              "server_id": 17,
+              "name": "遐蝶",
+              "avatar_id": "300810",
+              "frame_id": "400330",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "bfd2147c93f86e79"
+        },
+        {
+          "players": [
+            {
+              "server_id": 30,
+              "name": "星辰",
+              "avatar_id": "300750",
+              "frame_id": "400235",
+              "result": "win"
+            },
+            {
+              "server_id": 31,
+              "name": "滥情空心",
+              "avatar_id": "10501011",
+              "frame_id": "400310",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "374cfec06a0bc056"
+        },
+        {
+          "players": [
+            {
+              "server_id": 6,
+              "name": "周杰伦",
+              "avatar_id": "11501011",
+              "frame_id": "400250",
+              "result": "loss"
+            },
+            {
+              "server_id": 26,
+              "name": "盖亚之子",
+              "avatar_id": "300070",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "0c6e21f8092421ec"
+        },
+        {
+          "players": [
+            {
+              "server_id": 44,
+              "name": "旅人",
+              "avatar_id": "300720",
+              "frame_id": "400300",
+              "result": "loss"
+            },
+            {
+              "server_id": 25,
+              "name": "两年半",
+              "avatar_id": "50510011",
+              "frame_id": "400500",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "277fc510397234b0"
+        },
+        {
+          "players": [
+            {
+              "server_id": 9,
+              "name": "千里传音",
+              "avatar_id": "300830",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 16,
+              "name": "大坤子",
+              "avatar_id": "300270",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "7a2ff8db080c26f6"
+        },
+        {
+          "players": [
+            {
+              "server_id": 5,
+              "name": "天天爆单",
+              "avatar_id": "300840",
+              "frame_id": "400020",
+              "result": "win"
+            },
+            {
+              "server_id": 9,
+              "name": "秧秧",
+              "avatar_id": "300840",
+              "frame_id": "400250",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "dbf1fe237a392543"
+        },
+        {
+          "players": [
+            {
+              "server_id": 14,
+              "name": "风里雪",
+              "avatar_id": "300030",
+              "frame_id": "400250",
+              "result": "win"
+            },
+            {
+              "server_id": 15,
+              "name": "穿星楼",
+              "avatar_id": "300550",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "94ff6c02ec47aefd"
+        },
+        {
+          "players": [
+            {
+              "server_id": 4,
+              "name": "钟子期",
+              "avatar_id": "300440",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 5,
+              "name": "真魔咒",
+              "avatar_id": "11501011",
+              "frame_id": "400250",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "10fe9a1fedb15f43"
+        },
+        {
+          "players": [
+            {
+              "server_id": 5,
+              "name": "又到冬天",
+              "avatar_id": "50510011",
+              "frame_id": "400190",
+              "result": "win"
+            },
+            {
+              "server_id": 41,
+              "name": "我爱导管子",
+              "avatar_id": "300880",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "a9fa119548ed285a"
+        },
+        {
+          "players": [
+            {
+              "server_id": 3,
+              "name": "明虹",
+              "avatar_id": "50506011",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 53,
+              "name": "Astra",
+              "avatar_id": "50510011",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "27b9708901d40db4"
+        },
+        {
+          "players": [
+            {
+              "server_id": 40,
+              "name": "粉色妖精小姐",
+              "avatar_id": "300100",
+              "frame_id": "400190",
+              "result": "loss"
+            },
+            {
+              "server_id": 1,
+              "name": "沐浔",
+              "avatar_id": "300720",
+              "frame_id": "400340",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "5a824b7057997760"
+        }
+      ]
+    },
+    {
+      "key": "round16",
+      "label": "16强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 9,
+              "name": "桃子",
+              "avatar_id": "300560",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 46,
+              "name": "没昵称",
+              "avatar_id": "300880",
+              "frame_id": "400500",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "575ef7086b5be93e"
+        },
+        {
+          "players": [
+            {
+              "server_id": 1,
+              "name": "大魔王潇潇",
+              "avatar_id": "300870",
+              "frame_id": "400000",
+              "result": "win"
+            },
+            {
+              "server_id": 42,
+              "name": "派凯蒙宁",
+              "avatar_id": "300810",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "02b019f71f5842a9"
+        },
+        {
+          "players": [
+            {
+              "server_id": 13,
+              "name": "安晴",
+              "avatar_id": "300840",
+              "frame_id": "400000",
+              "result": "loss"
+            },
+            {
+              "server_id": 16,
+              "name": "NNNNN",
+              "avatar_id": "11501011",
+              "frame_id": "400740",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "078fe2d6e7b85ebf"
+        },
+        {
+          "players": [
+            {
+              "server_id": 30,
+              "name": "星辰",
+              "avatar_id": "300750",
+              "frame_id": "400235",
+              "result": "loss"
+            },
+            {
+              "server_id": 26,
+              "name": "盖亚之子",
+              "avatar_id": "300070",
+              "frame_id": "400000",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "165ce06818cfcec9"
+        },
+        {
+          "players": [
+            {
+              "server_id": 25,
+              "name": "两年半",
+              "avatar_id": "50510011",
+              "frame_id": "400500",
+              "result": "win"
+            },
+            {
+              "server_id": 9,
+              "name": "千里传音",
+              "avatar_id": "300830",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "95107f82f98bf71a"
+        },
+        {
+          "players": [
+            {
+              "server_id": 5,
+              "name": "天天爆单",
+              "avatar_id": "300840",
+              "frame_id": "400020",
+              "result": "win"
+            },
+            {
+              "server_id": 14,
+              "name": "风里雪",
+              "avatar_id": "300030",
+              "frame_id": "400250",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "d6430d08cbc55ac5"
+        },
+        {
+          "players": [
+            {
+              "server_id": 5,
+              "name": "真魔咒",
+              "avatar_id": "11501011",
+              "frame_id": "400250",
+              "result": "loss"
+            },
+            {
+              "server_id": 5,
+              "name": "又到冬天",
+              "avatar_id": "50510011",
+              "frame_id": "400190",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "f5dd36aa66227ba4"
+        },
+        {
+          "players": [
+            {
+              "server_id": 3,
+              "name": "明虹",
+              "avatar_id": "50506011",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 1,
+              "name": "沐浔",
+              "avatar_id": "300720",
+              "frame_id": "400340",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "ad71819d85d01e64"
+        }
+      ]
+    },
+    {
+      "key": "quarterfinal",
+      "label": "8强赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 9,
+              "name": "桃子",
+              "avatar_id": "300560",
+              "frame_id": "400260",
+              "result": "win"
+            },
+            {
+              "server_id": 1,
+              "name": "大魔王潇潇",
+              "avatar_id": "300870",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "0fc50f8561e0f3a4"
+        },
+        {
+          "players": [
+            {
+              "server_id": 16,
+              "name": "NNNNN",
+              "avatar_id": "11501011",
+              "frame_id": "400740",
+              "result": "win"
+            },
+            {
+              "server_id": 26,
+              "name": "盖亚之子",
+              "avatar_id": "300070",
+              "frame_id": "400000",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "77734ee880b6ba70"
+        },
+        {
+          "players": [
+            {
+              "server_id": 25,
+              "name": "两年半",
+              "avatar_id": "50510011",
+              "frame_id": "400500",
+              "result": "loss"
+            },
+            {
+              "server_id": 5,
+              "name": "天天爆单",
+              "avatar_id": "300840",
+              "frame_id": "400020",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "2530ab576ac75680"
+        },
+        {
+          "players": [
+            {
+              "server_id": 5,
+              "name": "又到冬天",
+              "avatar_id": "50510011",
+              "frame_id": "400190",
+              "result": "win"
+            },
+            {
+              "server_id": 3,
+              "name": "明虹",
+              "avatar_id": "50506011",
+              "frame_id": "400260",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "19b980b5f17f9449"
+        }
+      ]
+    },
+    {
+      "key": "semifinal",
+      "label": "半决赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 9,
+              "name": "桃子",
+              "avatar_id": "300560",
+              "frame_id": "400260",
+              "result": "loss"
+            },
+            {
+              "server_id": 16,
+              "name": "NNNNN",
+              "avatar_id": "11501011",
+              "frame_id": "400740",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "efca0d0592f7b956"
+        },
+        {
+          "players": [
+            {
+              "server_id": 5,
+              "name": "天天爆单",
+              "avatar_id": "300840",
+              "frame_id": "400020",
+              "result": "loss"
+            },
+            {
+              "server_id": 5,
+              "name": "又到冬天",
+              "avatar_id": "50510011",
+              "frame_id": "400190",
+              "result": "win"
+            }
+          ],
+          "lineup_id": "3c1d12420e09b1a8"
+        }
+      ]
+    },
+    {
+      "key": "final",
+      "label": "冠军赛",
+      "matches": [
+        {
+          "players": [
+            {
+              "server_id": 16,
+              "name": "NNNNN",
+              "avatar_id": "11501011",
+              "frame_id": "400740",
+              "result": "win"
+            },
+            {
+              "server_id": 5,
+              "name": "又到冬天",
+              "avatar_id": "50510011",
+              "frame_id": "400190",
+              "result": "loss"
+            }
+          ],
+          "lineup_id": "6b233d39b8952eb5"
+        }
+      ]
+    }
+  ],
+  "bronze_match": {
+    "players": [
+      {
+        "server_id": 9,
+        "name": "桃子",
+        "avatar_id": "300560",
+        "frame_id": "400260",
+        "result": "win"
+      },
+      {
+        "server_id": 5,
+        "name": "天天爆单",
+        "avatar_id": "300840",
+        "frame_id": "400020",
+        "result": "loss"
+      }
+    ],
+    "lineup_id": "30307fb0ad1d1add"
+  },
+  "channel": "xkghb",
+  "season": "S16"
+}
