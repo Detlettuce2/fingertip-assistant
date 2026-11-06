@@ -454,7 +454,8 @@ function rotationCardForWeek(weekIndex) {
 }
 
 function rotationWeekInfo() {
-  const anchor = Date.parse("2026-09-10T08:00:00+08:00");
+  // The skipped activity week shifted the cycle by one Thursday.
+  const anchor = Date.parse("2026-09-17T08:00:00+08:00");
   const now = Date.now();
   const weekIndex = Math.floor((now - anchor) / (7 * DAY));
   const start = anchor + weekIndex * 7 * DAY;
