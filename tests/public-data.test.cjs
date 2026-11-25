@@ -181,7 +181,7 @@ test("catalogs contain only public display fields, plain text, and existing imag
   const data = readJson(path.join(API_ROOT, "catalogs.json"));
   assertKeys(data, "catalogs", "api/catalogs.json");
   assert.match(data.updated_on, /^\d{4}-\d{2}-\d{2}$/);
-  const counts = {heroes: 89, runes: 60, pets: 16, artifacts: 45, seals: 7};
+  const counts = {heroes: 90, runes: 60, pets: 16, artifacts: 47, seals: 7};
   const publicItems = new Map(readJson(path.join(API_ROOT, "items.json")).items.map(item => [item.id, item]));
   const newPublicItems = new Map([[150110638, "守护圣盾"], [150110639, "霜结冰花"]]);
   for (const [kind, count] of Object.entries(counts)) {

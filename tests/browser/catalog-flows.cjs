@@ -13,10 +13,15 @@ module.exports=async(page,baseURL)=>{
   await page.locator('#item-search').fill('守护圣盾');
   await page.waitForFunction(()=>{const image=document.querySelector('#item-detail .item-icon');return image?.complete&&image.naturalWidth>0;});
   ok(await page.locator('#item-detail .item-icon').getAttribute('src')==='assets/item-assets/icon_150110638.png','守护圣盾碎片使用已有贴图而非占位');
+  await page.locator('#item-search').fill('S18红品圣物包');
+  ok(await page.locator('.item-content-icon').count()===7,'S18 红品圣物包有七件自选圣物');
   await page.locator('#item-search').fill('');
   await page.getByRole('tab',{name:'角色图鉴',exact:true}).click();
   await page.locator('.catalog-card').first().waitFor();
-  ok((await page.locator('#catalog-summary').innerText()).includes('89 个角色'),'角色静态资料已加载');
+  ok((await page.locator('#catalog-summary').innerText()).includes('90 个角色'),'角色静态资料已加载');
+  await page.locator('#catalog-search').fill('灭烬·黑龙');
+  ok(await page.locator('.catalog-card').count()===1 && (await page.locator('#catalog-detail').innerText()).includes('灭烬燃袭'),'黑龙角色和技能已收录');
+  await page.waitForFunction(()=>[...document.querySelectorAll('#catalog-detail img')].some(image=>image.complete&&image.naturalWidth>0&&image.src.includes('hricon_315050110')));
   await page.locator('#catalog-search').fill('丰饶·芙蕾雅');
   ok(await page.locator('.catalog-card').count()===1,'新版芙蕾雅已收录');
   await page.waitForFunction(()=>[...document.querySelectorAll('#catalog-detail img')].some(image=>image.complete&&image.naturalWidth>0&&image.src.includes('hricon_115050110')));
@@ -48,6 +53,8 @@ module.exports=async(page,baseURL)=>{
   await page.locator('#catalog-search').fill('守护圣盾');
   await page.waitForFunction(()=>{const image=document.querySelector('#catalog-detail .item-icon');return image?.complete&&image.naturalWidth>0;});
   ok(await page.locator('.catalog-card').count()===1,'新增圣物静态贴图完整加载');
+  await page.locator('#catalog-search').fill('灭世龙枪');
+  ok(await page.locator('.catalog-card').count()===1 && (await page.locator('#catalog-detail').innerText()).includes('魔盾'),'灭世龙枪及初始效果已收录');
   await page.getByRole('tab',{name:'兽印图鉴',exact:true}).click();
   await page.locator('#catalog-search').fill('九尾狐');
   await page.locator('#catalog-rare').check();
